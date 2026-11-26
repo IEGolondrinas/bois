@@ -136,11 +136,11 @@ function frame(){
     __safeRun('life2',()=>window.__life2&&window.__life2(dt,tt));
     if(skyTick)animateAwakeItems(tt);
     if(skyTick)animatePhotos(tt);
-    if(PERF.aux120>=.12){PERF.aux120=0;__safeRun('aux120',()=>{window.__boisGlassesTick?.();window.__boisSwanBoxTick?.()})}
     if(PERF.aux200>=.20){PERF.aux200=0;__safeRun('aux200',()=>window.__boisPuppyTick?.())}
-    if(PERF.aux400>=.40){PERF.aux400=0;__safeRun('aux400',()=>window.__boisEmojiTick?.())}
-    if(PERF.aux1000>=1.0){PERF.aux1000=0;__safeRun('aux1000',()=>{window.__boisCh7HintTick?.();window.__boisNtbTick?.()})}
   }
+  if(PERF.aux120>=.12){PERF.aux120=0;__safeRun('aux120',()=>{window.__boisGlassesTick?.();window.__boisSwanBoxTick?.()})}
+  if(PERF.aux400>=.40){PERF.aux400=0;__safeRun('aux400',()=>window.__boisEmojiTick?.())}
+  if(PERF.aux1000>=1.0){PERF.aux1000=0;__safeRun('aux1000',()=>{if(!inSubZone)window.__boisCh7HintTick?.();window.__boisNtbTick?.()})}
   if(ch6On&&typeof window.__boisCh6Step==='function')__safeRun('ch6',()=>window.__boisCh6Step(dt,now));
   if(S.on&&!cinActive){
     if(!inSubZone&&PERF.photos>=.10){PERF.photos=0;checkPhotos();}

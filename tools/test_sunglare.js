@@ -25,6 +25,6 @@ t(box(0,1,0,1,0,0,5,6,0,3,-1,1,90)>0&&box(0,1,0,-1,0,0,5,6,0,3,-1,1,90)<0,'prueb
 // integración
 const shn=sh.replace(/\s+/g,'');
 t(/sunOccluded(Factor)?\(env,cam\.position\.x/.test(shn)&&/o\*=1-occ/.test(shn),'el resplandor usa la oclusión suavizada');
-t(/PR\.on\)\|\|cam\.position\.z<-900\)\{?o=0/.test(shn),'sin resplandor en Poolrooms ni en las torres del capítulo VI');
+t(/PR\.on\)(\|\|\(window\.__boisCh6&&window\.__boisCh6\.on\))?\|\|cam\.position\.z<-900\)\{?o=0/.test(shn),'sin resplandor en Poolrooms ni en las torres del capítulo VI');
 const c4=R('js/31-chapter4.js');t(/__boisSunBlockers/.test(c4)&&/tragaluz/.test(c4),'el edificio del capítulo IV se registra como bloqueador (con el tragaluz abierto)');
 console.log('\n'+ok+' comprobaciones del resplandor solar superadas.');
