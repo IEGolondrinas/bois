@@ -73,7 +73,7 @@ if(e.code==='KeyE'&&!e.repeat&&S.on){if(interactCar())return;if(interactPhoto())
       {t:'Dentro quedan cuatro fotografías. Están dañadas, pero todavía puedes distinguir lo que muestran.'},
       {t:'Un bosque. Unos edificios. Una piscina. Y una figura humana cuyo rostro se ha perdido.'},
       {t:'No sabes quién tomó estas imágenes ni por qué las dejó aquí.'}
-    ],()=>{showMsg('Guardaste la cámara. Pulsa V para volver a examinar sus fotografías.');openCameraGallery();});
+    ],()=>{showMsg('Guardaste la cámara. Pulsa V para volver a examinar sus fotografías.');openCameraGallery();},{lookAt:it.cam.position});
     return;
   }
   if((typeof CH1==='undefined'||CH1.legacy)&&it&&it.nb&&Math.hypot(S.x-it.nb.position.x,S.z-it.nb.position.z)<2.5&&!STORY.flags.gotNb){
@@ -82,7 +82,7 @@ if(e.code==='KeyE'&&!e.repeat&&S.on){if(interactCar())return;if(interactPhoto())
       {t:'Una pequeña libreta. La primera página tiene una frase escrita a mano:'},
       {t:'«Si estás leyendo esto, significa que has vuelto.»',who:'Libreta'},
       {t:'No entiendes qué significa. Pero la guardas.'}
-    ],()=>showMsg('Guardaste la libreta.'));
+    ],()=>showMsg('Guardaste la libreta.'),{lookAt:it.nb.position});
     return;
   }
 }
@@ -124,8 +124,8 @@ if(touch){$('tb').style.display='flex';$('bj').onclick=()=>jumpQ=true;$('be').on
  // v122: atajos de teclado accesibles en pantallas táctiles (foto, diario, mapa, álbum, sentarse, radio).
  document.querySelectorAll('#tb [data-k]').forEach(b=>b.onclick=()=>{const code=b.dataset.k;for(const t of['keydown','keyup'])document.dispatchEvent(new KeyboardEvent(t,{code,key:code.slice(3).toLowerCase(),bubbles:true}))});
  let ls=null,rs=null;const st=$('st'),kn=st.firstElementChild;
- document.addEventListener('touchstart',e=>{for(const t of e.changedTouches){if(!S.on||t.target.closest('#tb'))continue;if(t.clientX<innerWidth/2&&!ls){ls={id:t.identifier,x:t.clientX,y:t.clientY};st.style.display='block';st.style.left=t.clientX+'px';st.style.top=t.clientY+'px'}else if(t.clientX>=innerWidth/2&&!rs)rs={id:t.identifier,x:t.clientX,y:t.clientY}}},{passive:true});
- document.addEventListener('touchmove',e=>{for(const t of e.changedTouches){if(ls&&t.identifier===ls.id){let dx=t.clientX-ls.x,dy=t.clientY-ls.y;const l=Math.hypot(dx,dy),m=48;if(l>m){dx*=m/l;dy*=m/l}jv.x=dx/m;jv.y=dy/m;kn.style.transform=`translate(${dx}px,${dy}px)`}
+ document.addEventListener('touchstart',e=>{for(const t of e.changedTouches){if(!S.on||CIN.on||t.target.closest('#tb'))continue;if(t.clientX<innerWidth/2&&!ls){ls={id:t.identifier,x:t.clientX,y:t.clientY};st.style.display='block';st.style.left=t.clientX+'px';st.style.top=t.clientY+'px'}else if(t.clientX>=innerWidth/2&&!rs)rs={id:t.identifier,x:t.clientX,y:t.clientY}}},{passive:true});
+ document.addEventListener('touchmove',e=>{if(!S.on||CIN.on){ls=null;rs=null;jv.x=jv.y=0;st.style.display='none';kn.style.transform='';return}for(const t of e.changedTouches){if(ls&&t.identifier===ls.id){let dx=t.clientX-ls.x,dy=t.clientY-ls.y;const l=Math.hypot(dx,dy),m=48;if(l>m){dx*=m/l;dy*=m/l}jv.x=dx/m;jv.y=dy/m;kn.style.transform=`translate(${dx}px,${dy}px)`}
   else if(rs&&t.identifier===rs.id){const dx=-(t.clientX-rs.x)*.005,dy=-(t.clientY-rs.y)*.005;if(typeof CAR!=='undefined'&&CAR.on&&typeof carLookDelta==='function'){carLookDelta(dx,dy)}else{S.yaw+=dx;S.pitch=Math.max(-1.5,Math.min(1.5,S.pitch+dy))}rs.x=t.clientX;rs.y=t.clientY}}},{passive:true});
  const releaseTouches=e=>{for(const t of e.changedTouches){if(ls&&t.identifier===ls.id){ls=null;jv.x=jv.y=0;st.style.display='none';kn.style.transform=''}if(rs&&t.identifier===rs.id)rs=null}};document.addEventListener('touchend',releaseTouches,{passive:true});document.addEventListener('touchcancel',releaseTouches,{passive:true})}
 function resize(){R.setPixelRatio(dpr);R.setSize(innerWidth,innerHeight,false);idleRendered=false;cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}{let __rz=0;addEventListener('resize',()=>{if(__rz)return;__rz=requestAnimationFrame(()=>{__rz=0;resize()})})}resize();

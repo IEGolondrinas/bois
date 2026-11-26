@@ -37,7 +37,11 @@ function ejWin(){
   ejTop.textContent='¡Lo encontraste! ('+s+' s)';
   if(ej.winTimer)clearTimeout(ej.winTimer);
   ej.winTimer=setTimeout(()=>{ej.winTimer=0;ejHide();
-    if(n>=3)playCinematic([{t:'Tres tableros, tres diferencias casi invisibles.'},{pause:2200},{t:'Mirar con atención también es una forma de cuidar — igual que quien se fijó en esos detalles tuyos.'},{pause:2800},{t:'Quizás por eso notas lo que otros pasan por alto.'},{pause:2500}]);
+    if(n>=3){
+      const fy=ej.board&&typeof PR!=='undefined'&&PR.geo?PR.geo.fyAt(ej.board.x,ej.board.z):0;
+      const look=ej.board?new THREE.Vector3(ej.board.x,fy+1.45,ej.board.z):undefined;
+      playCinematic([{t:'Tres tableros, tres diferencias casi invisibles.'},{pause:2200},{t:'Mirar con atención también es una forma de cuidar — igual que quien se fijó en esos detalles tuyos.'},{pause:2800},{t:'Quizás por eso notas lo que otros pasan por alto.'},{pause:2500}],null,look?{lookAt:look,location:'LOS POOLROOMS · ATENCIÓN'}:{location:'LOS POOLROOMS · ATENCIÓN'});
+    }
     else showMsg('Tablero '+n+'/3 resuelto · queda otro en los Poolrooms (E)');
   },1300);
 }

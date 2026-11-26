@@ -121,9 +121,18 @@ try{(()=>{
   small:[{t:'Una piscina demasiado pequeña para el tamaño de la sala.'},{pause:1800},{t:'Alrededor sobra espacio, como cuando encoges los hombros o miras al suelo creyendo que no eres suficiente.'},{pause:2400},{who:'Tú',t:'Siempre pensé que valía solo si hacía algo perfecto.'},{pause:2400}],
   sky:[{t:'El agua refleja un cielo que no existe.'},{pause:1800},{t:'Nubes lentas, una luz cálida. Levantas la vista y solo hay baldosas.'},{pause:2300},{who:'Tú',t:'A veces confundía lo que imaginaba por dentro con lo que de verdad estaba pasando afuera.'},{pause:2500}]};
  function room(k){const p=C5.pts.find(p=>p.id===k);
-  cine(TXT[k],()=>{storyFlag(p.flag,1);refresh(true);const n=roomsN();
+  let look=new THREE.Vector3(p.x,PR.geo.fyAt(p.x,p.z)+1.5,p.z);
+  let lines=TXT[k];
+  if(k==='small'&&C5.buoy){look=new THREE.Vector3(C5.buoy.position.x,PR.geo.PY+0.15,C5.buoy.position.z)}
+  else if(k==='sky'){
+   const sp=C5.skyDisc?C5.skyDisc.position:p;
+   look=new THREE.Vector3(sp.x,PR.geo.PY+0.2,sp.z);
+   lines=TXT.sky.map(l=>Object.assign({},l));
+   if(lines[2]){lines[2].lookAt=new THREE.Vector3(sp.x,PR.geo.PY+4.4,sp.z);lines[2].unclampedPitch=true}
+  }
+  cine(lines,()=>{storyFlag(p.flag,1);refresh(true);const n=roomsN();
    if(roomsDone()){sting([262,330,392,523],SV*1.1,3.2,.32);showMsg('Recuerdo 3/3 · al fondo se enciende una luz cálida · busca la mesa')}
-   else{sting([392,587],SV,2.2,.28);showMsg('Recuerdo '+n+'/3 · algo se movió en el agua… aún hay luces azules')}},{lookAt:new THREE.Vector3(p.x,PR.geo.fyAt(p.x,p.z)+1.2,p.z)})}
+   else{sting([392,587],SV,2.2,.28);showMsg('Recuerdo '+n+'/3 · algo se movió en el agua… aún hay luces azules')}},{lookAt:look})}
  function table(t,fy){
   window.__boisRevealPhoto={img:PHOTO_DATA,title:'Cátedra de Paz · Cinco palabras en tu cuaderno',layers:{stamp:'29 / 10 / 2025 · 14:48 · 9 y 9',fact:'Actividad «Sé algo bueno de ti». Te cambiaste de subgrupo para quedar 9 y 9. Katherin escribió cinco palabras en tu cuaderno.',thought2025:'Me sudaron frío las axilas y fingí calma para no parecer raro. Pensé que valía solo por mi 382 y que ella me vería insuficiente.',insight2026:'Por primera vez alguien nombró «linda persona, reservado, amable y enfocado» antes que tus notas. Tu valor no dependía de un logro.'}};
   sting([220,330],SV,3.6,.5);
@@ -133,13 +142,13 @@ try{(()=>{
    {type:'layer',layer:'pensaste',t:'A las 14:53 te temblaban las piernas y sudabas frío, fingiendo que no te importaba para que no se notara el nudo en el pecho.'},{pause:2800},
    {type: 'layer',layer:'hoy',t:'Y al mismo tiempo, el resto del salón te daba las gracias: «Oye Toro, gracias por la mezcla y por prestar tu computador».'},{pause:2800},
    {who:'Tú',t:'Quizá las personas también veían quién era yo… incluso cuando yo no hacía nada excepcional.'},{pause:3000}],
-   ()=>{storyFlag('ch5_photo',1);katherin(t,fy)},{lookAt:new THREE.Vector3(t.x,fy+.85,t.z)})}
+   ()=>{storyFlag('ch5_photo',1);katherin(t,fy)},{lookAt:new THREE.Vector3(t.x,fy+.92,t.z)})}
  function katherin(t,fy){
   ensureKat();
-  let look=new THREE.Vector3(S.x,fy+1.5,S.z);
+  let look=new THREE.Vector3(S.x,fy+1.4,S.z);
   if(C5.kat){const k=C5.kat;let kx=S.x+Math.sin(S.yaw)*3.2,kz=S.z+Math.cos(S.yaw)*3.2,found=false;
    for(const d of [3.2,2.6,3.8,2.1]){for(const da of [0,.6,-.6,1.2,-1.2]){const qx=S.x+Math.sin(S.yaw+da)*d,qz=S.z+Math.cos(S.yaw+da)*d;if(!PR.geo.hit(qx,qz)&&(Math.abs(qx-t.x)>1.5||Math.abs(qz-t.z)>1.0)&&PR.geo.fyAt(qx,qz)>=-0.35){kx=qx;kz=qz;found=true;break}}if(found)break}
-   k.position.set(kx,PR.geo.fyAt(kx,kz),kz);k.rotation.set(0,Math.atan2(S.x-kx,S.z-kz),0);k.visible=true;look=new THREE.Vector3(kx,k.position.y+1.5,kz)}
+   k.position.set(kx,PR.geo.fyAt(kx,kz),kz);k.rotation.set(0,Math.atan2(S.x-kx,S.z-kz),0);k.visible=true;look=new THREE.Vector3(kx,k.position.y+1.35,kz)}
   sting([294],SV*.8,3,0);
   cine([{pause:700},{t:'Un paso suave suena detrás de ti sobre las baldosas húmedas.'},{pause:1600},{who:'Katherin',t:'¿Te acuerdas de esa clase?'},{pause:1700},{t:'Te giras. No hay enigmas en su rostro; solo la calma tranquila de siempre.'},{pause:1600},{who:'Tú',t:'Por fuera me quedé quieto. Por dentro sentía que mi cuerpo no podía sostener lo que estaba sintiendo.'},{pause:2400},{t:'Katherin mira la hoja sobre la mesa.'},{pause:1500},{who:'Katherin',t:'Yo solo escribí lo que veía en ti ese día.'},{pause:2200},
    {type:'layer',layer:'hoy',t:'Tal vez nunca sepas todo lo que pasaba por su cabeza cuando escribió esas líneas.'},{pause:2400},{who:'Tú',t:'Pero sí sé cuánto significó para mí. Y eso ya es suficiente.'},{pause:2800}],
@@ -177,7 +186,7 @@ try{(()=>{
    if(active()&&!FL().ch5_entered)C5.enterTimer=setTimeout(()=>{C5.enterTimer=0;if(!PR.on||!S.on||CIN.on||FL().ch5_entered)return;
     cine([{pause:600},{t:'Al salir del agua, el aire huele a cloro y a humedad antigua.'},{pause:2000},{t:'Piscinas de distintas profundidades. Pasillos con arcos curvos. Pilares cilíndricos. Escaleras que no conducen a ninguna parte.'},{pause:2600},
      {t:'No hay ventanas. No hay relojes. No hay animales.'},{pause:1800},{t:'Solo agua, luces fluorescentes y el eco de tus propios movimientos.'},{pause:2400},{t:'El lugar parece no tener límites.'},{pause:2200},
-     {who:'Tú',t:'Todo esto estaba aquí abajo… esperando.'},{pause:2400}],()=>{storyFlag('ch5_entered',1);showMsg('Capítulo V · Busca luces azules flotando · E: examinar')},{})},1700)}catch(e){console.warn('Capítulo V:',e)}};
+     {who:'Tú',t:'Todo esto estaba aquí abajo… esperando.'},{pause:2400}],()=>{storyFlag('ch5_entered',1);showMsg('Capítulo V · Busca luces azules flotando · E: examinar')},{lookAt:new THREE.Vector3(0,PR.geo.PY+1.85,-8)})},1700)}catch(e){console.warn('Capítulo V:',e)}};
  // ---------- misión y brújula ----------
  let lk=null;const lakePt=()=>{if(lk)return lk;let b=1e9,bx=0,bz=0;for(let x=-480;x<=480;x+=16)for(let z=-480;z<=480;z+=16){const h=hAt(x,z);if(h<b){b=h;bx=x;bz=z}}return lk={x:bx,z:bz}};
  const oM=bgMission;bgMission=function(){const f=FL();

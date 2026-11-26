@@ -1025,7 +1025,7 @@ try {
     };
 
     const lookVec = new THREE.Vector3();
-    const look = (p, y = 2) => lookVec.set(p.x, by + y, p.z).clone();
+    const look = (p, y = 2) => lookVec.set(p.x, p.y != null ? p.y : by + y, p.z).clone();
     const chapterCine = (lines, cb, point, loc) => {
       playCinematic(lines, cb, {
         location: loc || 'CAPÍTULO IV · EL COLEGIO',
@@ -1195,7 +1195,7 @@ try {
           closeCh4Vignette();
           showMsg('Capítulo IV · El Colegio · busca el cuaderno abierto y los 4 recuerdos del salón');
         },
-        point || chapter4.door,
+        { x: cx, y: by + 2.3, z: cz - 6 },
         'CAPÍTULO IV · EL BUS DE LAS 6:30'
       );
     };
@@ -1231,7 +1231,7 @@ try {
             storyFlag('ch4_notebook', 1);
             showMsg('Recuerdo guardado · acércate ahora a la pizarra');
           },
-          chapter4.notebook
+          { x: cx - 5, y: by + 1.65, z: cz + 2.65 }
         );
         return true;
       }
@@ -1256,7 +1256,7 @@ try {
             chapter4.boardDone();
             showMsg('Acércate ahora al ventanal del fondo (también quedan fragmentos en los rincones)');
           },
-          chapter4.board
+          { x: cx, y: by + 2.8, z: cz - 11.2 }
         );
         return true;
       }
@@ -1310,7 +1310,7 @@ try {
             storyFlag('ch4_complete', 1);
             showMsg('Capítulo IV completado · Algo espera bajo la superficie del lago' + (all ? ' (4/4 recuerdos)' : ''));
           },
-          chapter4.window,
+          { x: cx + 8, y: by + 2.4, z: cz - 24 },
           'CAPÍTULO IV · EL ESPEJO Y LAS 4:12 P. M.'
         );
         return true;
@@ -1323,6 +1323,12 @@ try {
           for (const l of fr.lines) {
             timed.push(l, { pause: Math.min(2700, 850 + l.t.length * 26) });
           }
+          const fragLook = {
+            shelf: { x: cx - 10, y: by + 2.2, z: cz - 11.0 },
+            board: { x: cx + 11.7, y: by + 2.9, z: cz + 11.4 },
+            pc: { x: cx + 9.0, y: by + 1.9, z: cz - 1.22 },
+            lockers: { x: cx - 11.45, y: by + 1.45, z: cz + 11.2 }
+          }[fr.id] || { x: cx + fr.loc[0], y: by + 1.8, z: cz + fr.loc[1] };
           chapterCine(
             timed,
             () => {
@@ -1334,7 +1340,7 @@ try {
                   : 'Recuerdo del colegio (' + n + '/' + CH4_FRAGMENTS.length + ')'
               );
             },
-            { x: cx + fr.loc[0], z: cz + fr.loc[1] },
+            fragLook,
             'CAPÍTULO IV · ' + fr.name.toUpperCase()
           );
           return true;

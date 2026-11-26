@@ -85,22 +85,25 @@ function interactPhoto(){
       window.__boisRevealPhoto={title:p.title,img:p.img};
       const locLabel='CÁPSULA '+n+'/'+tot+(p.zone?' · '+String(p.zone).toUpperCase():'');
       const lines=typeof window.__boisMemoryLines==='function'?window.__boisMemoryLines(p):p.mem.map(t=>({t}));
+      const photoLook=new THREE.Vector3(g.position.x,Math.max(g.position.y+1.1,S.y+1.55),g.position.z);
       playCinematic(lines,()=>{
         if(n>=tot){
           storyFlag('ch2_complete',1);
           if(window.__katherin)window.__katherin.visible=true;
           if(window.__glasses&&!STORY.flags.glasses)window.__glasses.visible=true;
           ch2Pad([196,261.6,329.6,392],7.5,.042);
+          const kat=window.__katherin;
+          const endLook=kat?new THREE.Vector3(kat.position.x,kat.position.y+1.5,kat.position.z):new THREE.Vector3(-120,ground(-120,74,300)+1.8,74);
           playCinematic([
             {t:'Las seis cápsulas vuelven a su sitio en la cámara.'},
             {t:'No resolviste un misterio: empezaste a distinguir lo que pasó de lo que imaginaste.'},
             {t:'Junto al lago, en el Parque de los Cisnes, Katherin espera sentada en la banca.'}
-          ],()=>{showMsg('Capítulo III · El Parque de los Cisnes · acércate al lago')},{location:'CAPÍTULO II · COMPLETADO'});
+          ],()=>{showMsg('Capítulo III · El Parque de los Cisnes · acércate al lago')},{lookAt:endLook,location:'CAPÍTULO II · COMPLETADO'});
         }else{
           showMsg('Cápsula '+n+'/'+tot+' guardada'+(n===3?' · Nueva página en tu libreta (J)':''));
           if(typeof bgGuided==='function'){const gd=bgGuided();if(gd)setTimeout(()=>{if(S.on&&!CIN.on)showMsg('Siguiente pista · '+gd.zone+' · pulsa J o M')},3200)}
         }
-      },{location:locLabel});
+      },{lookAt:photoLook,location:locLabel});
       return true;
     }
   }

@@ -128,24 +128,36 @@ function ch1CamEnd() {
   CH1CAM.shake = 0;
   if (CH1CAM.save) {
     S.yaw = CH1CAM.cur.yaw;
-    S.pitch = Math.max(-1.4, Math.min(1.4, CH1CAM.cur.pitch));
+    S.pitch = Math.max(-1.25, Math.min(1.25, CH1CAM.cur.pitch));
     cam.fov = 72;
     cam.updateProjectionMatrix();
+    cam.rotation.set(S.pitch, S.yaw, 0, 'YXZ');
+    cam.updateMatrixWorld();
     CH1CAM.save = null;
   }
 }
 
 function ch1CamTo(target, dur, easeFn) {
+  const keys = Object.keys(target);
+  for (let i = CH1CAM.tws.length - 1; i >= 0; i--) {
+    const tw = CH1CAM.tws[i];
+    for (const k of keys) {
+      delete tw.to[k];
+      delete tw.from[k];
+    }
+    if (Object.keys(tw.to).length === 0) CH1CAM.tws.splice(i, 1);
+  }
   const from = {};
-  for (const k of Object.keys(target)) from[k] = CH1CAM.cur[k];
-  CH1CAM.tws.push({ from, to: target, t: 0, dur: Math.max(0.05, dur || 1), ease: easeFn || ch1EaseIO });
+  for (const k of keys) from[k] = CH1CAM.cur[k];
+  CH1CAM.tws.push({ from, to: Object.assign({}, target), t: 0, dur: Math.max(0.05, dur || 1), ease: easeFn || ch1EaseIO });
 }
 
 function ch1LookAt(x, y, z, dur, extra) {
   const dx = x - CH1CAM.cur.x, dy = y - CH1CAM.cur.y, dz = z - CH1CAM.cur.z;
-  const dist = Math.hypot(dx, dz) || 1;
-  const yaw = Math.atan2(-dx, -dz);
-  const pitch = Math.atan2(dy, dist);
+  const horiz = Math.hypot(dx, dz);
+  const yaw = horiz >= 0.35 ? Math.atan2(-dx, -dz) : CH1CAM.cur.yaw;
+  const dist = Math.max(horiz, 1.8);
+  const pitch = Math.max(-0.55, Math.min(0.72, Math.atan2(dy, dist)));
   ch1CamTo(Object.assign({ yaw, pitch }, extra || {}), dur || 1.2);
 }
 
@@ -160,9 +172,10 @@ function ch1CamApply(dt, t) {
     const u = Math.min(1, tw.t / tw.dur);
     const e = tw.ease(u);
     for (const k of Object.keys(tw.to)) {
-      let a = tw.from[k], b = tw.to[k];
+      const a = tw.from[k], b = tw.to[k];
       if (k === 'yaw') {
-        let d = ((b - a + Math.PI) % (Math.PI * 2)) - Math.PI;
+        let d = (b - a) % (Math.PI * 2);
+        if (d > Math.PI) d -= Math.PI * 2;
         if (d < -Math.PI) d += Math.PI * 2;
         CH1CAM.cur.yaw = a + d * e;
       } else {

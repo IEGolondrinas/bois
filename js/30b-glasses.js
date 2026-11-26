@@ -173,11 +173,15 @@ function interactGlasses() {
   g.visible = false;
   glNear = false;
   glassesSoundChime();
-  const lookAt = new THREE.Vector3(g.position.x, g.position.y, g.position.z);
+  const lookAt = new THREE.Vector3(g.position.x, g.position.y + 0.15, g.position.z);
+  const kat = window.__katherin;
+  const parkLook = kat
+    ? new THREE.Vector3(kat.position.x, kat.position.y + 1.45, kat.position.z)
+    : new THREE.Vector3(-125, (typeof WL !== 'undefined' ? WL : 0) + 1.8, 110);
   playCinematic([
     { t: 'Unas gafas. Las lentes tienen un leve tono de miopía.' },
     { pause: 1600 },
-    { t: 'Te las pones. El parque se aclara de golpe: las ramas del cerezo, el agua, los dos cisnes.', on: () => glassesUpdate() },
+    { t: 'Te las pones. El parque se aclara de golpe: las ramas del cerezo, el agua, los dos cisnes.', lookAt: parkLook, on: () => glassesUpdate() },
     { pause: 2100 },
     { t: 'Quizás nada había cambiado. Quizás siempre estuvo ahí, y tú no mirabas con suficiente atención.' },
     { pause: 2500 }

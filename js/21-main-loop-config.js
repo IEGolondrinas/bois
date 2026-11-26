@@ -97,8 +97,13 @@ function frame(){
       cam.rotation.set(S.pitch,S.yaw,0,'YXZ');
     }
     camFx(dt);
-  }else if(!inSubZone){
-    setUW(uw?cam.position.y<WL+.03:cam.position.y<WL-.03);
+  }else{
+    if(typeof CIN!=='undefined'&&CIN.on&&!(typeof CH1CAM!=='undefined'&&CH1CAM.on)&&!(typeof CAR!=='undefined'&&CAR.on)){
+      window.__boisCinCamStep?.(dt);
+    }
+    if(!inSubZone){
+      setUW(uw?cam.position.y<WL+.03:cam.position.y<WL-.03);
+    }
   }
 
   // ---------- Entorno vivo continuo (se omiten sistemas exclusivos de la isla al entrar en Poolrooms o Capítulo VI) ----------

@@ -3237,16 +3237,17 @@ try {
     const worldOf = (x, y, z) => new THREE.Vector3(O6.x + x, O6.y + y, O6.z + z);
 
     // ---------- Cinemáticas (guión intacto) ----------
-    const cine = (lines, cb, pt, abs) => {
+    const cine = (lines, cb, pt, abs, extra) => {
       const loc = cinBox.querySelector('.cin-location'), old = loc ? loc.textContent : '';
       if (loc) loc.textContent = 'LAS TORRES';
+      const opts = pt ? Object.assign({ lookAt: abs ? new THREE.Vector3(pt.x, pt.y, pt.z) : worldOf(pt.x, pt.y || 1.6, pt.z) }, extra || {}) : (extra || {});
       playCinematic(
         lines,
         () => {
           if (loc) loc.textContent = old || 'PARQUE DE LOS CISNES';
           if (cb) cb();
         },
-        pt ? { lookAt: abs ? new THREE.Vector3(pt.x, pt.y, pt.z) : worldOf(pt.x, pt.y || 1.6, pt.z) } : {}
+        opts
       );
     };
 
@@ -3328,7 +3329,7 @@ try {
           storyFlag('ch6_aula', 1);
           doneMsg('Torre del pasado · ' + pastN() + '/3 · hay más escenas');
         },
-        P('aula')
+        { x: -42, y: 2.0, z: -7.5 }
       );
     }
 
@@ -3352,7 +3353,7 @@ try {
           storyFlag('ch6_nino', 1);
           doneMsg('Torre del pasado · ' + pastN() + '/3 · mira las escenas del fondo');
         },
-        P('nino')
+        { x: -34, y: 1.55, z: -6.5 }
       );
     }
 
@@ -3382,7 +3383,7 @@ try {
           chime(660);
           showMsg('Se abre la puerta del puente · (Opcional: mira el recuerdo junto a la ventana antes de cruzar)');
         },
-        P('cierre')
+        { x: -39.8, y: 1.35, z: 6.7 }
       );
     }
 
@@ -3411,7 +3412,7 @@ try {
           storyFlag('ch6_valeria', 1);
           showMsg('Recuerdo guardado · 01/11/2025 · La habitación de Valeria');
         },
-        { x: -32.2, y: 0.7, z: 6.2 }
+        { x: -32.2, y: 0.95, z: 6.2 }
       );
     }
 
@@ -3430,7 +3431,7 @@ try {
           storyFlag('ch6_bridge', 1);
           showMsg('Torre de los futuros · mira cada escena');
         },
-        { x: -8, y: 1.6, z: 0 }
+        { x: 2, y: 1.8, z: 0 }
       );
     }
 
@@ -3452,7 +3453,7 @@ try {
           storyFlag('ch6_fisica', 1);
           doneMsg(left('Un futuro visto'));
         },
-        P('fisica')
+        { x: -1, y: 1.75, z: -8.5 }
       );
     }
 
@@ -3474,7 +3475,7 @@ try {
           storyFlag('ch6_compu', 1);
           doneMsg(left('Un futuro visto'));
         },
-        P('compu')
+        { x: 7, y: 1.55, z: -8.3 }
       );
     }
 
@@ -3496,7 +3497,7 @@ try {
           storyFlag('ch6_solo', 1);
           doneMsg(left('Un futuro visto'));
         },
-        P('solo')
+        { x: -1, y: 1.5, z: 8.2 }
       );
     }
 
@@ -3518,7 +3519,7 @@ try {
           storyFlag('ch6_gente', 1);
           doneMsg(left('Un futuro visto'));
         },
-        P('gente')
+        { x: 7, y: 1.35, z: 7.9 }
       );
     }
 
@@ -3568,14 +3569,14 @@ try {
           { pause: 2400 },
           { who: 'Inscripción', t: '«No puedes recordar el futuro porque todavía no ha ocurrido.»' },
           { pause: 3800 },
-          { t: 'Al fondo, dos ventanales opuestos miran al cielo abierto, y al este se extiende la ciudad.' },
+          { t: 'Al fondo, dos ventanales opuestos miran al cielo abierto, y al este se extiende la ciudad.', lookAt: worldOf(56, TOP + 2.0, 0) },
           { pause: 2300 },
         ],
         () => {
           storyFlag('ch6_frase', 1);
           showMsg('Mira las ventanas opuestas o acércate al ventanal del este · E');
         },
-        P('frase')
+        { x: 47.2, y: TOP + 0.15, z: 0 }
       );
     }
 
@@ -3602,7 +3603,7 @@ try {
           storyFlag('ch6_ventanas', 1);
           showMsg('Recuerdo guardado · Dos ventanas opuestas · acércate al ventanal del este (E)');
         },
-        { x: 42.5, y: TOP + 1.6, z: -7.8 }
+        { x: 42.5, y: TOP + 1.55, z: -7.8 }
       );
     }
 
@@ -3629,7 +3630,7 @@ try {
           storyFlag('ch6_complete', 1);
           leave(() => showMsg('Capítulo VI completado · Las torres'));
         },
-        { x: 56, y: TOP + 2.2, z: 0 }
+        { x: 120, y: TOP + 2.0, z: 0 }
       );
     }
 
@@ -3734,8 +3735,9 @@ try {
             { pause: 2400 },
           ],
           go,
-          { x: GAP.x, y: 40, z: -16 },
-          true
+          { x: GAP.x, y: 32, z: -16 },
+          true,
+          { minDist: 14 }
         );
         M6.preloadTimer = setTimeout(() => {
           M6.preloadTimer = 0;

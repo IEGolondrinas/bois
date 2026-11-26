@@ -1,7 +1,7 @@
 /* BOIS.IO · 23-cinematics.js — Diálogos cinemáticos y despertar visual
    (líneas 2243–2376 de BOIS_IO_v119_Optimizado.html) */
 // ===== CINEMATIC DIALOGUE =====
-const CIN={on:false,lines:[],i:0,t:0,cb:null,timer:null,fadeTimer:null,pendingOn:null,oldRotation:null};
+const CIN={on:false,lines:[],i:0,t:0,cb:null,timer:null,fadeTimer:null,pendingOn:null,oldRotation:null,camTarget:null,curYaw:0,curPitch:0,curRoll:0,goalYaw:null,goalPitch:null,camSpeed:4.2,hadLook:false,restoreLook:false,pitchBias:0.035,unclampedPitch:false};
 const cinBox=document.createElement('div');
 cinBox.id='cin';
 cinBox.style.cssText='position:fixed;inset:0;z-index:10;display:none;pointer-events:none;background:linear-gradient(transparent 60%,rgba(0,0,0,.7))';
@@ -80,6 +80,55 @@ function playWakeOpening(onComplete){
   setTimeout(()=>{layer.remove();style.remove();window.__boisWakeLock=false;if(typeof onComplete==='function')onComplete();},5200);
 }
 
+function cinWrapAngle(a){
+  let d=a%(Math.PI*2);
+  if(d>Math.PI)d-=Math.PI*2;
+  if(d<-Math.PI)d+=Math.PI*2;
+  return d;
+}
+function cinComputeGoal(target,opts){
+  if(!target||typeof cam==='undefined')return null;
+  const tx=target.x,ty=target.y,tz=target.z;
+  if(!Number.isFinite(tx)||!Number.isFinite(ty)||!Number.isFinite(tz))return null;
+  const dx=tx-cam.position.x,dy=ty-cam.position.y,dz=tz-cam.position.z;
+  const horiz=Math.hypot(dx,dz);
+  const yaw=horiz>=0.35?Math.atan2(-dx,-dz):CIN.curYaw;
+  const effDist=Math.max(horiz,(opts&&opts.minDist)||2.1);
+  let pitch=Math.atan2(dy,effDist);
+  if(dy<-0.2&&!(opts&&opts.noBias))pitch+=(opts&&opts.pitchBias!=null?opts.pitchBias:CIN.pitchBias);
+  if(!(opts&&opts.unclampedPitch))pitch=Math.max(-0.48,Math.min(0.68,pitch));
+  else pitch=Math.max(-1.25,Math.min(1.25,pitch));
+  return{yaw,pitch};
+}
+function cinSetLookAt(target,opts){
+  if(!target){CIN.camTarget=null;return}
+  CIN.camTarget={x:target.x,y:target.y,z:target.z};
+  if(opts&&opts.camSpeed)CIN.camSpeed=opts.camSpeed;
+  const g=cinComputeGoal(CIN.camTarget,opts);
+  if(!g)return;
+  CIN.goalYaw=g.yaw;CIN.goalPitch=g.pitch;CIN.hadLook=true;
+  if(opts&&opts.snap&&typeof cam!=='undefined'){
+    CIN.curYaw=g.yaw;CIN.curPitch=g.pitch;
+    cam.rotation.set(CIN.curPitch,CIN.curYaw,0,'YXZ');cam.updateMatrixWorld();
+  }
+}
+window.__boisCinLookAt=cinSetLookAt;
+window.__boisCinCamStep=function(dt){
+  if(!CIN.on||typeof cam==='undefined')return;
+  if(typeof CH1CAM!=='undefined'&&CH1CAM.on)return;
+  if(typeof CAR!=='undefined'&&CAR.on)return;
+  if(CIN.camTarget){
+    const g=cinComputeGoal(CIN.camTarget,CIN.camOpts);
+    if(g){CIN.goalYaw=g.yaw;CIN.goalPitch=g.pitch}
+  }
+  if(CIN.goalYaw===null||CIN.goalPitch===null)return;
+  const k=1-Math.exp(-Math.max(1.2,CIN.camSpeed||4.2)*Math.min(dt||0.016,0.05));
+  CIN.curYaw+=cinWrapAngle(CIN.goalYaw-CIN.curYaw)*k;
+  CIN.curPitch+=(CIN.goalPitch-CIN.curPitch)*k;
+  CIN.curRoll+=(0-CIN.curRoll)*k;
+  cam.rotation.set(CIN.curPitch,CIN.curYaw,CIN.curRoll,'YXZ');
+};
+
 function flushCinPending(){
   if(typeof CIN.pendingOn!=='function')return;
   const fn=CIN.pendingOn;CIN.pendingOn=null;
@@ -95,11 +144,22 @@ function playCinematic(lines,cb,opts={}){
     r.innerHTML='<div class="cin-photo-mat"><img src="'+__esc(__ph.img)+'" alt="'+__esc(__ph.title)+'"><div class="cin-photo-caption">'+__esc(__ph.title)+'</div></div>';
     cinBox.appendChild(r);
   }
+  const ch1Owns=typeof CH1CAM!=='undefined'&&!!CH1CAM.on;
   CIN.oldRotation=cam.rotation.clone();
+  CIN.camOpts=opts;CIN.camTarget=null;CIN.goalYaw=null;CIN.goalPitch=null;
+  CIN.hadLook=false;CIN.restoreLook=!!opts.restoreLook;CIN.camSpeed=opts.camSpeed||4.2;
   if(opts.location){const loc=cinBox.querySelector('.cin-location');if(loc){loc.textContent=opts.location;CIN.locSet=true}} // v131: los capítulos IV/V fijan su rótulo por su cuenta
-  if(opts.lookAt){
-    cam.lookAt(opts.lookAt.x,opts.lookAt.y,opts.lookAt.z);
-    cam.updateMatrixWorld();
+  if(!ch1Owns&&typeof cam!=='undefined'){
+    cam.rotation.order='YXZ';
+    CIN.curYaw=cam.rotation.y;
+    CIN.curPitch=Math.max(-1.35,Math.min(1.35,cam.rotation.x));
+    CIN.curRoll=cam.rotation.z||0;
+    if(opts.lookAt){
+      cinSetLookAt(opts.lookAt,opts);
+    }else{
+      CIN.goalYaw=CIN.curYaw;
+      CIN.goalPitch=Math.max(-0.42,Math.min(0.42,CIN.curPitch));
+    }
   }
   cinBox.classList.add('active');
   cinBox.classList.remove('pause');
@@ -116,6 +176,7 @@ function showCinLine(){
   clearTimeout(CIN.fadeTimer);CIN.fadeTimer=null;
   flushCinPending();
   CIN.pendingOn=typeof l.on==='function'?l.on:null;
+  if(l.lookAt&&!(typeof CH1CAM!=='undefined'&&CH1CAM.on))cinSetLookAt(l.lookAt,l);
   cinTxt.classList.remove('visible');
   // La frase anterior se desvanece antes de cambiar; la nueva entra con el fade-in habitual.
   const renderLine=()=>{
@@ -157,11 +218,26 @@ function showCinLine(){
 function endCinematic(){
   clearTimeout(CIN.timer);clearTimeout(CIN.fadeTimer);CIN.timer=null;CIN.fadeTimer=null;
   flushCinPending();
-  CIN.on=false;cinBox.classList.remove('active','pause');cinBox.style.display='none';
+  const ch1Owns=typeof CH1CAM!=='undefined'&&!!CH1CAM.on;
+  const keepFramed=!ch1Owns&&!CIN.restoreLook&&CIN.hadLook;
+  const endYaw=CIN.curYaw,endPitch=CIN.curPitch;
+  CIN.on=false;CIN.camTarget=null;CIN.goalYaw=null;CIN.goalPitch=null;CIN.hadLook=false;
+  cinBox.classList.remove('active','pause');cinBox.style.display='none';
   if(CIN.locSet){CIN.locSet=false;const loc=cinBox.querySelector('.cin-location');if(loc)loc.textContent='PARQUE DE LOS CISNES'}
   const reveal=cinBox.querySelector('#cinPhotoReveal');if(reveal)reveal.remove();
   window.__boisRevealPhoto=null;
-  if(CIN.oldRotation){cam.rotation.copy(CIN.oldRotation);cam.updateMatrixWorld();CIN.oldRotation=null}
+  if(!ch1Owns&&typeof cam!=='undefined'){
+    if(keepFramed&&typeof S!=='undefined'){
+      S.yaw=endYaw;
+      S.pitch=Math.max(-1.25,Math.min(1.25,endPitch));
+      cam.rotation.set(S.pitch,S.yaw,0,'YXZ');
+      cam.updateMatrixWorld();
+    }else if(CIN.oldRotation){
+      cam.rotation.copy(CIN.oldRotation);
+      cam.updateMatrixWorld();
+    }
+  }
+  CIN.oldRotation=null;
   S.on=true;
   if(CIN.cb)CIN.cb();
 }
