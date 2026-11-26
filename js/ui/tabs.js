@@ -1,0 +1,1 @@
+/* Pestañas de la pantalla de controles */document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.tabs button').forEach(x=>{x.classList.toggle('on',x===b);x.setAttribute('aria-selected',x===b?'true':'false')});document.querySelectorAll('.pan').forEach(p=>p.classList.toggle('on',p.id===b.dataset.t))}))

@@ -1,0 +1,15 @@
+{
+  "name": "bois-io",
+  "version": "1.89.0",
+  "description": "BOIS.IO · Lago de los Cisnes — Juego narrativo de exploración en 3D (three.js r128)",
+  "main": "server.js",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "build": "node -c server.js && node tools/test_v189.js",
+    "lint": "node -c server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

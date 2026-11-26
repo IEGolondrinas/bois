@@ -1,0 +1,1 @@
+(()=>{const b=document.getElementById('controlsToggle'),p=document.getElementById('controlsPanel');if(!b||!p)return;b.addEventListener('click',()=>{const open=!p.classList.contains('open');p.classList.toggle('open',open);p.setAttribute('aria-hidden',String(!open));b.setAttribute('aria-expanded',String(open));b.textContent=open?'Ocultar controles':'Controles'})})()

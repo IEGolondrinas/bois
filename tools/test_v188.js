@@ -1,0 +1,25 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.resolve(__dirname,'..');
+const c6=fs.readFileSync(path.join(root,'js','36e-chapter6.js'),'utf8');
+const tel=fs.readFileSync(path.join(root,'js','37c-telemetry.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+let n=0;const ok=(c,m)=>{assert(c,m);console.log('OK · '+m);n++};
+ok(/__BOX_GEO/.test(c6)&&/o\.scale\.set\(w,\s*h,\s*d\)/.test(c6),'bx reutiliza geometría compartida');
+ok(/__cylGeo/.test(c6)&&/__CYL_GEO/.test(c6),'cyl reutiliza geometrías por perfil');
+ok(/__DOT_TEX/.test(c6),'dotTex tiene caché compartida');
+ok(/setValueAtTime\(0,\s*t\)/.test(c6)&&/setValueAtTime\(v,\s*t\)/.test(c6),'audio ambiente fija el gain antes de los ramps');
+ok(/function disposeChapter/.test(c6)&&/\.dispose\(\)/.test(c6)&&/root\.parent\s*&&\s*typeof root\.parent\.remove\s*===\s*'function'/.test(c6),'Capítulo VI libera recursos y elimina su raíz');
+ok(/ground\s*=\s*__g0/.test(c6)&&/blocked\s*=\s*__b0/.test(c6)&&/stepSurface\s*=\s*__ss/.test(c6)&&/__wxUpd0/.test(c6),'restaura wrappers globales al salir');
+ok(/function floorY\(x,\s*z\)[\s\S]*?\(k\s*\+\s*f\)\s*\*\s*RISE/.test(c6),'primer escalón progresivo');
+ok(/function chair\(p,\s*x,\s*z,\s*ry,\s*m,\s*collide\s*=\s*false\)/.test(c6)&&/if\s*\(collide\)\s*M6\.props\.push/.test(c6),'sillas con colisión opcional');
+ok(/M6\.decorCity\s*=\s*im/.test(c6)&&/M6\.decorCity\.material\.color/.test(c6),'segunda fila de ciudad sigue la niebla');
+ok(/const gauze\s*=[\s\S]*?\[140,\s*0?\.68\][\s\S]*?\[420,\s*0?\.78\]/.test(c6),'reducción de capas verticales de niebla');
+ok(/const PN\s*=\s*tc\s*\?\s*24\s*:\s*48/.test(c6),'nubes ambientales reducidas');
+ok(/M6\.markerRAF/.test(c6)&&/startMarkerSpin/.test(c6),'marcador no mantiene RAF permanente');
+ok(/function preloadChapter/.test(c6)&&/requestIdleCallback/.test(c6)&&/M6\.preloadPerf/.test(c6),'Capítulo VI tiene precarga anticipada en idle con perfil');
+ok(/preloadChapter\(\)\.catch/.test(c6)&&/M6\.preloadPromise/.test(c6),'la entrada reutiliza la promesa de precarga');
+ok(/## Capítulo VI · precarga/.test(tel)&&/const VER='v189'/.test(tel),'telemetría registra la precarga de Capítulo VI en v189');
+ok(/const VER='v189'/.test(tel)&&/v189 · BOIS Telemetry/.test(html),'proyecto etiquetado v189');
+console.log('\n'+n+' comprobaciones de v188 superadas.');

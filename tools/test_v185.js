@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.resolve(__dirname,'..');
+const pool=fs.readFileSync(path.join(root,'js/18-poolrooms.js'),'utf8');
+const boot=fs.readFileSync(path.join(root,'js/37-boot.js'),'utf8');
+const tel=fs.readFileSync(path.join(root,'js/37c-telemetry.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const ok=(c,m)=>{assert(c,m);console.log('OK · '+m)};
+ok(/P\.preload=\(opts\)/.test(pool),'Poolrooms tiene precarga parametrizable');
+ok(/opts\.priority\)setTimeout\(run,0\)/.test(pool),'la precarga prioritaria no espera idle callback');
+ok(/P\.loadPromise/.test(pool)&&/Promise\.resolve\(loadLog\)/.test(pool),'la precarga devuelve una promesa reutilizable');
+ok(/geometry_generation/.test(pool)&&/texture_material_setup/.test(pool)&&/mesh_build/.test(pool)&&/water_fx/.test(pool)&&/lighting_fx/.test(pool),'las fases de carga quedan instrumentadas');
+ok(/window\.__boisPoolroomsLoad/.test(pool),'el estado de carga queda disponible para la telemetría');
+ok(/await PR\.preload\(\{priority:true\}\)/.test(boot),'el arranque espera la precarga prioritaria');
+ok(/go\.disabled=true/.test(boot)&&/go\.disabled=false/.test(boot),'el botón Comenzar queda bloqueado durante la precarga');
+ok(/Preparando los Poolrooms/.test(boot),'la pantalla de arranque muestra la etapa Poolrooms');
+ok(/Poolrooms · carga inicial/.test(tel),'el informe incluye el profiling de carga Poolrooms');
+ok(/const VER='v189'/.test(tel),'telemetría reporta v189');
+ok(/BOIS\.IO v189/.test(html),'HTML reporta v189');
+console.log('\n10 comprobaciones de v185 superadas.');

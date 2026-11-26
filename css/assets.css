@@ -1,0 +1,9 @@
+/* BOIS.IO · assets.css — Paleta base y utilidades tipográficas del menú */
+:root {
+  --bois-bg: #070b0f;
+  --bois-ink: #eee8d9;
+  --bois-muted: #b8b2a4;
+  --bois-gold: #e2b878;
+  --bois-panel: rgba(13, 19, 24, 0.92);
+  --bois-border: rgba(226, 214, 186, 0.24);
+}

@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.resolve(__dirname,'..');
+const pool=fs.readFileSync(path.join(root,'js/18-poolrooms.js'),'utf8');
+const loop=fs.readFileSync(path.join(root,'js/21-main-loop-config.js'),'utf8');
+const quality=fs.readFileSync(path.join(root,'js/17-quality.js'),'utf8');
+const boot=fs.readFileSync(path.join(root,'js/37-boot.js'),'utf8');
+const tel=fs.readFileSync(path.join(root,'js/37c-telemetry.js'),'utf8');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const ok=(c,m)=>{assert(c,m);console.log('OK · '+m)};
+ok(/P\.preload=/.test(pool),'Poolrooms expone precarga');
+ok(/requestIdleCallback/.test(pool),'la precarga usa idle callback cuando existe');
+ok(/if\(!P\.built\)\{build\(\)\}/.test(pool),'P.enter conserva fallback seguro');
+ok(/fps<50/.test(loop)&&/__fpsLowTime>=3/.test(loop),'la resolución adaptativa reacciona antes a FPS bajos');
+ok(/__fpsHighTime>=12/.test(loop),'la recuperación de DPR es conservadora');
+ok(/const shTick=qi>=3\?\.55:qi>=2\?\.40:\.28/.test(loop),'la cadencia de sombras depende de calidad');
+ok(/'Ultra'.*ms:2048/.test(quality)||/n:'Ultra'.*ms:2048/.test(quality),'Ultra usa shadow map 2048');
+ok(/n:'Ultra',dpr:Math\.min\(devicePixelRatio\|\|1,1\.25\)/.test(quality),'Ultra limita DPR a 1.25');
+ok(/PR\.preload\(\{priority:true\}\)/.test(boot)&&/__boisPoolPreloadReady/.test(boot),'boot espera la precarga de Poolrooms antes de habilitar Comenzar');
+ok(/const VER='v\d+'/.test(tel),'telemetría reporta una versión');
+ok(/BOIS\.IO v\d+/.test(html),'HTML reporta una versión');
+console.log('\n12 comprobaciones de optimización v184 superadas.');

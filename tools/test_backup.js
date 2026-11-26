@@ -1,0 +1,24 @@
+// v179 · valida la limpieza de datos al importar copias de seguridad (js/ui/backup.js)
+const fs=require('fs'),path=require('path');let n=0;
+const ok=(c,m)=>{if(!c){console.error('FALLA · '+m);process.exit(1)}n++;console.log('OK · '+m)};
+global.window=global;global.document={getElementById:()=>null};
+eval(fs.readFileSync(path.join(__dirname,'../js/ui/backup.js'),'utf8'));
+const C=window.__bkClean;
+const story=JSON.stringify({flags:{a:1}}),mask='01'.repeat(1250);
+const good={bois_story:story,bois_cfg:JSON.stringify({mu:true,au:false,q:2,s:1.2}),bois_pos:JSON.stringify({x:10,z:-20,yaw:1.5}),bois_explored:mask,bois_dev_points:'[]'};
+const g=C(good);ok(Object.keys(g).length===5,'una copia válida se conserva completa');
+ok(!('bois_cfg' in C({...good,bois_cfg:'{no es json'})),'cfg con JSON roto se descarta');
+ok(!('bois_cfg' in C({...good,bois_cfg:JSON.stringify({q:'x'})})),'cfg con tipos incorrectos se descarta');
+ok(!('bois_cfg' in C({...good,bois_cfg:'[]'})),'cfg que es un arreglo se descarta');
+ok(!('bois_pos' in C({...good,bois_pos:JSON.stringify({x:9999,z:0})})),'posición fuera del mapa se descarta');
+ok(!('bois_pos' in C({...good,bois_pos:JSON.stringify({x:'a',z:0})})),'posición no numérica se descarta');
+ok(!('bois_explored' in C({...good,bois_explored:'1'.repeat(10)})),'mapa explorado de tamaño incorrecto se descarta');
+ok(!('bois_explored' in C({...good,bois_explored:'2'.repeat(2500)})),'mapa explorado con caracteres inválidos se descarta');
+ok(!('bois_dev_points' in C({...good,bois_dev_points:'{}'})),'puntos que no son arreglo se descartan');
+const dp=JSON.parse(C({...good,bois_dev_points:JSON.stringify([null,5,'x',[],{x:1,z:2,name:'ok'},{x:'a',z:2},{x:9999,z:0},{x:3,z:4,name:{a:1},extra:'<img onerror=1>'}])}).bois_dev_points);
+ok(dp.length===2&&dp[0].name==='ok'&&dp[1].name===''&&!('extra' in dp[1]),'puntos importados: se descartan elementos inválidos y campos desconocidos');
+ok(JSON.parse(C({...good,bois_dev_points:JSON.stringify(Array.from({length:900},(_, i)=>({x:i%100,z:0,name:'p'})))}).bois_dev_points).length===500,'puntos importados: máximo 500');
+ok(!('bois_story' in C({...good,bois_story:'{"flags":[]}'})),'historia con flags en arreglo se rechaza');
+ok(!('bois_story' in C({...good,bois_story:5})),'valor que no es texto se ignora');
+ok(Object.keys(C({bois_story:story})).length===1,'las claves ausentes no se inventan');
+console.log('\n'+n+' comprobaciones de la importación superadas.');

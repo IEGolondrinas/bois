@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+'use strict';
+const fs=require('fs'),path=require('path'),assert=require('assert');
+const root=path.resolve(__dirname,'..');
+const src=fs.readFileSync(path.join(root,'js/37b-debug.js'),'utf8');
+assert(src.includes("id='boisDebug'"),'falta el panel');
+assert(src.includes("e.code==='F8'"),'falta el atajo F8');
+assert(src.includes("typeof R!=='undefined'"),'el monitor debe leer el renderer lexical R');
+assert(src.includes("typeof S!=='undefined'"),'el monitor debe leer el jugador lexical S');
+assert(src.includes("typeof STORY!=='undefined'"),'el monitor debe leer la historia lexical STORY');
+assert(src.includes("typeof qi!=='undefined'"),'el monitor debe leer el índice de calidad lexical qi');
+assert(src.includes('r.info&&r.info.render'),'no lee estadísticas del renderer');
+assert(src.includes('r.info&&r.info.memory'),'no lee memoria del renderer');
+assert(src.includes('window.BOIS_DEBUG'),'no expone estado de debug');
+assert(!/window\.(renderer|S|STORY)\s*[=,;?]/.test(src),'no debe depender de propiedades window inexistentes');
+assert(!/localStorage|STORY\.flags\s*=/.test(src),'el monitor no debe modificar la partida');
+console.log('OK · monitor F8');
+console.log('OK · bindings globales R/S/STORY/qi/QS');
+console.log('OK · métricas de render y memoria');
+console.log('OK · observación sin mutar la partida');
+console.log('\n4 comprobaciones del monitor de debug superadas.');

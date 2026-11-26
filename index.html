@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<title>BOIS.IO v189 · Lago de los Cisnes</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="stylesheet" href="css/assets.css">
+<link rel="stylesheet" href="css/main.css">
+</head><body>
+<canvas id="c"></canvas>
+<div id="carHud" aria-hidden="true">
+  <div class="carTop"><span class="carLabel">AUTO</span><span class="carSpeed"><span id="carSpeed">0</span> km/h</span></div>
+  <div class="carGearRow"><b id="carGear">N</b><div class="carRpmBar"><i id="carRpm"></i></div></div>
+  <div class="carRadio">◉ <b id="carRadioName">Radio apagada</b><span id="carRadioHint"> · R cambia</span></div>
+</div>
+<div id="carPrompt" aria-hidden="true">E · subir al auto</div>
+<div id="vhsFx" aria-hidden="true"><div class="vhsNoise"></div><div class="vhsOsd"><span class="vhsRec"><i class="vhsDot"></i>REC</span><span>CAM 01</span><span>SP</span></div><div class="vhsMode">PLAY ▶</div></div>
+<div id="uwv"></div><div id="lfl"></div><div id="st"><i></i></div>
+<div id="tb"><button id="bj">Saltar</button><button id="be">Interactuar</button><button id="bh" type="button" aria-label="Mantener freno de mano" aria-hidden="true" style="display:none">Freno</button><button data-k="KeyP" aria-label="Fotografiar">📷</button><button data-k="KeyJ">Diario</button><button data-k="KeyM">Mapa</button><button data-k="KeyV">Álbum</button><button data-k="KeyF">Sentarse</button><button id="bb" data-k="KeyB" aria-label="Cajita de música">Cajita</button><button data-k="KeyR">Radio</button></div>
+<div id="bootScreen" role="status" aria-live="polite" aria-label="Cargando Bois.io">
+ <div id="bootInner">
+  <div id="bootEyebrow">Una aventura narrativa</div>
+  <div id="bootLogo">BOIS.IO</div>
+  <div id="bootSub">LOS LUGARES QUE DEJAMOS ATRÁS</div>
+  <div id="bootRule"><div id="bootProgress"></div></div>
+  <div id="bootStatus"><span id="bootStage">Preparando la isla</span><span id="bootPercent">0%</span></div>
+  <div id="bootHint">El bosque despierta lentamente…</div>
+ </div>
+</div>
+<div id="ov">
+<svg id="menuScene" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+<defs>
+<linearGradient id="msSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141c3f"/><stop offset=".28" stop-color="#3a356d"/><stop offset=".6" stop-color="#8b5984"/><stop offset=".84" stop-color="#df8b6b"/><stop offset="1" stop-color="#f7c580"/></linearGradient>
+<radialGradient id="msSun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff8e3" stop-opacity=".98"/><stop offset=".22" stop-color="#ffd58b" stop-opacity=".68"/><stop offset=".55" stop-color="#ff995d" stop-opacity=".22"/><stop offset="1" stop-color="#ff8c4c" stop-opacity="0"/></radialGradient>
+<linearGradient id="msRay" x1=".2" y1="1" x2=".9" y2="0"><stop offset="0" stop-color="#ffe7b8" stop-opacity=".26"/><stop offset=".6" stop-color="#ffd08e" stop-opacity=".07"/><stop offset="1" stop-color="#ffd08e" stop-opacity="0"/></linearGradient>
+<linearGradient id="msLake" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e79e7a"/><stop offset=".24" stop-color="#9e6d8c"/><stop offset=".58" stop-color="#484b70"/><stop offset="1" stop-color="#19213c"/></linearGradient>
+<linearGradient id="msSand" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c6047"/><stop offset=".45" stop-color="#423124"/><stop offset="1" stop-color="#19120d"/></linearGradient>
+<linearGradient id="msMist" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe0b8" stop-opacity="0"/><stop offset=".55" stop-color="#ffd7ab" stop-opacity=".42"/><stop offset="1" stop-color="#ffd7ab" stop-opacity="0"/></linearGradient>
+<linearGradient id="msTower" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fae1ba"/><stop offset=".42" stop-color="#9cb5d8"/><stop offset="1" stop-color="#455175"/></linearGradient>
+<linearGradient id="msTowerEdge" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#ffeac7" stop-opacity=".65"/><stop offset=".4" stop-color="#b4cae6" stop-opacity=".18"/><stop offset="1" stop-color="#2c3550" stop-opacity=".55"/></linearGradient>
+<linearGradient id="msTowerBeam" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#ffe8b8" stop-opacity=".24"/><stop offset="1" stop-color="#ffe8b8" stop-opacity="0"/></linearGradient>
+<linearGradient id="msTowerRefl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d5b8a4" stop-opacity=".28"/><stop offset="1" stop-color="#5d698f" stop-opacity="0"/></linearGradient>
+<radialGradient id="msGlowDot" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff8d6" stop-opacity="1"/><stop offset=".3" stop-color="#ffd878" stop-opacity=".7"/><stop offset="1" stop-color="#ffbd44" stop-opacity="0"/></radialGradient>
+<filter id="msBlur" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="14"/></filter>
+<filter id="msSoft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.2"/></filter>
+<filter id="msShadow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="4"/></filter>
+</defs>
+<rect width="1600" height="505" fill="url(#msSky)"/>
+<g id="msStars" fill="#fff7e2"><circle cx="95" cy="52" r="1.5"/><circle cx="215" cy="118" r="1.1"/><circle cx="340" cy="42" r="1.7"/><circle cx="485" cy="96" r="1.2"/><circle cx="620" cy="34" r="1.6"/><circle cx="770" cy="74" r="1.3"/><circle cx="910" cy="40" r="1.7"/><circle cx="1050" cy="88" r="1.2"/><circle cx="1190" cy="48" r="1.8"/><circle cx="1335" cy="98" r="1.3"/><circle cx="1475" cy="44" r="1.6"/><circle cx="285" cy="184" r="1"/><circle cx="670" cy="145" r="1.1"/><circle cx="1140" cy="160" r="1"/><circle cx="1410" cy="170" r="1.2"/><circle cx="1540" cy="112" r="1.3"/><circle cx="165" cy="78" r="1.2"/><circle cx="425" cy="138" r="1"/><circle cx="560" cy="68" r="1.4"/><circle cx="835" cy="112" r="1.1"/><circle cx="980" cy="64" r="1.5"/><circle cx="1265" cy="128" r="1.1"/><circle cx="1515" cy="162" r="1.2"/><circle cx="725" cy="30" r="1.2"/></g>
+<g class="msShoot" opacity="0"><line x1="1260" y1="42" x2="1190" y2="84" stroke="#fff7df" stroke-width="1.8" stroke-linecap="round"/><circle cx="1190" cy="84" r="2.2" fill="#fff9e8"/></g>
+<g opacity=".78" transform="translate(1360 116)"><circle cx="-2" cy="0" r="36" fill="url(#msGlowDot)" opacity=".18"/><path d="M0-14A14 14 0 1 0 12 9A11 11 0 1 1 0-14Z" fill="#fff4d4"/><circle cx="-3" cy="0" r="22" fill="url(#msGlowDot)" opacity=".28"/></g>
+<g opacity=".4" style="mix-blend-mode:screen"><polygon points="570,402 820,40 990,85" fill="url(#msRay)"/><polygon points="570,402 1080,145 1230,220" fill="url(#msRay)" opacity=".6"/><polygon points="570,402 220,90 360,55" fill="url(#msRay)" opacity=".5"/></g>
+<circle class="msSunGlow" cx="570" cy="400" r="220" fill="url(#msSun)"/>
+<circle cx="570" cy="402" r="20" fill="#fff7dc"/>
+<g class="msCloud c1" filter="url(#msBlur)" fill="#ff9f7c" opacity=".52"><ellipse cx="1180" cy="168" rx="275" ry="34"/><ellipse cx="1400" cy="248" rx="230" ry="26"/><ellipse cx="860" cy="128" rx="195" ry="22"/><ellipse cx="1005" cy="296" rx="185" ry="17"/></g>
+<g class="msCloud c2" filter="url(#msBlur)" fill="#fff2e2" opacity=".3"><ellipse cx="1235" cy="150" rx="165" ry="15"/><ellipse cx="765" cy="212" rx="140" ry="12"/><ellipse cx="1370" cy="228" rx="130" ry="10"/></g>
+<g id="msTowers" data-depth="3">
+  <polygon points="1096,216 1132,216 1144,44 1084,44" fill="url(#msTowerBeam)" opacity=".55"/>
+  <polygon points="1160,204 1198,204 1212,28 1146,28" fill="url(#msTowerBeam)" opacity=".65"/>
+  <rect x="1096" y="216" width="36" height="225" fill="url(#msTower)"/>
+  <rect x="1096" y="216" width="36" height="225" fill="url(#msTowerEdge)"/>
+  <rect x="1160" y="204" width="38" height="237" fill="url(#msTower)"/>
+  <rect x="1160" y="204" width="38" height="237" fill="url(#msTowerEdge)"/>
+  <g stroke="#e6f0ff" stroke-width=".9" opacity=".26">
+    <line x1="1105" y1="220" x2="1105" y2="435"/><line x1="1114" y1="220" x2="1114" y2="435"/><line x1="1123" y1="220" x2="1123" y2="435"/>
+    <line x1="1169" y1="208" x2="1169" y2="435"/><line x1="1179" y1="208" x2="1179" y2="435"/><line x1="1189" y1="208" x2="1189" y2="435"/>
+  </g>
+  <g fill="#ffe4a8" opacity=".7">
+    <rect x="1102" y="234" width="12" height="2"/><rect x="1118" y="254" width="9" height="2"/><rect x="1104" y="278" width="15" height="2"/><rect x="1116" y="304" width="10" height="2"/><rect x="1103" y="330" width="13" height="2"/>
+    <rect x="1166" y="224" width="14" height="2"/><rect x="1182" y="246" width="10" height="2"/><rect x="1168" y="270" width="12" height="2"/><rect x="1174" y="296" width="16" height="2"/><rect x="1167" y="324" width="11" height="2"/>
+  </g>
+  <rect x="1094" y="214" width="40" height="3" fill="#ffe8c2" opacity=".75"/>
+  <rect x="1158" y="202" width="42" height="3" fill="#ffe8c2" opacity=".82"/>
+  <rect x="1112" y="190" width="4" height="26" fill="#95a2c6"/><rect x="1177" y="174" width="4" height="30" fill="#95a2c6"/>
+  <circle class="msBlink" cx="1114" cy="188" r="2.6" fill="#ff5a4d"/><circle class="msBlink b2" cx="1179" cy="172" r="2.6" fill="#ff5a4d"/>
+</g>
+<path d="M-60 500L320 500C465 444 600 404 755 348C858 318 960 322 1065 352C1205 384 1400 422 1600 430L1600 505L-60 505Z" fill="#372e4f"/>
+<path d="M-60 505L220 486C420 456 610 416 815 392C960 376 1125 398 1320 424C1440 440 1530 448 1600 452L1600 506L-60 506Z" fill="#2c2944" opacity=".82"/>
+<path d="M-60 505L330 505C520 462 700 446 900 456C1100 462 1300 476 1600 488L1600 510L-60 510Z" fill="#212a38"/>
+<path d="M340 498L354 480L366 492L382 466L398 486L416 456L432 482L454 446L470 476L492 436L512 468L538 430L558 462L588 424L608 456L638 422L660 454L694 426L716 458L750 430L772 460L804 434L828 462L862 436L884 464L920 440L944 468L982 444L1004 472L1042 448L1064 474L1104 452L1126 476L1168 456L1190 480L1232 460L1254 484L1298 464L1320 486L1364 470L1386 490L1432 476L1456 494L1504 480L1530 496L1600 488V512H330Z" fill="#17202b" opacity=".96"/>
+<rect x="0" y="440" width="1600" height="72" fill="url(#msMist)"/>
+<rect y="500" width="1600" height="235" fill="url(#msLake)"/>
+<g class="msTowerRefl" opacity=".55" filter="url(#msSoft)">
+  <rect x="1098" y="504" width="32" height="118" fill="url(#msTowerRefl)"/>
+  <rect x="1162" y="504" width="34" height="132" fill="url(#msTowerRefl)"/>
+</g>
+<g class="msGlint" fill="#ffe7b5" filter="url(#msSoft)"><rect x="546" y="505" width="48" height="3.5" rx="2" opacity=".78"/><rect x="530" y="518" width="76" height="3" rx="2" opacity=".62"/><rect x="514" y="534" width="108" height="3" rx="2" opacity=".48"/><rect x="492" y="553" width="144" height="2.8" rx="2" opacity=".36"/><rect x="468" y="576" width="188" height="2.6" rx="2" opacity=".24"/><rect x="442" y="602" width="236" height="2.4" rx="2" opacity=".16"/></g>
+<g fill="#fff0cc" opacity=".24" filter="url(#msSoft)"><ellipse cx="1360" cy="528" rx="14" ry="2.2"/><ellipse cx="1360" cy="548" rx="22" ry="2.4"/><ellipse cx="1360" cy="572" rx="18" ry="2"/></g>
+<g class="msRipple" stroke="#f7caa4" stroke-width="1.8" opacity=".22"><path d="M900 540h140M1100 560h200M760 590h120M1200 520h160M980 610h220M310 555h110M240 605h150"/></g>
+<g class="msSwans" data-depth="5">
+  <g transform="translate(868 552)" opacity=".88">
+    <ellipse cx="14" cy="14" rx="16" ry="3" fill="#ffd9ae" opacity=".32"/>
+    <path d="M4 12C8 6 19 6 24 11C21 12 18 11 16 12C18 8 21 3 18 1C16 0 14 2 15 5C11 6 7 9 4 12Z" fill="#f7efe0"/>
+    <path d="M22 11C25 10 27 8 28 7" stroke="#f7efe0" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  </g>
+  <g transform="translate(910 562) scale(.84)" opacity=".78">
+    <ellipse cx="14" cy="14" rx="15" ry="2.8" fill="#ffd9ae" opacity=".28"/>
+    <path d="M4 12C8 6 19 6 24 11C21 12 18 11 16 12C18 8 21 3 18 1C16 0 14 2 15 5C11 6 7 9 4 12Z" fill="#efe6d6"/>
+  </g>
+</g>
+<path d="M0 900V716C300 696 520 686 800 696C1100 708 1400 738 1600 756V900Z" fill="url(#msSand)"/>
+<path d="M0 716C300 696 520 686 800 696C1100 708 1400 738 1600 756L1600 769C1400 750 1100 722 800 710C520 700 300 710 0 731Z" fill="#c7986d" opacity=".52"/>
+<path d="M0 734C320 714 550 708 820 718C1110 730 1390 756 1600 774" fill="none" stroke="#ffe5bd" stroke-width="1.2" opacity=".24"/>
+<g id="msFigure" data-depth="14" fill="#1d1a17">
+  <ellipse cx="786" cy="746" rx="74" ry="12" fill="#120c08" opacity=".48" filter="url(#msShadow)"/>
+  <circle cx="762" cy="636" r="21"/>
+  <path d="M722 712C718 672 738 654 764 654C792 654 806 672 806 706L804 736L726 736Z" fill="#2c2a26"/>
+  <path d="M790 722C830 716 862 726 880 738L874 752L786 744Z" fill="#26241f"/>
+  <path d="M742 646C746 626 776 622 784 640C772 634 756 636 742 646Z"/>
+  <path d="M744 624C758 614 776 618 783 632" fill="none" stroke="#f7cfa0" stroke-width="1.4" opacity=".42" stroke-linecap="round"/>
+  <path d="M726 674C736 658 752 653 770 655" fill="none" stroke="#f7cfa0" stroke-width="1.5" opacity=".3" stroke-linecap="round"/>
+</g>
+<g id="msKeepsakes" data-depth="22"><g transform="translate(0 -34)">
+  <g fill="#120c08" opacity=".44" filter="url(#msShadow)">
+    <ellipse cx="1062" cy="872" rx="64" ry="14" transform="rotate(-8 1062 872)"/>
+    <ellipse cx="1146" cy="884" rx="64" ry="14" transform="rotate(8 1146 884)"/>
+    <ellipse cx="1248" cy="842" rx="72" ry="13"/>
+    <ellipse cx="1436" cy="890" rx="102" ry="16" transform="rotate(-4 1436 890)"/>
+  </g>
+  <g transform="translate(1000 816) rotate(-9)">
+    <rect width="120" height="86" rx="2" fill="#dbd2bf" stroke="#3b342b" stroke-width="2"/>
+    <rect x="9" y="9" width="102" height="54" fill="#6f6375"/>
+    <rect x="9" y="9" width="102" height="28" fill="#c7836e" opacity=".75"/>
+    <rect x="66" y="18" width="7" height="24" fill="#2a3248"/><rect x="77" y="15" width="8" height="27" fill="#2a3248"/>
+    <rect x="9" y="42" width="102" height="21" fill="#3a405c" opacity=".82"/>
+    <line x1="20" y1="73" x2="88" y2="73" stroke="#7d6e5c" stroke-width="1.8" opacity=".6"/>
+  </g>
+  <g transform="translate(1086 834) rotate(8)">
+    <rect width="120" height="86" rx="2" fill="#e2dac8" stroke="#3b342b" stroke-width="2"/>
+    <rect x="9" y="9" width="102" height="54" fill="#4f6c78"/>
+    <path d="M9 48C32 34 62 38 111 46V63H9Z" fill="#273a3b"/>
+    <circle cx="82" cy="24" r="7" fill="#ffd99a" opacity=".8"/>
+    <line x1="18" y1="73" x2="76" y2="73" stroke="#7d6e5c" stroke-width="1.8" opacity=".6"/>
+  </g>
+  <g transform="translate(1180 756)">
+    <rect x="14" y="-6" width="22" height="8" rx="2" fill="#3a332b"/>
+    <rect x="96" y="-5" width="18" height="6" rx="2" fill="#b7a78e"/>
+    <path d="M42 0L50-10H82L90 0Z" fill="#2d2822"/>
+    <rect width="132" height="80" rx="7" fill="#26221e" stroke="#15120e" stroke-width="1.5"/>
+    <rect y="15" width="132" height="50" fill="#bba98e"/>
+    <rect x="10" y="21" width="20" height="12" rx="2" fill="#1b2230" stroke="#4f483d" stroke-width="1.5"/>
+    <circle cx="68" cy="41" r="27" fill="#17140f" stroke="#665c4e" stroke-width="4.5"/>
+    <circle cx="68" cy="41" r="19" fill="#101520" stroke="#3a4152" stroke-width="2"/>
+    <circle cx="68" cy="41" r="12" fill="#2b3d5c"/>
+    <circle cx="63" cy="36" r="4" fill="#9bc5ff" opacity=".55"/>
+    <path d="M58 31L75 49" stroke="#d8e7ff" stroke-width="1" opacity=".4"/>
+  </g>
+  <g transform="translate(1340 818) rotate(-4)">
+    <path d="M138 96L146 122L154 114L162 122L156 96Z" fill="#b44a3a"/>
+    <rect x="4" y="4" width="188" height="102" rx="4" fill="#d8cbb2"/>
+    <rect width="190" height="104" rx="5" fill="#6b3a23" stroke="#3d1f11" stroke-width="1.5"/>
+    <rect x="12" y="0" width="6" height="104" fill="#4f2917"/>
+    <rect x="24" y="9" width="156" height="86" rx="2" fill="none" stroke="#b98148" stroke-width="1.6" stroke-dasharray="6 3"/>
+    <rect x="64" y="28" width="76" height="28" rx="2" fill="#d8ccb3" opacity=".88"/>
+    <line x1="74" y1="38" x2="130" y2="38" stroke="#5c4632" stroke-width="2"/>
+    <line x1="74" y1="46" x2="116" y2="46" stroke="#5c4632" stroke-width="1.6" opacity=".7"/>
+  </g>
+</g></g>
+<g class="msBirds" fill="none" stroke="#251f30" stroke-width="2.8" stroke-linecap="round" opacity=".82"><path d="M1000 210q9-9 18 0q9-9 18 0"/><path d="M1060 240q7-7 14 0q7-7 14 0"/><path d="M1110 196q6-6 12 0q6-6 12 0"/><path d="M930 258q6-6 12 0q6-6 12 0"/><path d="M1182 222q5-5 10 0q5-5 10 0"/></g>
+<g id="msFireflies" data-depth="18">
+  <g class="ff f1"><circle cx="210" cy="560" r="14" fill="url(#msGlowDot)" opacity=".65"/><circle cx="210" cy="560" r="2.2" fill="#fff7d1"/></g>
+  <g class="ff f2"><circle cx="380" cy="640" r="12" fill="url(#msGlowDot)" opacity=".6"/><circle cx="380" cy="640" r="2" fill="#fff7d1"/></g>
+  <g class="ff f3"><circle cx="640" cy="610" r="15" fill="url(#msGlowDot)" opacity=".7"/><circle cx="640" cy="610" r="2.4" fill="#fff7d1"/></g>
+  <g class="ff f4"><circle cx="860" cy="690" r="12" fill="url(#msGlowDot)" opacity=".58"/><circle cx="860" cy="690" r="2" fill="#fff7d1"/></g>
+  <g class="ff f5"><circle cx="1040" cy="640" r="14" fill="url(#msGlowDot)" opacity=".68"/><circle cx="1040" cy="640" r="2.3" fill="#fff7d1"/></g>
+  <g class="ff f1"><circle cx="1240" cy="700" r="13" fill="url(#msGlowDot)" opacity=".64"/><circle cx="1240" cy="700" r="2.1" fill="#fff7d1"/></g>
+  <g class="ff f2"><circle cx="1420" cy="640" r="12" fill="url(#msGlowDot)" opacity=".6"/><circle cx="1420" cy="640" r="2" fill="#fff7d1"/></g>
+  <g class="ff f3"><circle cx="300" cy="760" r="14" fill="url(#msGlowDot)" opacity=".66"/><circle cx="300" cy="760" r="2.2" fill="#fff7d1"/></g>
+  <g class="ff f4"><circle cx="760" cy="780" r="12" fill="url(#msGlowDot)" opacity=".55"/><circle cx="760" cy="780" r="2" fill="#fff7d1"/></g>
+  <g class="ff f5"><circle cx="1130" cy="790" r="13" fill="url(#msGlowDot)" opacity=".64"/><circle cx="1130" cy="790" r="2.1" fill="#fff7d1"/></g>
+  <g class="ff f1"><circle cx="90" cy="690" r="12" fill="url(#msGlowDot)" opacity=".6"/><circle cx="90" cy="690" r="2" fill="#fff7d1"/></g>
+  <g class="ff f2"><circle cx="1500" cy="740" r="14" fill="url(#msGlowDot)" opacity=".66"/><circle cx="1500" cy="740" r="2.3" fill="#fff7d1"/></g>
+</g>
+<rect class="msMist2" x="-200" y="610" width="2000" height="120" fill="url(#msMist)" opacity=".55"/>
+<g class="msReeds" fill="#0b130f" opacity=".88">
+  <path d="M24 900Q32 820 46 772Q38 824 36 900Z"/>
+  <path d="M56 900Q62 802 82 748Q70 808 70 900Z"/>
+  <path d="M88 900Q98 830 118 790Q104 838 100 900Z"/>
+  <path d="M1556 900Q1544 824 1528 776Q1548 828 1568 900Z"/>
+  <path d="M1582 900Q1570 810 1554 758Q1578 814 1594 900Z"/>
+</g>
+<g fill="#0c1410"><path d="M0 0H520C500 30 470 60 420 84C380 104 340 100 300 120C240 150 170 150 90 120C60 108 30 104 0 112Z" opacity=".92"/><ellipse cx="130" cy="880" rx="230" ry="74"/><ellipse cx="520" cy="900" rx="170" ry="40"/></g>
+</svg>
+<div id="menuShade"></div>
+<main id="card">
+<header class="mHead"><p class="mEyebrow">Aventura narrativa</p><h1>BOIS<span>.IO</span></h1><p class="mSub">Los lugares que dejamos atrás</p><div id="menuProgressBadge" class="mBadge" hidden></div></header>
+<div id="ld" style="display:none"><i></i></div>
+<nav class="mNav" aria-label="Menú principal">
+<button id="go" class="mPrimary" type="button" disabled>Cargando…</button>
+<button id="resetProgress" type="button">Nueva partida</button>
+<button id="menuSettings" type="button">Configuración</button>
+<button id="controlsToggle" type="button" aria-expanded="false" aria-controls="controlsPanel">Controles</button>
+<button id="menuHistory" type="button">Historia</button>
+<button id="menuCredits" type="button">Créditos</button>
+<button id="menuExit" type="button">Salir</button>
+</nav>
+<div id="controlsPanel" role="region" aria-label="Guía de controles" aria-hidden="true">
+  <h2>GUÍA DE CONTROLES</h2>
+  <h3>Exploración a pie</h3>
+  <div class="ctrlGrid">
+   <span class="ctrlKey">W A S D / Flechas</span><span class="ctrlDesc">Moverte por la isla.</span>
+   <span class="ctrlKey">Ratón</span><span class="ctrlDesc">Mirar alrededor.</span>
+   <span class="ctrlKey">Mayús (Shift)</span><span class="ctrlDesc">Correr.</span>
+   <span class="ctrlKey">Espacio</span><span class="ctrlDesc">Saltar; en el agua, subir.</span>
+   <span class="ctrlKey">C</span><span class="ctrlDesc">Bajar mientras nadas.</span>
+   <span class="ctrlKey">E</span><span class="ctrlDesc">Interactuar con objetos; cerca del auto, subir o bajar.</span>
+   <span class="ctrlKey">B</span><span class="ctrlDesc">Darle cuerda a la cajita de música (junto a la banca de Katherin).</span>
+   <span class="ctrlKey">Z (mantener)</span><span class="ctrlDesc">Acercar la vista.</span>
+  </div>
+  <h3>Conducción</h3>
+  <div class="ctrlGrid">
+   <span class="ctrlKey">W / S</span><span class="ctrlDesc">Acelerar y frenar; S activa la reversa cuando el auto está detenido.</span>
+   <span class="ctrlKey">A / D</span><span class="ctrlDesc">Girar a izquierda y derecha.</span>
+   <span class="ctrlKey">Espacio (mantener)</span><span class="ctrlDesc">Activar el freno de mano.</span>
+   <span class="ctrlKey">E</span><span class="ctrlDesc">Bajar del auto.</span>
+   <span class="ctrlKey">R</span><span class="ctrlDesc">Cambiar la estación de radio.</span>
+  </div>
+  <h3>Cámara y recuerdos</h3>
+  <div class="ctrlGrid">
+   <span class="ctrlKey">P</span><span class="ctrlDesc">Tomar una fotografía.</span>
+   <span class="ctrlKey">Mayús + P</span><span class="ctrlDesc">Tomar la fotografía y descargar una copia PNG en tu equipo.</span>
+   <span class="ctrlKey">J</span><span class="ctrlDesc">Abrir o cerrar el diario de exploración y consultar el objetivo actual.</span>
+   <span class="ctrlKey">M</span><span class="ctrlDesc">Abrir o cerrar el mapa de la isla: se revela a medida que exploras y marca las zonas donde buscar fotografías.</span>
+   <span class="ctrlKey">V</span><span class="ctrlDesc">Examinar las fotografías de la cámara (cuando la tengas).</span>
+   <span class="ctrlKey">Esc</span><span class="ctrlDesc">Cerrar el mapa o el diario; si estás jugando, también pausa y vuelve al menú.</span>
+  </div>
+  <h3>Ambiente y hora</h3>
+  <div class="ctrlGrid">
+   <span class="ctrlKey">N</span><span class="ctrlDesc">Silenciar o activar el sonido.</span>
+   <span class="ctrlKey">U</span><span class="ctrlDesc">Activar o apagar los sonidos de la naturaleza.</span>
+   <span class="ctrlKey">O</span><span class="ctrlDesc">Alternar entre verano y otoño, con hojas y colores estacionales.</span>
+   <span class="ctrlKey">H</span><span class="ctrlDesc">Cambiar entre hora automática, mediodía, atardecer, noche y amanecer.</span>
+  </div>
+  <h3>Sensibilidad del ratón</h3>
+  <div class="ctrlGrid">
+   <span class="ctrlKey">[</span><span class="ctrlDesc">Disminuir la sensibilidad del ratón.</span>
+   <span class="ctrlKey">]</span><span class="ctrlDesc">Aumentar la sensibilidad del ratón.</span>
+  </div>
+<h3>Poolrooms y torres</h3>
+  <div class="ctrlGrid">
+   <span class="ctrlKey">Retroceso (Backspace)</span><span class="ctrlDesc">Salir de las Poolrooms y volver al lago; dentro de las torres de cristal, volver a la isla.</span>
+  </div>
+  <h3>Herramientas privadas</h3>
+  <div class="ctrlGrid">
+   <span class="ctrlKey devOnly">F3</span><span class="ctrlDesc devOnly">Mostrar u ocultar las herramientas de desarrollo.</span>
+   <span class="ctrlKey devOnly">F4</span><span class="ctrlDesc devOnly">Guardar tu ubicación actual como punto personal (con F3 activo).</span>
+   <span class="ctrlKey devOnly">F5</span><span class="ctrlDesc devOnly">Mostrar u ocultar en el mapa todas las ubicaciones de las fotografías (con F3 activo).</span>
+   <span class="ctrlKey devOnly">G</span><span class="ctrlDesc devOnly">Activar o desactivar el vuelo (con F3 activo). En vuelo: Espacio sube, C baja y Shift acelera.</span>
+   <span class="ctrlKey devOnly">F8</span><span class="ctrlDesc devOnly">Mostrar el monitor de rendimiento: FPS, llamadas de render, triángulos, memoria y estado del capítulo.</span>
+   <span class="ctrlKey devOnly">F9</span><span class="ctrlDesc devOnly">BOIS Telemetry: abre el panel de notas e informe (pausa el mundo). Mientras juegas graba FPS, zonas lentas, tirones, memoria y errores.</span>
+   <span class="ctrlKey devOnly">F10</span><span class="ctrlDesc devOnly">Marca rápida: guarda tu posición, hora y estado para anotarlo después en F9. En pantallas táctiles, usa el botón «TEL».</span>
+  </div>
+  <p class="ctrlNote">En pantallas táctiles: usa el joystick virtual del lado izquierdo para moverte, arrastra el lado derecho para mirar y pulsa «Saltar» para saltar o subir en el agua. Al conducir, aparecerá un botón «Freno» para mantener el freno de mano.</p>
+ </div>
+<p class="mMotto">Algunos lugares…<br>no se olvidan.</p>
+</main>
+<footer id="menuVer">v189 · BOIS Telemetry y modo desarrollador</footer>
+</div>
+<div id="menuModalLayer" aria-live="polite">
+ <section class="menuModal" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <button class="modalClose" type="button" data-close="settingsModal" aria-label="Cerrar">×</button>
+  <h2 id="settingsTitle">Configuración</h2><p class="modalLead">Ajusta la experiencia de exploración.</p>
+  <div class="settingRow"><div><b>Calidad gráfica</b><small>Equilibra detalle y rendimiento.</small></div><select id="menuQuality"><option value="0">Baja</option><option value="1">Media</option><option value="2">Alta</option><option value="3">Ultra</option></select></div>
+  <div class="settingRow"><div><b>Clima</b><small>Cambia el tiempo del mundo, también en las torres.</small></div><select id="menuWeather"><option value="0">Automático</option><option value="1">Despejado</option><option value="2">Supercélula</option><option value="3">Lluvia</option><option value="4">Tormenta</option><option value="5">Niebla</option></select></div>
+  <div class="settingRow"><div><b>Sensibilidad de la cámara</b><small>Velocidad al mirar con ratón (también [ y ]).</small></div><input type="range" id="menuSens" min="0.0008" max="0.006" step="0.0001" aria-label="Sensibilidad"></div>
+  <div class="settingRow"><div><b>Sonido general</b><small>Ambiente, pasos y efectos.</small></div><button class="settingToggle" id="menuSound" type="button">Activado</button></div>
+  <div class="settingRow"><div><b>Volumen general</b><small>Sube o baja todo el audio, incluida la cajita de música.</small></div><input type="range" id="menuVol" min="0" max="1" step="0.05" aria-label="Volumen general"></div>
+  <div class="settingRow"><div><b>Sonidos de naturaleza</b><small>Aves y otros sonidos ambientales.</small></div><button class="settingToggle" id="menuNature" type="button">Activados</button></div>
+  <div class="settingRow"><div><b>Balanceo al caminar</b><small>Desactívalo si el movimiento de la cámara te marea.</small></div><button class="settingToggle" id="menuBob" type="button">Activado</button></div>
+  <div class="settingRow"><div><b>Invertir eje vertical</b><small>Con el ratón, mover hacia arriba mira hacia abajo.</small></div><button class="settingToggle" id="menuInvY" type="button">No</button></div>
+  <div class="settingRow"><div><b>Copia de seguridad</b><small id="bkMsg">Guarda tu progreso en un archivo, por si se borran los datos del navegador.</small></div><span style="display:flex;gap:8px"><button class="settingToggle" id="bkExport" type="button">Exportar</button><button class="settingToggle" id="bkImport" type="button">Importar</button></span><input id="bkFile" type="file" accept=".json,application/json" hidden></div>
+  <p class="modalFoot">Los ajustes se guardan automáticamente en este navegador.</p>
+ </section>
+ <section class="menuModal storyModal" id="historyModal" role="dialog" aria-modal="true" aria-labelledby="historyTitle">
+  <button class="modalClose" type="button" data-close="historyModal" aria-label="Cerrar">×</button>
+  <h2 id="historyTitle">BOIS.IO</h2><p class="modalLead">Los lugares que dejamos atrás · Historia</p>
+  <p class="storyIntro">Hay lugares a los que no llegas por azar. Cuando regresas a esta isla, cada orilla, objeto y silencio parece estar esperando a que te mires con calma.</p>
+  <div class="storyChapter"><b>I. El regreso a la orilla</b><p>Vuelves en ti en una playa familiar con tu vieja cámara, una libreta casi en blanco y tu auto aparcado cerca. No recuerdas cómo llegaste, pero todo en tus manos resulta conocido.</p></div>
+  <div class="storyChapter"><b>II. Los recuerdos de la isla</b><p>Recorres bosques, senderos y ruinas —a pie o en tu auto— siguiendo seis fotografías dispersas que devuelven el pulso de una vida que creías olvidada.</p></div>
+  <div class="storyChapter"><b>III. El Parque de los Cisnes</b><p>Al completar el álbum, encuentras tus gafas en una banca, conoces a un cachorro de pañoleta roja y vuelves a ver a Katherin junto al lago. Ella te recibe sin prisa y abre de nuevo el camino hacia los salones.</p></div>
+  <div class="storyChapter"><b>IV. El edificio de los salones</b><p>Entre pupitres, notas y relojes detenidos revives la exigencia constante de convertirte en alguien, sin dejar de notar los pequeños gestos que iluminaban esos días.</p></div>
+  <div class="storyChapter"><b>V. Bajo el lago: los Poolrooms</b><p>Sumergido bajo el agua hallas galerías silenciosas donde cada detalle importa. Una fotografía guardada en lo hondo rescata aquellas cinco palabras escritas en tu cuaderno.</p></div>
+  <div class="storyChapter"><b>VI. Las torres gemelas</b><p>Dos torres reflejan tu pasado y tus posibles futuros. Allí comprendes que no puedes resolver tu propia vida como si fuera una ecuación cerrada.</p></div>
+  <div class="storyChapter"><b>VII. La conversación junto al agua</b><p>De vuelta en la banca del lago hablas con Katherin sobre lo que callaron y lo que imaginaron. Al cerrar el círculo, entiendes que no hace falta esperar a que alguien vuelva para empezar a vivir.</p></div>
+  <p class="storyMotto">«No tienes que resolver toda tu vida para permitirte vivirla.»</p>
+  <p class="modalFoot">Historia completa (Capítulos I–VII) disponible y jugable de principio a fin en esta versión.</p>
+ </section>
+ <section class="menuModal" id="creditsModal" role="dialog" aria-modal="true" aria-labelledby="creditsTitle">
+  <button class="modalClose" type="button" data-close="creditsModal" aria-label="Cerrar">×</button>
+  <h2 id="creditsTitle">Créditos</h2><p class="modalLead">Un proyecto personal construido con paciencia.</p>
+  <div class="creditLine"><b>Creación y concepto</b><span>Julian Toro</span></div>
+  <div class="creditLine"><b>Historia y dirección narrativa</b><span>Julian Toro</span></div>
+  <div class="creditLine"><b>Desarrollo y programación</b><span>Julian Toro · con asistencia de ChatGPT</span></div>
+  <div class="creditLine"><b>Motor gráfico</b><span>Three.js</span></div>
+  <div class="creditLine"><b>Dedicado a</b><span>Quien escribió cinco palabras en mi cuaderno · y a las graderías</span></div>
+  <div class="creditLine"><b>Universo</b><span>BOIS.IO — Los lugares que dejamos atrás</span></div>
+  <p class="storyMotto">Hecho para explorar, recordar y volver.</p>
+ </section>
+ <section class="menuModal exitModal" id="exitModal" role="dialog" aria-modal="true" aria-labelledby="exitTitle">
+  <button class="modalClose" type="button" data-close="exitModal" aria-label="Cerrar">×</button>
+  <h2 id="exitTitle">Antes de irte…</h2><p class="modalLead">Gracias por recorrer un pequeño fragmento de esta isla.</p>
+  <p>Algunos lugares… no se olvidan.</p>
+  <button class="modalAction" id="confirmExit" type="button">Cerrar el juego</button>
+  <p class="modalFoot" id="exitHint">Si el navegador no permite cerrar la pestaña automáticamente, puedes cerrarla normalmente.</p>
+ </section>
+</div>
+<!-- UI ligera (se ejecuta al parsear; el DOM de arriba ya existe) -->
+<script src="js/ui/tabs.js"></script>
+<script src="js/ui/controls-panel.js"></script>
+<script src="js/ui/menu-modals.js"></script>
+<script src="js/ui/backup.js"></script>
+
+<!-- Motor 3D local: BOIS.IO puede arrancar sin red. Si falta el archivo, se muestra un aviso claro. -->
+<script src="vendor/three.min.js"></script>
+<script>if(typeof THREE==='undefined'){window.__boisNoThree=true;addEventListener('DOMContentLoaded',function(){var d=document.createElement('div');d.style.cssText='position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;background:#0b1116;color:#cfe3ea;font:15px/1.6 system-ui;text-align:center;padding:24px';d.innerHTML='<div><b style="font-size:18px">No se pudo cargar el motor 3D</b><br>Falta vendor/three.min.js en esta copia de BOIS.IO.<br>Vuelve a descargar el proyecto completo.</div>';document.body.appendChild(d)})}</script>
+
+<!-- Datos pesados: deben cargarse antes que el código -->
+<script src="data/mesh-data.js"></script>
+<script src="data/terrain-textures.js"></script>
+<script src="data/trail-mask.js"></script>
+<script src="data/camera-photos.js"></script>
+<script src="data/hidden-photos.js"></script>
+<script src="data/chapter5-photo.js"></script>
+
+<!-- Código del juego: el ORDEN importa (comparten el mismo ámbito global) -->
+<script src="js/01-core-renderer.js"></script>
+<script src="js/02-terrain-material.js"></script>
+<script src="js/03-terrain-heights.js"></script>
+<script src="js/04-buildings.js"></script>
+<script src="js/05-collision.js"></script>
+<script src="js/06-vegetation.js"></script>
+<script src="js/07-audio-discovery.js"></script>
+<script src="js/08-fauna-journal.js"></script>
+<script src="js/09-sky.js"></script>
+<script src="js/10-lighting-time.js"></script>
+<script src="js/11-player-input.js"></script>
+<script src="js/12-weather.js"></script>
+<script src="js/13-park-fireflies-rainbow.js"></script>
+<script src="js/14-grass.js"></script>
+<script src="js/15-render-frame.js"></script>
+<script src="js/16-water-life-aurora.js"></script>
+<script src="js/17-quality.js"></script>
+<script src="js/18a-poolrooms-tex.js"></script>
+<script src="js/18-poolrooms.js"></script>
+<script src="js/20-life-bridge-towers.js"></script>
+<script src="js/21-main-loop-config.js"></script>
+<script src="js/22-story-state.js"></script>
+<script src="js/23-cinematics.js"></script>
+<script src="js/24-camera-album.js"></script>
+<script src="js/25-hidden-photos.js"></script>
+<script src="js/26-guide-map.js"></script>
+<script src="js/27-world-constants.js"></script>
+<script src="js/28-car-radio.js"></script>
+<script src="js/28a-ch1-director.js"></script>
+<script src="js/28b-chapter1-awakening.js"></script>
+<script src="js/28c-chapter2-guide.js"></script>
+<script src="js/29-awakening-init.js"></script>
+<script src="js/30-katherin.js"></script>
+<script src="js/30b-glasses.js"></script>
+<script src="js/30c-puppy.js"></script>
+<script src="js/30d-emoji.js"></script>
+<script src="data/swan-audio.js"></script>
+<script src="js/30e-swanbox.js"></script>
+<script src="js/30f-notebook-pages.js"></script>
+<script src="js/31-chapter4.js"></script>
+<script src="js/32-resume-fallbacks.js"></script>
+<script src="js/33-shore-life.js"></script>
+<script src="js/34-lake-postcard.js"></script>
+<script src="js/35-freeze-matrices.js"></script>
+<script src="js/36-flocks-boats-fish.js"></script>
+<script src="js/36b-hardening.js"></script>
+<script src="js/36c-chapter5.js"></script>
+<script src="js/36d-world-polish.js"></script>
+<script src="js/36e-chapter6.min.js"></script>
+<script src="js/36f-shinkai.js"></script>
+<script src="js/36g-chapter7.js"></script>
+<script src="js/36h-night-train.js"></script>
+<script src="js/ui/menu-scene.js"></script>
+<script src="js/37-boot.js"></script>
+<script src="js/37b-debug.js"></script>
+<script src="js/37c-telemetry.js"></script>
+</body></html>
