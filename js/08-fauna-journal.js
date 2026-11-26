@@ -47,7 +47,7 @@ window.camFlash=()=>{dfl.style.transition='none';dfl.style.opacity=.75;requestAn
 {const tb=document.getElementById('tb');if(tb){
   const doReset=()=>{
     window.__boisResetting=true;/* v181: los volcados al cerrar/ocultar no deben reescribir lo que se acaba de borrar */
-    try{['bois_story','bois_story_bak','bois_pos','bois_notes','bois_dsc','bois_seen','bois_dfoto','bois_explored'].forEach(k=>localStorage.removeItem(k))}catch(e){typeof __bw==='function'&&__bw('08-fauna-journal#1',e)}
+    try{['bois_story','bois_story_bak','bois_pos','bois_car_pos','bois_notes','bois_dsc','bois_seen','bois_dfoto','bois_explored'].forEach(k=>localStorage.removeItem(k))}catch(e){typeof __bw==='function'&&__bw('08-fauna-journal#1',e)}
     // v69: volver al menú. La nueva partida comienza únicamente al pulsar Comenzar.
     try{sessionStorage.removeItem('bois_autostart_after_reset');sessionStorage.setItem('bois_new_game_pending','1')}catch(e){typeof __bw==='function'&&__bw('08-fauna-journal#2',e)}
     location.reload();

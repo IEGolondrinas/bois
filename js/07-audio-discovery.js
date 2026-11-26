@@ -54,5 +54,5 @@ function stepSurface(){const h=hAt(S.x,S.z),rv=.88+Math.random()*.24;
 function stepFx(px,pz,sw0){const d=Math.hypot(S.x-px,S.z-pz),run=keys.ShiftLeft,lim=S.sw?1.6:run?2.3:1.6,gr=!S.fly&&(S.sw||S.vy===0);
  if(S.sw&&!sw0)auHit(800,.5,.3);bobT+=d*6.283/lim;bobA+=((gr&&d>.002?(run?.07:.045):0)-bobA)*.15;
  if(!gr)return;stAcc+=d;if(stAcc>lim){stAcc=0;if(S.sw)auHit(1400,.28,.07);else stepSurface()}}
-function camFx(dt){const mv=keys.KeyW||keys.KeyS||keys.KeyA||keys.KeyD,cf=window.__boisCamFinder,tf=(typeof CAR!=='undefined'&&CAR.on)?72+Math.min(16,Math.abs(CAR.speed)*.42):(cf&&cf.on)?(uw?72:72/(cf.zoom||1)):keys.KeyZ?(uw?72:28):S.fly&&keys.ShiftLeft?88:(keys.ShiftLeft&&mv&&!S.sw)?80:72,nf=cam.fov+(tf-cam.fov)*Math.min(1,dt*8);if(Math.abs(nf-cam.fov)>.01){cam.fov=nf;cam.updateProjectionMatrix()}}
+function camFx(dt){const mv=keys.KeyW||keys.KeyS||keys.KeyA||keys.KeyD,cf=window.__boisCamFinder,tf=(cf&&cf.on)?(uw?72:72/(cf.zoom||1)):(typeof CAR!=='undefined'&&CAR.on)?(CAR.camMode==='first'?72+Math.min(8,Math.abs(CAR.speed)*.24):72+Math.min(16,Math.abs(CAR.speed)*.42)):keys.KeyZ?(uw?72:28):S.fly&&keys.ShiftLeft?88:(keys.ShiftLeft&&mv&&!S.sw)?80:72,nf=cam.fov+(tf-cam.fov)*Math.min(1,dt*8);if(Math.abs(nf-cam.fov)>.01){cam.fov=nf;cam.updateProjectionMatrix()}}
 const WL=1.4;

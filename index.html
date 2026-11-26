@@ -8,14 +8,14 @@
 </head><body>
 <canvas id="c"></canvas>
 <div id="carHud" aria-hidden="true">
-  <div class="carTop"><span class="carLabel">AUTO</span><span class="carSpeed"><span id="carSpeed">0</span> km/h</span></div>
+  <div class="carTop"><span class="carLabel">AUTO · <em id="carViewMode">CABINA (C)</em></span><span class="carSpeed"><span id="carSpeed">0</span> km/h</span></div>
   <div class="carGearRow"><b id="carGear">N</b><div class="carRpmBar"><i id="carRpm"></i></div></div>
-  <div class="carRadio">◉ <b id="carRadioName">Radio apagada</b><span id="carRadioHint"> · R cambia</span></div>
+  <div class="carRadio">◉ <b id="carRadioName">Radio apagada</b><span id="carRadioHint"> · R cambia · C vista</span></div>
 </div>
 <div id="carPrompt" aria-hidden="true">E · subir al auto</div>
 <div id="vhsFx" aria-hidden="true"><div class="vhsNoise"></div><div class="vhsOsd"><span class="vhsRec"><i class="vhsDot"></i>REC</span><span>CAM 01</span><span>SP</span></div><div class="vhsMode">PLAY ▶</div></div>
 <div id="uwv"></div><div id="lfl"></div><div id="st"><i></i></div>
-<div id="tb"><button id="bj">Saltar</button><button id="be">Interactuar</button><button id="bh" type="button" aria-label="Mantener freno de mano" aria-hidden="true" style="display:none">Freno</button><button data-k="KeyP" aria-label="Fotografiar">📷</button><button data-k="KeyJ">Diario</button><button data-k="KeyM">Mapa</button><button data-k="KeyV">Álbum</button><button data-k="KeyF">Sentarse</button><button id="bb" data-k="KeyB" aria-label="Cajita de música">Cajita</button><button data-k="KeyR">Radio</button></div>
+<div id="tb"><button id="bj">Saltar</button><button id="be">Interactuar</button><button id="bh" type="button" aria-label="Mantener freno de mano" aria-hidden="true" style="display:none">Freno</button><button id="bc" data-k="KeyC" type="button" aria-label="Cambiar vista del auto" aria-hidden="true" style="display:none">Vista</button><button data-k="KeyP" aria-label="Fotografiar">📷</button><button data-k="KeyJ">Diario</button><button data-k="KeyM">Mapa</button><button data-k="KeyV">Álbum</button><button data-k="KeyF">Sentarse</button><button id="bb" data-k="KeyB" aria-label="Cajita de música">Cajita</button><button data-k="KeyR">Radio</button></div>
 <div id="bootScreen" role="status" aria-live="polite" aria-label="Cargando Bois.io">
  <div id="bootInner">
   <div id="bootEyebrow">Una aventura narrativa</div>
@@ -211,6 +211,8 @@
    <span class="ctrlKey">W / S</span><span class="ctrlDesc">Acelerar y frenar; S activa la reversa cuando el auto está detenido.</span>
    <span class="ctrlKey">A / D</span><span class="ctrlDesc">Girar a izquierda y derecha.</span>
    <span class="ctrlKey">Espacio (mantener)</span><span class="ctrlDesc">Activar el freno de mano.</span>
+   <span class="ctrlKey">C</span><span class="ctrlDesc">Alternar entre vista interior (primera persona) y exterior (tercera persona).</span>
+   <span class="ctrlKey">Ratón</span><span class="ctrlDesc">Mirar alrededor desde la cabina o girar la cámara exterior.</span>
    <span class="ctrlKey">E</span><span class="ctrlDesc">Bajar del auto.</span>
    <span class="ctrlKey">R</span><span class="ctrlDesc">Cambiar la estación de radio.</span>
   </div>

@@ -101,11 +101,12 @@ if(!S.on)return;keys[e.code==='ShiftRight'?'ShiftLeft':e.code]=1;
    if(e.code==='Equal'||e.code==='NumpadAdd'||e.code==='KeyZ'){e.preventDefault();window.__boisCamFinderZoom?.(1)}
    else if(e.code==='Minus'||e.code==='NumpadSubtract'){e.preventDefault();window.__boisCamFinderZoom?.(-1)}
   }
+  if(e.code==='KeyC'&&S.on&&typeof CAR!=='undefined'&&CAR.on){e.preventDefault();typeof toggleCarCamMode==='function'&&toggleCarCamMode();return;}
   if(e.code==='KeyR'&&S.on&&CAR.on){setRadio();e.preventDefault();}
   if(e.code==='KeyN'){AU.on=!AU.on;if(!AU.on&&typeof carSoundMute==='function')carSoundMute();window.__saveBoisCfg?.();showMsg(AU.on?'Sonido activado':'Sonido silenciado')}
  }});
 addEventListener('keyup',e=>{if(e.target&&/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;keys[e.code==='ShiftRight'?'ShiftLeft':e.code]=0});addEventListener('blur',()=>{for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0});document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0}});
-document.addEventListener('mousemove',e=>{if(document.pointerLockElement&&S.on&&!CIN.on){S.yaw-=e.movementX*SENS*cam.fov/72;S.pitch=Math.max(-1.5,Math.min(1.5,S.pitch-(BOIS_OPT.invY?-1:1)*e.movementY*SENS*cam.fov/72))}});
+document.addEventListener('mousemove',e=>{if(document.pointerLockElement&&S.on&&!CIN.on){const dx=-e.movementX*SENS*cam.fov/72,dy=-(BOIS_OPT.invY?-1:1)*e.movementY*SENS*cam.fov/72;if(typeof CAR!=='undefined'&&CAR.on&&typeof carLookDelta==='function'){carLookDelta(dx,dy)}else{S.yaw+=dx;S.pitch=Math.max(-1.5,Math.min(1.5,S.pitch+dy))}}});
 document.addEventListener('mousedown',e=>{const cf=window.__boisCamFinder;if(!cf||!cf.on||!S.on||CIN.on||window.__boisGuideOverlayOpen)return;if(e.button===0&&document.pointerLockElement){e.preventDefault();shot=true;shotDl=e.shiftKey}else if(e.button===2){e.preventDefault();window.__boisCamFinderClose?.()}});
 document.addEventListener('contextmenu',e=>{if(window.__boisCamFinder&&window.__boisCamFinder.on&&S.on&&!CIN.on)e.preventDefault()});
 document.addEventListener('wheel',e=>{if(window.__boisCamFinder&&window.__boisCamFinder.on&&S.on&&!CIN.on&&!window.__boisGuideOverlayOpen){window.__boisCamFinderZoom?.(e.deltaY<0?1:-1)}},{passive:true});
@@ -125,6 +126,6 @@ if(touch){$('tb').style.display='flex';$('bj').onclick=()=>jumpQ=true;$('be').on
  let ls=null,rs=null;const st=$('st'),kn=st.firstElementChild;
  document.addEventListener('touchstart',e=>{for(const t of e.changedTouches){if(!S.on||t.target.closest('#tb'))continue;if(t.clientX<innerWidth/2&&!ls){ls={id:t.identifier,x:t.clientX,y:t.clientY};st.style.display='block';st.style.left=t.clientX+'px';st.style.top=t.clientY+'px'}else if(t.clientX>=innerWidth/2&&!rs)rs={id:t.identifier,x:t.clientX,y:t.clientY}}},{passive:true});
  document.addEventListener('touchmove',e=>{for(const t of e.changedTouches){if(ls&&t.identifier===ls.id){let dx=t.clientX-ls.x,dy=t.clientY-ls.y;const l=Math.hypot(dx,dy),m=48;if(l>m){dx*=m/l;dy*=m/l}jv.x=dx/m;jv.y=dy/m;kn.style.transform=`translate(${dx}px,${dy}px)`}
-  else if(rs&&t.identifier===rs.id){S.yaw-=(t.clientX-rs.x)*.005;S.pitch=Math.max(-1.5,Math.min(1.5,S.pitch-(t.clientY-rs.y)*.005));rs.x=t.clientX;rs.y=t.clientY}}},{passive:true});
+  else if(rs&&t.identifier===rs.id){const dx=-(t.clientX-rs.x)*.005,dy=-(t.clientY-rs.y)*.005;if(typeof CAR!=='undefined'&&CAR.on&&typeof carLookDelta==='function'){carLookDelta(dx,dy)}else{S.yaw+=dx;S.pitch=Math.max(-1.5,Math.min(1.5,S.pitch+dy))}rs.x=t.clientX;rs.y=t.clientY}}},{passive:true});
  const releaseTouches=e=>{for(const t of e.changedTouches){if(ls&&t.identifier===ls.id){ls=null;jv.x=jv.y=0;st.style.display='none';kn.style.transform=''}if(rs&&t.identifier===rs.id)rs=null}};document.addEventListener('touchend',releaseTouches,{passive:true});document.addEventListener('touchcancel',releaseTouches,{passive:true})}
 function resize(){R.setPixelRatio(dpr);R.setSize(innerWidth,innerHeight,false);idleRendered=false;cam.aspect=innerWidth/innerHeight;cam.updateProjectionMatrix()}{let __rz=0;addEventListener('resize',()=>{if(__rz)return;__rz=requestAnimationFrame(()=>{__rz=0;resize()})})}resize();

@@ -25,4 +25,6 @@ const up=JSON.parse(C({...good,bois_user_photos:JSON.stringify([null,{img:'javas
 ok(up.length===1&&up[0].place==='El lago'&&up[0].note==='luz suave'&&!('extra' in up[0]),'fotos personales importadas: se validan y limpian campos');
 const nr=JSON.parse(C({...good,bois_notebook_replies:JSON.stringify({cap20261122:[{id:'r1',date:'2027',text:'Sí seguí'},{text:''}],'bad$key':[{text:'x'}]})}).bois_notebook_replies);
 ok(nr.cap20261122&&nr.cap20261122.length===1&&!nr['bad$key'],'respuestas de libreta importadas: se validan y limpian claves');
+ok('bois_car_pos' in C({...good,bois_car_pos:JSON.stringify({x:42,y:2.1,z:-80,yaw:1.2,camMode:'first'})}),'posición del auto válida se conserva');
+ok(!('bois_car_pos' in C({...good,bois_car_pos:JSON.stringify({x:9999,z:0})})),'posición del auto fuera del mapa se descarta');
 console.log('\n'+n+' comprobaciones de la importación superadas.');

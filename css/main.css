@@ -155,6 +155,12 @@ body.vhs-active #vhsFx {
   letter-spacing: 1.6px;
   color: #c7bba0;
 }
+.carLabel em {
+  font-style: normal;
+  font-size: 9.5px;
+  letter-spacing: .9px;
+  color: #e4c98f;
+}
 .carSpeed {
   font: 600 18px/1.1 ui-monospace, Consolas, monospace;
   color: #f4efe3;
