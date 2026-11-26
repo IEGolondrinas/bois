@@ -64,7 +64,7 @@ if(e.code==='KeyF'&&!e.repeat&&S.on&&!CIN.on&&!(typeof CAR!=='undefined'&&CAR.on
 if(e.code==='KeyE'&&!e.repeat&&CAR&&CAR.on){
   e.preventDefault();e.stopImmediatePropagation();exitCar();return;
 }
-if(e.code==='KeyE'&&!e.repeat&&S.on){if(interactCar())return;if(interactPhoto())return;if(typeof interactGlasses==="function"&&interactGlasses())return;if(typeof interactEmoji==="function"&&interactEmoji())return;if(interactKatherin())return;   try{if(typeof ch1Interact==='function'&&ch1Interact())return}catch(err){console.warn('ch1Interact',err)}
+if(e.code==='KeyE'&&!e.repeat&&S.on){if(interactCar())return;if(interactPhoto())return;if(typeof interactGlasses==="function"&&interactGlasses())return;if(typeof interactEmoji==="function"&&interactEmoji())return;if(typeof window.__boisMonumentInteract==="function"&&window.__boisMonumentInteract())return;if(interactKatherin())return;   try{if(typeof ch1Interact==='function'&&ch1Interact())return}catch(err){console.warn('ch1Interact',err)}
   const it=window.__awakeItems;
   if((typeof CH1==='undefined'||CH1.legacy)&&it&&it.cam&&Math.hypot(S.x-it.cam.position.x,S.z-it.cam.position.z)<2.5&&!STORY.flags.gotCam){
     storyFlag('gotCam',1);if(window.__awakeItems)window.__awakeItems.cam.visible=false;

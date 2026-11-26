@@ -40,14 +40,39 @@ const NTB_PAGES=[
  {id:'hoy',date:null,sort:100,cond:()=>!!STORY.flags.ch7_complete,
   t:'Si estás leyendo esto, significa que volviste, miraste con calma y te permitiste cerrar el círculo. No tenías que resolver toda tu vida para empezar a vivirla.'}
 ];
+const NTB_REPLIES_KEY='bois_notebook_replies';
+function ntbEsc(v){return String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function ntbLoadReplies(){try{if(typeof localStorage==='undefined')return{};const o=JSON.parse(localStorage.getItem(NTB_REPLIES_KEY)||'{}');return o&&typeof o==='object'&&!Array.isArray(o)?o:{}}catch(e){return{}}}
+function ntbSaveReply(id,text){try{const clean=String(text||'').trim().slice(0,1200);if(!clean||typeof localStorage==='undefined')return false;const all=ntbLoadReplies(),list=Array.isArray(all[id])?all[id]:[];const now=new Date();let date='';try{date=now.toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'})}catch(e){date=ntbToday()}list.push({id:'r_'+now.getTime().toString(36)+'_'+Math.random().toString(36).slice(2,5),date,ts:now.getTime(),text:clean});all[id]=list.slice(-30);localStorage.setItem(NTB_REPLIES_KEY,JSON.stringify(all));if(typeof window.__boisMarkBackupDirty==='function')window.__boisMarkBackupDirty();return true}catch(e){return false}}
+function ntbDeleteReply(id,rid){try{if(typeof localStorage==='undefined')return false;const all=ntbLoadReplies();if(!Array.isArray(all[id]))return false;all[id]=all[id].filter(r=>r&&r.id!==rid);if(!all[id].length)delete all[id];localStorage.setItem(NTB_REPLIES_KEY,JSON.stringify(all));return true}catch(e){return false}}
+window.__boisNtbSaveReply=ntbSaveReply;window.__boisNtbDeleteReply=ntbDeleteReply;window.__boisNtbEditing=null;
+function ntbRepliesBlock(id,all,btnLabel){
+  const list=Array.isArray(all[id])?all[id]:[];
+  const ed=window.__boisNtbEditing===id;
+  let s='';
+  if(list.length){
+    s+=list.map(r=>'<div style="margin:7px 0 0 12px;padding:7px 10px;background:rgba(200,185,142,.08);border-left:2px solid #9ec2ad"><span class="bgMuted" style="font-style:italic">Escrito el '+ntbEsc(r.date)+'</span><button type="button" data-ntb-del="'+ntbEsc(id)+'" data-ntb-rid="'+ntbEsc(r.id)+'" style="float:right;background:transparent;border:none;color:#a59d8d;font:11px system-ui;cursor:pointer;padding:0">Borrar</button><br><span style="color:#e7e1d1;white-space:pre-wrap">'+ntbEsc(r.text)+'</span></div>').join('');
+  }
+  if(ed){
+    s+='<div style="margin:8px 0 0 12px"><textarea data-ntb-input="'+ntbEsc(id)+'" rows="3" maxlength="1200" placeholder="Escríbele algo a tu yo de aquel momento o al de mañana…" style="width:100%;box-sizing:border-box;background:rgba(0,0,0,.35);border:1px solid rgba(200,185,142,.4);color:#eee9dd;padding:8px;font:13px/1.5 Georgia,serif;resize:vertical"></textarea><div style="display:flex;gap:8px;margin-top:6px"><button type="button" data-ntb-save="'+ntbEsc(id)+'" style="padding:5px 11px;background:rgba(200,185,142,.18);border:1px solid rgba(200,185,142,.55);color:#f3ecdc;font:11px system-ui;cursor:pointer">Guardar respuesta</button><button type="button" data-ntb-cancel="1" style="padding:5px 11px;background:transparent;border:1px solid #ffffff30;color:#c9c2b1;font:11px system-ui;cursor:pointer">Cancelar</button></div></div>';
+  }else if(typeof document!=='undefined'){
+    s+='<div style="margin:6px 0 0 12px"><button type="button" data-ntb-reply="'+ntbEsc(id)+'" style="padding:4px 9px;background:transparent;border:1px solid rgba(200,185,142,.35);color:#d7cbb0;font:11px system-ui;cursor:pointer">'+ntbEsc(btnLabel)+'</button></div>';
+  }
+  return s;
+}
 function ntbDate(p){if(p.date)return p.date;try{return new Date().toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'})}catch(e){return 'Hoy'}}
 function ntbPagesHTML(){
   const ok=NTB_PAGES.filter(ntbOpen).sort((a,b)=>a.sort-b.sort);
   const sealed=NTB_PAGES.filter(p=>p.sealed&&p.from&&!ntbReached(p)).sort((a,b)=>a.from<b.from?-1:1);
+  const all=ntbLoadReplies();
   let h='<div class="bgBlock"><strong>Libreta · páginas con fecha</strong>';
+  if(window.__boisSpecialDate)h+='<p style="border-left:2px solid #e4b66f;padding:6px 10px;margin:10px 0;background:rgba(228,182,111,.08);color:#f0dec0">✨ '+ntbEsc(window.__boisSpecialDate.wish)+'</p>';
   if(!ok.length)h+='<p class="bgMuted">La libreta tiene páginas en blanco. Se irán escribiendo a medida que recuerdes.</p>';
-  else h+=ok.map(p=>'<p style="border-left:2px solid #c8b98e;padding-left:10px;margin:12px 0"><span class="bgMuted" style="font-style:italic">'+ntbDate(p)+'</span><br>'+p.t+'</p>').join('');
+  else h+=ok.map(p=>'<div style="border-left:2px solid #c8b98e;padding-left:10px;margin:12px 0"><p style="margin:0"><span class="bgMuted" style="font-style:italic">'+ntbDate(p)+'</span><br>'+p.t+'</p>'+(p.from?ntbRepliesBlock(p.id,all,'Responder a esta carta'):'')+'</div>').join('');
   if(sealed.length)h+=sealed.map(p=>'<p class="bgMuted" style="margin:12px 0">🔒 Cápsula sellada · se abre el '+ntbFromLabel(p)+'</p>').join('');
+  if(STORY.flags&&STORY.flags.gotNb&&typeof document!=='undefined'){
+    h+='<div style="margin-top:16px;padding-top:12px;border-top:1px dashed rgba(200,185,142,.24)"><strong style="font-size:13px">Páginas libres · para volver cuando quieras</strong><p class="bgMuted" style="margin:4px 0 8px">Escribe cómo estás hoy o deja un mensaje para la próxima vez que regreses a la isla.</p>'+ntbRepliesBlock('free',all,'Escribir en página libre')+'</div>';
+  }
   return h+'</div>';
 }
 function __ntbTick(){try{

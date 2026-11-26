@@ -23,4 +23,6 @@ ok(!('bois_story' in C({...good,bois_story:5})),'valor que no es texto se ignora
 ok(Object.keys(C({bois_story:story})).length===1,'las claves ausentes no se inventan');
 const up=JSON.parse(C({...good,bois_user_photos:JSON.stringify([null,{img:'javascript:alert(1)',place:'x'},{id:'p1',img:'data:image/jpeg;base64,AAAA',place:'El lago',note:'luz suave',extra:'<script>'}])}).bois_user_photos);
 ok(up.length===1&&up[0].place==='El lago'&&up[0].note==='luz suave'&&!('extra' in up[0]),'fotos personales importadas: se validan y limpian campos');
+const nr=JSON.parse(C({...good,bois_notebook_replies:JSON.stringify({cap20261122:[{id:'r1',date:'2027',text:'Sí seguí'},{text:''}],'bad$key':[{text:'x'}]})}).bois_notebook_replies);
+ok(nr.cap20261122&&nr.cap20261122.length===1&&!nr['bad$key'],'respuestas de libreta importadas: se validan y limpian claves');
 console.log('\n'+n+' comprobaciones de la importación superadas.');

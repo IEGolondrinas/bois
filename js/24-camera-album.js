@@ -317,7 +317,7 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
       if (userPhotos.length >= MAX_PHOTOS) userPhotos.pop();
       userPhotos.unshift(entry);
       saved = saveUserPhotos();
-      if (saved) preferredTab = 'mine';
+      if (saved) { preferredTab = 'mine'; if (typeof window.__boisMarkBackupDirty === 'function') window.__boisMarkBackupDirty(); }
     } catch (e) {
       console.warn('Captura personal:', e);
     }
