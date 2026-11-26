@@ -2812,6 +2812,40 @@ try {
           ok: () => FL().ch6_aula && FL().ch6_nino,
           run: () => scene_cierre(),
         });
+
+        // 4) 01 / 11 / 2025 · La habitación de Valeria (silencio y la llave en la mano)
+        {
+          const valStatic = new THREE.Group();
+          g.add(valStatic);
+          bx(valStatic, 1.35, 0.42, 0.72, -32.2, 0.21, 6.2, wood);
+          bx(valStatic, 1.25, 0.08, 0.64, -32.2, 0.46, 6.2, cmat(0x8899a8, 0.16));
+          bx(valStatic, 0.36, 0.08, 0.46, -32.65, 0.54, 6.2, cmat(0xe7dfd1, 0.18));
+          const keyMat = stdM(0xd9b86c, 0.35, { roughness: 0.28, metalness: 0.85 });
+          cyl(valStatic, 0.032, 0.032, 0.012, -32.05, 0.51, 6.08, keyMat, 12);
+          bx(valStatic, 0.075, 0.012, 0.016, -31.99, 0.51, 6.08, keyMat);
+          mergeStaticGroup(valStatic);
+          const valHalo = new THREE.Mesh(new THREE.RingGeometry(0.95, 1.08, 28), glowM(0xffe1a8, 0.22));
+          valHalo.rotation.x = -Math.PI / 2;
+          valHalo.position.set(-32.2, 0.032, 4.7);
+          valHalo.userData.dyn = true;
+          g.add(valHalo);
+          M6.an.push((t) => {
+            valHalo.material.opacity = FL().ch6_cierre && !FL().ch6_valeria ? 0.18 + 0.1 * Math.sin(t * 1.8) : 0;
+          });
+          M6.props.push([-33.0, -31.4, 5.7, 6.7]);
+          M6.pts.push({
+            id: 'valeria',
+            flag: 'ch6_valeria',
+            name: '01/11/2025 · La habitación de Valeria',
+            x: -32.2,
+            z: 4.7,
+            r: 2.5,
+            y: 1.0,
+            opt: true,
+            ok: () => !!FL().ch6_cierre,
+            run: () => scene_valeria(),
+          });
+        }
       }
 
       // === Torre B: cuatro futuros que cambian al mirarlos ===
@@ -3129,6 +3163,37 @@ try {
 
       mergeStaticGroup(alcoveFrames);
 
+      // === 01 / 11 / 2025 · Dos ventanas opuestas (Último Piso) ===
+      try {
+        const topGrp = new THREE.Group();
+        topGrp.position.y = TOP;
+        g.add(topGrp);
+        const oppKat = figure(topGrp, 42.5, -7.8, 1.62, 0xcfe3f2, Math.PI, 0.58, null, true);
+        const oppRing = new THREE.Mesh(new THREE.RingGeometry(1.05, 1.18, 28), glowM(0xffe1a8, 0.24));
+        oppRing.rotation.x = -Math.PI / 2;
+        oppRing.position.set(42.5, TOP + 0.032, 6.6);
+        oppRing.userData.dyn = true;
+        g.add(oppRing);
+        M6.an.push((t) => {
+          oppKat.visible = !!FL().ch6_frase && !FL().ch6_complete;
+          oppRing.material.opacity = FL().ch6_frase && !FL().ch6_ventanas ? 0.16 + 0.1 * Math.sin(t * 1.5) : 0;
+        });
+        M6.pts.push({
+          id: 'ventanas',
+          flag: 'ch6_ventanas',
+          name: '01/11/2025 · Dos ventanas opuestas',
+          x: 42.5,
+          z: 6.4,
+          r: 3.2,
+          y: TOP + 1.5,
+          opt: true,
+          ok: () => !!FL().ch6_frase,
+          run: () => scene_ventanas(),
+        });
+      } catch (e) {
+        console.warn('Capítulo VI (ventanas opuestas):', e);
+      }
+
       M6.pts.push({ id: 'frase', flag: 'ch6_frase', name: 'Inscripción en el suelo', x: 46, z: 0, r: 3.6, y: TOP + 0.2, ok: () => true, run: () => scene_frase() });
       M6.pts.push({ id: 'ventana', flag: 'ch6_complete', name: 'La ventana al horizonte', x: 53, z: 0, r: 3.2, y: TOP + 1.8, ok: () => !!FL().ch6_frase, run: () => scene_final() });
 
@@ -3191,19 +3256,73 @@ try {
       showMsg(m);
     };
 
+    function keyClinkSnd() {
+      try {
+        const C = AU.ctx;
+        if (!C || !AU.on) return;
+        const v = volScale();
+        if (v <= 0.001) return;
+        const t = C.currentTime;
+        [2480, 3320].forEach((f, i) => {
+          const o = C.createOscillator();
+          const g = C.createGain();
+          o.type = 'sine';
+          o.frequency.value = f;
+          const st = t + i * 0.065;
+          g.gain.setValueAtTime(0.0001, st);
+          g.gain.exponentialRampToValueAtTime(0.028 * v, st + 0.008);
+          g.gain.exponentialRampToValueAtTime(0.0001, st + 0.24);
+          o.connect(g);
+          g.connect(C.destination);
+          o.onended = () => { try { o.disconnect(); g.disconnect(); } catch (_) {} };
+          o.start(st);
+          o.stop(st + 0.28);
+        });
+      } catch (_) {}
+    }
+
+    function distantBarkSnd() {
+      try {
+        const C = AU.ctx;
+        if (!C || !AU.on) return;
+        const v = volScale();
+        if (v <= 0.001) return;
+        const t = C.currentTime;
+        [0, 0.28].forEach((off) => {
+          const o = C.createOscillator();
+          const f = C.createBiquadFilter();
+          const g = C.createGain();
+          o.type = 'triangle';
+          o.frequency.setValueAtTime(340, t + off);
+          o.frequency.exponentialRampToValueAtTime(210, t + off + 0.14);
+          f.type = 'lowpass';
+          f.frequency.value = 780;
+          g.gain.setValueAtTime(0.0001, t + off);
+          g.gain.exponentialRampToValueAtTime(0.022 * v, t + off + 0.025);
+          g.gain.exponentialRampToValueAtTime(0.0001, t + off + 0.16);
+          o.connect(f);
+          f.connect(g);
+          g.connect(C.destination);
+          o.onended = () => { try { o.disconnect(); f.disconnect(); g.disconnect(); } catch (_) {} };
+          o.start(t + off);
+          o.stop(t + off + 0.19);
+        });
+      } catch (_) {}
+    }
+
     function scene_aula() {
       chime(440);
       cine(
         [
           { pause: 800 },
-          { t: 'Una sala reconstruida: escritorios en fila, una pizarra, siluetas que conversan sin voz.' },
-          { pause: 2000 },
-          { t: 'No son recuerdos exactos. Es lo que quedó de ellos: la forma de las cosas, nunca los detalles.' },
+          { t: 'Una sala reconstruida: pupitres en fila, una pizarra con ecuaciones, siluetas que hablan entre sí.' },
+          { pause: 2100 },
+          { t: 'Aquí fue donde más hablabas: en matemáticas, en química, en los cálculos.' },
           { pause: 2200 },
-          { t: 'Reconoces el olor a tiza. Una ventana donde llueve una tarde cualquiera. El murmullo de gente que conversa.' },
+          { t: 'Por fuera parecía orden. El uniforme en regla, la respuesta correcta a tiempo, el 382 en mente.' },
           { pause: 2400 },
-          { who: 'Tú', t: 'Todo está aquí… pero ninguna cara.' },
-          { pause: 2400 },
+          { who: 'Tú', t: 'Sabía resolver casi todo lo del tablero… pero seguía sin saber cómo conversar en los descansos.' },
+          { pause: 2500 },
         ],
         () => {
           storyFlag('ch6_aula', 1);
@@ -3218,17 +3337,15 @@ try {
       cine(
         [
           { pause: 800 },
-          { t: 'En medio de la escena hay un niño de pie, rodeado de preguntas que flotan como luciérnagas.' },
+          { t: 'En medio de la escena hay un niño pequeño de pie, rodeado de preguntas que flotan como luciérnagas.' },
           { pause: 2200 },
           { who: 'Niño', t: '¿Y por qué el cielo huele distinto cuando va a llover?' },
-          { pause: 2400 },
-          { who: 'Niño', t: '¿Y si construimos un barco con eso? ¿Y si no flota? ¿Y por qué flotan las cosas?' },
-          { pause: 2800 },
-          { t: 'Habla rápido. Se interrumpe a sí mismo para preguntar otra cosa. Imagina mundos enteros mientras camina.' },
-          { pause: 2400 },
-          { who: 'Tú', t: '¿Ese era yo?' },
-          { pause: 2200 },
-          { t: 'Curioso. Hablador. Lleno de preguntas.' },
+          { pause: 2300 },
+          { who: 'Niño', t: '¿Y si hacemos una recarga o una hoja de vida sin ningún error? ¿Y por qué si lloro dicen que está mal?' },
+          { pause: 2700 },
+          { t: 'Habla rápido. Se emociona. Quiere entender todo antes de que alguien lo corrija.' },
+          { pause: 2300 },
+          { who: 'Tú', t: 'Ese era yo antes de aprender a quedarme callado.' },
           { pause: 2200 },
         ],
         () => {
@@ -3246,28 +3363,55 @@ try {
           { pause: 800 },
           { t: 'Al fondo hay otras escenas. A cada una le falta un poco más de luz que a la anterior.' },
           { pause: 2200 },
-          { label: 'INCOMPRENSIÓN', t: 'Dos adultos de espaldas. El niño pregunta otra vez, más bajo. Nadie se gira.' },
+          { label: 'INCOMPRENSIÓN', t: 'Voces adultas que solo preguntan por notas o por lo que hiciste bien. Ningún abrazo cuando te dolía por dentro.' },
+          { pause: 2900 },
+          { label: 'VERGÜENZA', t: 'Burlarse por llorar de niño. Aprender a tragar el nudo en la garganta para no emitir ni un sonido.' },
+          { pause: 2900 },
+          { label: 'AISLAMIENTO', t: 'Un pupitre al fondo del salón. Hacerlo todo perfecto —una carta, una tarea, una recarga— para merecer cariño.' },
           { pause: 2800 },
-          { label: 'VERGÜENZA', t: 'Un semicírculo de siluetas. El niño encoge los hombros. La pregunta se queda dentro.' },
-          { pause: 2800 },
-          { label: 'AISLAMIENTO', t: 'Un escritorio al fondo del salón. Una sola silla ocupada.' },
-          { pause: 2600 },
           { label: 'SILENCIO', t: 'Una silla vacía junto a una ventana encendida. Ya nadie pregunta nada.' },
-          { pause: 3000 },
-          { t: 'No ocurrió de repente. Cada escena cerró una puerta pequeña. Ninguna hizo ruido.' },
-          { pause: 2600 },
-          { who: 'Tú', t: 'Me fui volviendo reservado… como quien aprende a cuidar algo frágil.' },
+          { pause: 2900 },
+          { t: 'No fue frialdad. Fue un niño con Asperger aprendiendo a no dar problemas mientras por dentro sentía demasiado.' },
+          { pause: 2900 },
+          { who: 'Tú', t: 'Me volví callado… como quien cuida algo frágil para que nadie más lo juzgue.' },
           { pause: 2800 },
-          { t: 'Aquella personalidad callada no apareció de la nada. Fue una manera de protegerse.' },
-          { pause: 3200 },
         ],
         () => {
           storyFlag('ch6_cierre', 1);
           syncGates();
           chime(660);
-          showMsg('Se abre la puerta del puente de cristal');
+          showMsg('Se abre la puerta del puente · (Opcional: mira el recuerdo junto a la ventana antes de cruzar)');
         },
         P('cierre')
+      );
+    }
+
+    function scene_valeria() {
+      chime(370);
+      cine(
+        [
+          { stamp: '01 / 11 / 2025', t: 'La habitación de Valeria.' },
+          { pause: 900 },
+          { type: 'layer', layer: 'hecho', t: 'Llegaste a casa de Valeria para el último ensayo. Un rato después llegó Katherin.', on: () => distantBarkSnd() },
+          { pause: 2500 },
+          { t: 'El perrito de la casa ladraba tímido desde el corredor, así que Valeria los mandó a su habitación mientras se alistaba.' },
+          { pause: 2600 },
+          { type: 'layer', layer: 'hecho', t: 'Al entrar, Katherin hizo un gesto pequeño y dijo un «hola» suave. Tú te sentaste en la cama, mirando la llave de tu casa entre los dedos.', on: () => keyClinkSnd() },
+          { pause: 3000 },
+          { t: 'Ninguno dijo nada más. Ella miraba su teléfono en la silla del fondo. Tú seguías girando la llave.' },
+          { pause: 2700 },
+          { type: 'layer', layer: 'pensaste', t: 'Pensé: qué incómodo, seguro le aburro, soy invisible, o quizá Valeria lo hizo a propósito. No pude ni decir hola.' },
+          { pause: 3000 },
+          { type: 'layer', layer: 'hoy', t: 'Desde 2026 solo se ven dos adolescentes bastante reservados en un mismo cuarto, sin saber cómo empezar a hablar.', on: () => keyClinkSnd() },
+          { pause: 2900 },
+          { who: 'Tú (2026)', t: 'No tenías que hacerlo perfectamente. Tenías dieciséis años y estabas aprendiendo.' },
+          { pause: 2900 },
+        ],
+        () => {
+          storyFlag('ch6_valeria', 1);
+          showMsg('Recuerdo guardado · 01/11/2025 · La habitación de Valeria');
+        },
+        { x: -32.2, y: 0.7, z: 6.2 }
       );
     }
 
@@ -3341,9 +3485,9 @@ try {
           { pause: 800 },
           { t: 'Una habitación con una sola silla y una lámpara encendida. Nadie más.' },
           { pause: 2400 },
-          { t: 'La ventana está oscura. La figura mira hacia ella como si esperara que alguien tocara.' },
+          { t: 'La ventana está oscura. La figura mira hacia ella como si esperara un mensaje que nunca llega.' },
           { pause: 2400 },
-          { who: 'Tú', t: '¿Es esto lo que temo… o lo que me resulta más cómodo?' },
+          { who: 'Tú', t: '¿Es esto lo que temo… o lo que elijo cuando me canso de intentar encajar?' },
           { pause: 2800 },
           { t: 'Al mirar demasiado, la habitación parece más grande.' },
           { pause: 2200 },
@@ -3361,14 +3505,14 @@ try {
       cine(
         [
           { pause: 800 },
-          { t: 'Una mesa larga. Siluetas alrededor, hablando a la vez, sin que se oiga una sola palabra.' },
+          { t: 'Una mesa larga. Siluetas alrededor, hablando a la vez, sin que tengas que decir una sola palabra.' },
           { pause: 2600 },
-          { t: 'Hay una silla libre. Quizá es para ti. Quizá no.' },
-          { pause: 2400 },
+          { t: 'Hay una silla libre. Como aquel día en que el grupo agradeció la mezcla y nadie te exigió hablar más de la cuenta.' },
+          { pause: 2600 },
           { t: 'Cuando intentas ver sus caras, la escena se mueve, como si aún no las hubieras conocido.' },
-          { pause: 2600 },
-          { who: 'Tú', t: 'Tampoco sé si eso me haría feliz.' },
-          { pause: 2400 },
+          { pause: 2500 },
+          { who: 'Tú', t: 'Tal vez pertenecer no sea hablar todo el tiempo. Tal vez sea poder quedarte.' },
+          { pause: 2500 },
         ],
         () => {
           storyFlag('ch6_gente', 1);
@@ -3424,14 +3568,41 @@ try {
           { pause: 2400 },
           { who: 'Inscripción', t: '«No puedes recordar el futuro porque todavía no ha ocurrido.»' },
           { pause: 3800 },
-          { t: 'Al fondo, un ventanal enorme se abre hacia el este.' },
-          { pause: 2200 },
+          { t: 'Al fondo, dos ventanales opuestos miran al cielo abierto, y al este se extiende la ciudad.' },
+          { pause: 2300 },
         ],
         () => {
           storyFlag('ch6_frase', 1);
-          showMsg('Acércate al ventanal · E');
+          showMsg('Mira las ventanas opuestas o acércate al ventanal del este · E');
         },
         P('frase')
+      );
+    }
+
+    function scene_ventanas() {
+      chime(410);
+      cine(
+        [
+          { stamp: '01 / 11 / 2025', t: 'La casa grande · Dos ventanas.' },
+          { pause: 900 },
+          { type: 'layer', layer: 'hecho', t: 'Al llegar a la casa grande del ensayo, quedaron un momento solos antes de que llegara Michelle.' },
+          { pause: 2600 },
+          { t: 'Katherin se acercó al ventanal de enfrente a mirar el paisaje.' },
+          { pause: 2200 },
+          { type: 'layer', layer: 'hecho', t: 'Tú te fuiste a la ventana del lado opuesto a mirar otro paisaje.' },
+          { pause: 2400 },
+          { type: 'layer', layer: 'pensaste', t: 'Por dentro pensabas en cada paso detrás de ella, midiendo la distancia para no incomodarla.' },
+          { pause: 2700 },
+          { type: 'layer', layer: 'hoy', t: 'Dos personas reservadas existiendo en el mismo lugar, mirando por ventanas distintas sin decir palabra.' },
+          { pause: 2800 },
+          { who: 'Tú (2026)', t: 'Tal vez nunca sepa qué significó para ella. Pero sí sé cuánto significó para mí. Y eso es suficiente.' },
+          { pause: 3000 },
+        ],
+        () => {
+          storyFlag('ch6_ventanas', 1);
+          showMsg('Recuerdo guardado · Dos ventanas opuestas · acércate al ventanal del este (E)');
+        },
+        { x: 42.5, y: TOP + 1.6, z: -7.8 }
       );
     }
 
@@ -3441,18 +3612,18 @@ try {
         [
           { pause: 1000 },
           { t: 'Más allá del cristal, el mar se extiende hasta una ciudad lejana: apenas un temblor de luces en el horizonte.' },
-          { pause: 3200 },
-          { t: 'Te quedas mirándola. Por primera vez comprendes que llevas mucho tiempo intentando resolver tu vida como si fuera un problema matemático.' },
-          { pause: 3600 },
-          { t: 'Qué camino elegir. Qué debiste haber hecho. Quién pudiste ser. Qué pensará de ti la versión que todavía no existe.' },
-          { pause: 3600 },
-          { t: 'La isla no te ofrece ninguna respuesta. Solo te muestra que existen posibilidades.' },
+          { pause: 3000 },
+          { t: 'Te quedas mirándola. Comprendes cuánto tiempo pasaste intentando demostrar tu valor con un promedio, un 382 o una respuesta exacta.' },
           { pause: 3400 },
-          ...(FL().ch6_vacio ? [{ t: 'Junto a tu reflejo en el cristal queda un espacio sin llenar. No sientes que falte algo. Sientes que todavía cabe.' }, { pause: 3400 }] : []),
-          { who: 'Tú', t: 'Quizá no hay nada que resolver. Solo algo que seguir mirando.' },
-          { pause: 3000 },
+          { t: 'Intentando calcular si incomodas. Qué debiste haber dicho. Qué pensará de ti la versión que todavía no existe.' },
+          { pause: 3400 },
+          { t: 'La isla no te entrega una fórmula cuantitativa. Solo te muestra que todavía caben posibilidades.' },
+          { pause: 3200 },
+          ...(FL().ch6_vacio ? [{ t: 'Junto a tu reflejo en el cristal queda un espacio sin llenar. No sientes que falte algo. Sientes que todavía cabe.' }, { pause: 3200 }] : []),
+          { who: 'Tú', t: 'Quizá no hay nada que resolver. Solo seguir mirando.' },
+          { pause: 2900 },
           { t: 'Por primera vez, no intentas calcular cuál es la correcta.' },
-          { pause: 3000 },
+          { pause: 2900 },
         ],
         () => {
           storyFlag('ch6_complete', 1);
@@ -3851,10 +4022,10 @@ try {
       if (!f.ch6_bridge && !(f.ch6_aula && f.ch6_nino && f.ch6_cierre)) {
         return f.ch6_aula && f.ch6_nino ? 'Mira las escenas del fondo de la Torre del pasado.' : 'Examina las escenas reconstruidas de la Torre del pasado.';
       }
-      if (!f.ch6_bridge) return 'Cruza el puente de cristal.';
+      if (!f.ch6_bridge) return f.ch6_valeria ? 'Cruza el puente de cristal.' : 'Cruza el puente de cristal (o mira la habitación junto a la ventana).';
       if (futN() < 4) return 'Mira cada uno de los cuatro futuros. Observa cómo cambian. (' + futN() + '/4)';
       if (!f.ch6_frase) return 'Sube la escalera de cristal hasta el último piso.';
-      return 'Acércate al ventanal y mira hacia el horizonte.';
+      return f.ch6_ventanas ? 'Acércate al ventanal y mira hacia el horizonte.' : 'Mira el recuerdo de las ventanas opuestas o acércate al ventanal del este.';
     };
 
     const oM = bgMission;
@@ -3886,7 +4057,7 @@ try {
       console.log('Capítulo V marcado como completado: ve a la puerta entre las torres (E).');
     };
     window.__boisCh6Reset = () => {
-      for (const k of ['ch6_started', 'ch6_aula', 'ch6_nino', 'ch6_cierre', 'ch6_bridge', 'ch6_fisica', 'ch6_compu', 'ch6_solo', 'ch6_gente', 'ch6_vacio', 'ch6_frase', 'ch6_complete']) {
+      for (const k of ['ch6_started', 'ch6_aula', 'ch6_nino', 'ch6_cierre', 'ch6_valeria', 'ch6_bridge', 'ch6_fisica', 'ch6_compu', 'ch6_solo', 'ch6_gente', 'ch6_vacio', 'ch6_frase', 'ch6_ventanas', 'ch6_complete']) {
         delete STORY.flags[k];
       }
       saveStory();

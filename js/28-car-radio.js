@@ -76,50 +76,84 @@ function createCarTireGeometry(outerR, width) {
 
 function createCarGaugeTexture() {
   const cv = document.createElement('canvas');
-  cv.width = 256;
-  cv.height = 128;
+  cv.width = 512;
+  cv.height = 256;
   const ctx = cv.getContext('2d');
-  ctx.fillStyle = '#0c161a';
-  ctx.fillRect(0, 0, 256, 128);
-  const drawDial = (cx, cy, r, ticks, redFrom) => {
-    ctx.strokeStyle = '#3c8e84';
-    ctx.lineWidth = 2.5;
+  ctx.fillStyle = '#091317';
+  ctx.fillRect(0, 0, 512, 256);
+
+  // Marco sutil del cuadro de instrumentos
+  ctx.strokeStyle = '#254a4d';
+  ctx.lineWidth = 4;
+  ctx.strokeRect(8, 8, 496, 240);
+
+  const drawDial = (cx, cy, r, ticks, redFrom, labels) => {
+    ctx.fillStyle = '#0e1d22';
     ctx.beginPath();
-    ctx.arc(cx, cy, r, Math.PI * 0.78, Math.PI * 2.22);
-    ctx.stroke();
-    ctx.fillStyle = '#112227';
-    ctx.beginPath();
-    ctx.arc(cx, cy, r - 4, 0, Math.PI * 2);
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = '#4cb8aa';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.arc(cx, cy, r - 2, Math.PI * 0.78, Math.PI * 2.22);
+    ctx.stroke();
+
     for (let i = 0; i <= ticks; i++) {
-      const a = Math.PI * 0.78 + (i / ticks) * (Math.PI * 1.44);
+      const f = i / ticks;
+      const a = Math.PI * 0.78 + f * (Math.PI * 1.44);
       const isRed = redFrom >= 0 && i >= redFrom;
-      ctx.strokeStyle = isRed ? '#e25c48' : '#cfe5df';
-      ctx.lineWidth = i % 2 === 0 ? 2 : 1.1;
-      const r0 = r - (i % 2 === 0 ? 11 : 7);
+      const major = i % 2 === 0;
+      ctx.strokeStyle = isRed ? '#ff644c' : (major ? '#e8f5f1' : '#85aba3');
+      ctx.lineWidth = major ? 3.2 : 1.6;
+      const r0 = r - (major ? 18 : 11);
       ctx.beginPath();
       ctx.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
-      ctx.lineTo(cx + Math.cos(a) * (r - 2), cy + Math.sin(a) * (r - 2));
+      ctx.lineTo(cx + Math.cos(a) * (r - 5), cy + Math.sin(a) * (r - 5));
       ctx.stroke();
     }
-    ctx.fillStyle = '#d9c598';
+
+    if (labels && labels.length) {
+      ctx.fillStyle = '#e7f2ee';
+      ctx.font = '700 13px system-ui,sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      for (let i = 0; i < labels.length; i++) {
+        const f = i / (labels.length - 1);
+        const a = Math.PI * 0.78 + f * (Math.PI * 1.44);
+        const lr = r - 30;
+        ctx.fillStyle = (redFrom >= 0 && i === labels.length - 1) ? '#ff7c66' : '#dceee9';
+        ctx.fillText(labels[i], cx + Math.cos(a) * lr, cy + Math.sin(a) * lr);
+      }
+    }
+
+    ctx.fillStyle = '#e0ca98';
     ctx.beginPath();
-    ctx.arc(cx, cy, 4, 0, Math.PI * 2);
+    ctx.arc(cx, cy, 7, 0, Math.PI * 2);
     ctx.fill();
   };
-  drawDial(72, 68, 46, 7, 6);
-  drawDial(184, 68, 46, 14, -1);
-  ctx.fillStyle = '#9ac9bf';
-  ctx.font = '600 10px system-ui,sans-serif';
+
+  drawDial(142, 136, 92, 14, 11, ['0', '1', '2', '3', '4', '5', '6', '7']);
+  drawDial(370, 136, 92, 14, -1, ['0', '20', '40', '60', '80', '100', '120', '140']);
+
+  ctx.fillStyle = '#9fd6cc';
+  ctx.font = '700 16px system-ui,sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('RPM', 72, 99);
-  ctx.fillText('KM/H', 184, 99);
-  ctx.fillStyle = '#cbb788';
-  ctx.font = '700 9px Georgia,serif';
-  ctx.fillText('BOIS', 128, 30);
+  ctx.fillText('RPM', 142, 198);
+  ctx.fillText('KM/H', 370, 198);
+
+  ctx.fillStyle = '#142a2f';
+  ctx.fillRect(216, 174, 80, 26);
+  ctx.strokeStyle = '#3d7d76';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(216, 174, 80, 26);
+  ctx.fillStyle = '#ebd49d';
+  ctx.font = '700 13px Georgia,serif';
+  ctx.fillText('BOIS · 89', 256, 191);
+
   const tex = new THREE.CanvasTexture(cv);
   if ('colorSpace' in tex && THREE.SRGBColorSpace) tex.colorSpace = THREE.SRGBColorSpace;
   else if (THREE.sRGBEncoding) tex.encoding = THREE.sRGBEncoding;
+  tex.anisotropy = 4;
   return tex;
 }
 
@@ -231,15 +265,16 @@ function buildCar() {
   const revMat = new THREE.MeshStandardMaterial({
     color: 0xd6dde0, emissive: 0xffffff, emissiveIntensity: 0, roughness: 0.2, metalness: 0.05
   });
+  const gaugeTex = createCarGaugeTexture();
   const gaugeMat = new THREE.MeshStandardMaterial({
-    map: createCarGaugeTexture(),
-    emissive: 0x35968a,
-    emissiveMap: createCarGaugeTexture(),
-    emissiveIntensity: 0.55,
-    roughness: 0.28
+    map: gaugeTex,
+    emissive: 0x62d4c2,
+    emissiveMap: gaugeTex,
+    emissiveIntensity: 0.92,
+    roughness: 0.22
   });
   const needleMat = new THREE.MeshStandardMaterial({
-    color: 0xff6e48, emissive: 0xff5a36, emissiveIntensity: 0.9, roughness: 0.3
+    color: 0xff7048, emissive: 0xff5a36, emissiveIntensity: 1.15, roughness: 0.25
   });
   const radioLedMat = new THREE.MeshStandardMaterial({
     color: 0x152326, emissive: 0xebb663, emissiveIntensity: 0, roughness: 0.35
@@ -344,8 +379,11 @@ function buildCar() {
   rearMesh.receiveShadow = true;
   body.add(rearMesh);
 
-  // Capó elevado, chasis inferior, piso de cabina y mamparos
+  // Capó elevado, emblema, chasis inferior, piso de cabina y mamparos
   add(new THREE.BoxGeometry(0.66, 0.036, 0.96), paint, 0, 1.03, -1.16, -0.085, 0, 0, true);
+  add(new THREE.BoxGeometry(0.035, 0.014, 0.72), paintDeep, -0.22, 1.01, -1.18, -0.085, 0, 0);
+  add(new THREE.BoxGeometry(0.035, 0.014, 0.72), paintDeep, 0.22, 1.01, -1.18, -0.085, 0, 0);
+  add(new THREE.BoxGeometry(0.06, 0.014, 0.045), chrome, 0, 0.848, -1.96, -0.1, 0, 0);
   add(new THREE.BoxGeometry(1.20, 0.07, 3.85), underMat, 0, 0.34, -0.02);
   add(new THREE.BoxGeometry(1.42, 0.06, 1.40), cabinWallMat, 0, 0.40, 0.20, 0, 0, 0, true);
   add(new THREE.BoxGeometry(1.32, 0.015, 1.32), carpetMat, 0, 0.435, 0.20);
@@ -470,11 +508,13 @@ function buildCar() {
     add(new THREE.BoxGeometry(0.11, 0.055, 0.048), revMat, sx * 0.58, 0.59, 2.072);
   }
   add(new THREE.BoxGeometry(0.38, 0.024, 0.03), chrome, 0, 0.805, 2.035);
+  add(new THREE.BoxGeometry(1.36, 0.032, 0.11), paint, 0, 0.825, 1.98, 0.18, 0, 0, true);
   add(new THREE.BoxGeometry(1.64, 0.12, 0.09), trim, 0, 0.44, 2.085, 0, 0, 0, true);
   add(new THREE.BoxGeometry(1.70, 0.065, 0.07), chrome, 0, 0.42, 2.125, 0, 0, 0, true);
   add(new THREE.BoxGeometry(0.34, 0.10, 0.28), underMat, 0.50, 0.33, 1.85);
   for (const ex of [0.44, 0.56]) {
     add(new THREE.CylinderGeometry(0.034, 0.034, 0.24, 12), chrome, ex, 0.33, 2.09, Math.PI / 2);
+    add(new THREE.CylinderGeometry(0.024, 0.024, 0.25, 10), underMat, ex, 0.33, 2.095, Math.PI / 2);
   }
 
   // --- Matrícula ---
@@ -545,45 +585,74 @@ function buildCar() {
   body.add(hbPivot);
   CAR.hbPivot = hbPivot;
 
-  // Tablero esculpido, moldura nogal, radio y cuadro de instrumentos con agujas vivas
-  add(new THREE.BoxGeometry(1.24, 0.16, 0.34), trim, 0, 0.93, -0.42);
-  add(new THREE.BoxGeometry(1.24, 0.035, 0.36), leatherDark, 0, 1.01, -0.43);
-  add(new THREE.BoxGeometry(0.56, 0.055, 0.025), walnutMat, 0.28, 0.94, -0.245);
-  add(new THREE.BoxGeometry(0.16, 0.065, 0.04), trim, 0, 0.87, -0.255);
-  add(new THREE.PlaneGeometry(0.11, 0.028), radioLedMat, 0, 0.87, -0.234);
+  // Tablero esculpido y despejado: la parte superior se detiene detrás del cuadro para no taparlo
+  add(new THREE.BoxGeometry(1.24, 0.14, 0.24), trim, 0, 0.915, -0.45);
+  add(new THREE.BoxGeometry(1.24, 0.028, 0.26), leatherDark, 0, 1.002, -0.47);
+  add(new THREE.BoxGeometry(0.58, 0.12, 0.09), trim, 0.28, 0.925, -0.32);
+  add(new THREE.BoxGeometry(0.54, 0.058, 0.024), walnutMat, 0.28, 0.935, -0.272);
+  add(new THREE.BoxGeometry(0.045, 0.012, 0.012), chrome, 0.28, 0.935, -0.258);
+  add(new THREE.BoxGeometry(0.16, 0.068, 0.05), trim, 0, 0.87, -0.27);
+  add(new THREE.PlaneGeometry(0.115, 0.030), radioLedMat, 0, 0.87, -0.243);
+  for (const vx of [-0.045, 0.045]) {
+    add(new THREE.BoxGeometry(0.055, 0.036, 0.018), underMat, vx, 0.96, -0.325);
+  }
 
-  // Visera del cuadro y esfera iluminada frente al conductor (-0.30)
-  add(new THREE.BoxGeometry(0.36, 0.13, 0.14), trim, -0.30, 1.02, -0.40);
-  add(new THREE.PlaneGeometry(0.27, 0.095), gaugeMat, -0.30, 1.02, -0.328);
+  // Cuadro de instrumentos elevado e inclinado hacia los ojos del conductor (sin obstrucciones)
+  const clusterGroup = new THREE.Group();
+  clusterGroup.position.set(-0.30, 1.074, -0.338);
+  clusterGroup.rotation.set(-0.20, 0, 0);
+  body.add(clusterGroup);
+
+  const addCluster = (geo, mat, x, y, z, rx = 0) => {
+    const m = new THREE.Mesh(geo, mat);
+    m.position.set(x, y, z);
+    m.rotation.x = rx;
+    clusterGroup.add(m);
+    return m;
+  };
+  addCluster(new THREE.BoxGeometry(0.33, 0.128, 0.06), trim, 0, 0, -0.034);
+  addCluster(new THREE.BoxGeometry(0.35, 0.022, 0.12), leatherDark, 0, 0.068, -0.015);
+  addCluster(new THREE.BoxGeometry(0.022, 0.12, 0.095), trim, -0.164, 0.004, -0.012);
+  addCluster(new THREE.BoxGeometry(0.022, 0.12, 0.095), trim, 0.164, 0.004, -0.012);
+  addCluster(new THREE.BoxGeometry(0.34, 0.018, 0.075), trim, 0, -0.065, -0.018);
+
+  addCluster(new THREE.PlaneGeometry(0.285, 0.115), gaugeMat, 0, 0, 0.001);
+  const dialRingGeo = new THREE.TorusGeometry(0.044, 0.0035, 8, 28);
+  addCluster(dialRingGeo, chrome, -0.063, -0.004, 0.003);
+  addCluster(dialRingGeo, chrome, 0.063, -0.004, 0.003);
 
   const makeNeedle = (cx) => {
     const piv = new THREE.Group();
-    piv.position.set(cx, 1.015, -0.323);
-    const bar = new THREE.Mesh(new THREE.BoxGeometry(0.005, 0.032, 0.004), needleMat);
-    bar.position.y = 0.013;
-    piv.add(bar);
-    body.add(piv);
+    piv.position.set(cx, -0.004, 0.006);
+    const bar = new THREE.Mesh(new THREE.BoxGeometry(0.0045, 0.037, 0.003), needleMat);
+    bar.position.y = 0.014;
+    const cap = new THREE.Mesh(new THREE.CylinderGeometry(0.0055, 0.0055, 0.005, 10), chrome);
+    cap.rotation.x = Math.PI / 2;
+    piv.add(bar, cap);
+    clusterGroup.add(piv);
     return piv;
   };
-  CAR.rpmNeedle = makeNeedle(-0.36);
-  CAR.speedNeedle = makeNeedle(-0.24);
+  CAR.rpmNeedle = makeNeedle(-0.063);
+  CAR.speedNeedle = makeNeedle(0.063);
 
-  // Columna y volante animado (grupo rotatorio alrededor de su eje)
-  add(new THREE.CylinderGeometry(0.026, 0.030, 0.18, 10), trim, -0.30, 0.98, -0.34, Math.PI / 2 - 0.52);
+  // Columna y volante deportivo de 3 radios bajos (mitad superior abierta hacia el velocímetro)
+  add(new THREE.CylinderGeometry(0.024, 0.028, 0.17, 10), trim, -0.30, 0.905, -0.315, Math.PI / 2 - 0.40);
   const steerPivot = new THREE.Group();
-  steerPivot.position.set(-0.30, 1.015, -0.275);
-  steerPivot.rotation.set(-0.52, 0, 0);
-  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.135, 0.016, 12, 24), leatherDark);
-  const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.024, 14), trim);
+  steerPivot.position.set(-0.30, 0.935, -0.245);
+  steerPivot.rotation.set(-0.40, 0, 0);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.116, 0.013, 12, 26), leatherDark);
+  const hub = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.032, 0.022, 14), trim);
   hub.rotation.x = Math.PI / 2;
-  const badge = new THREE.Mesh(new THREE.CylinderGeometry(0.016, 0.016, 0.027, 12), gold);
+  const badge = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.025, 12), gold);
   badge.rotation.x = Math.PI / 2;
-  const spL = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.02, 0.012), chrome);
-  spL.position.x = -0.065;
-  const spR = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.02, 0.012), chrome);
-  spR.position.x = 0.065;
-  const spB = new THREE.Mesh(new THREE.BoxGeometry(0.022, 0.11, 0.012), chrome);
-  spB.position.y = -0.065;
+  const spL = new THREE.Mesh(new THREE.BoxGeometry(0.092, 0.018, 0.011), chrome);
+  spL.position.set(-0.056, -0.016, 0);
+  spL.rotation.z = 0.28;
+  const spR = new THREE.Mesh(new THREE.BoxGeometry(0.092, 0.018, 0.011), chrome);
+  spR.position.set(0.056, -0.016, 0);
+  spR.rotation.z = -0.28;
+  const spB = new THREE.Mesh(new THREE.BoxGeometry(0.020, 0.092, 0.011), chrome);
+  spB.position.set(0, -0.058, 0);
   steerPivot.add(rim, hub, badge, spL, spR, spB);
   body.add(steerPivot);
   CAR.steerPivot = steerPivot;
@@ -593,9 +662,9 @@ function buildCar() {
   add(new THREE.BoxGeometry(0.19, 0.048, 0.024), trim, 0, 1.40, -0.18);
   add(new THREE.PlaneGeometry(0.172, 0.036), mirrorGlassMat, 0, 1.40, -0.167);
 
-  // Punto exacto de los ojos del conductor + luz suave nocturna de cabina
+  // Punto exacto de los ojos del conductor (por encima del volante, vista directa al cuadro)
   const eyeAnchor = new THREE.Object3D();
-  eyeAnchor.position.set(-0.30, 1.24, 0.11);
+  eyeAnchor.position.set(-0.30, 1.255, 0.105);
   body.add(eyeAnchor);
   CAR.eyeAnchor = eyeAnchor;
 
@@ -1453,15 +1522,15 @@ function carStep(dt) {
     CAR.body.position.y = vib;
   }
 
-  // Animación interior: volante, agujas, palanca de cambios, freno y limpiaparabrisas
+  // Animación interior: volante, agujas alineadas a las escalas del cuadro, palanca, freno y limpiaparabrisas
   if (CAR.steerPivot) CAR.steerPivot.rotation.z = CAR.delta * 4.5;
   if (CAR.speedNeedle) {
     const kmh = Math.min(140, Math.abs(CAR.speed) * 3.6);
-    CAR.speedNeedle.rotation.z = 2.15 - (kmh / 140) * 4.3;
+    CAR.speedNeedle.rotation.z = 2.26 - (kmh / 140) * 4.52;
   }
   if (CAR.rpmNeedle) {
     const rN = Math.max(0, Math.min(1, (CAR.rpm - 700) / (CAR_CFG.redline - 700)));
-    CAR.rpmNeedle.rotation.z = 2.15 - rN * 4.3;
+    CAR.rpmNeedle.rotation.z = 2.26 - rN * 4.52;
   }
   if (CAR.shifterPivot) {
     const tgtSh = CAR.gear < 0 ? 0.24 : -0.18;

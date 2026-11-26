@@ -276,15 +276,15 @@ function ch1Wake(){
   ch1AudioLevel(.55,2);
   playCinematic([
     {t:'El sonido de las olas llega primero.',auto:3700,on:()=>{ch1AudioLevel(.9,2.5);ch1Tinnitus(5.5)}},
-    {t:'La luz se abre paso entre tus párpados. La imagen todavía está borrosa.',auto:4100,on:()=>{ch1LidsGo();ch1AudioOpen();ch1Pad([146.8,220,329.6,440],9.5,.048,true);ch1CamTo({yaw:sea+.42,pitch:.92,roll:.1},8.6)}},
+    {t:'La luz se abre paso entre tus párpados. Todo tarda un segundo en enfocarse.',auto:4100,on:()=>{ch1LidsGo();ch1AudioOpen();ch1Pad([146.8,220,329.6,440],9.5,.048,true);ch1CamTo({yaw:sea+.42,pitch:.92,roll:.1},8.6)}},
     {t:'Abres los ojos. Arena bajo las manos. Cielo encima.',auto:4100},
-    {t:'No recuerdas cómo regresaste a esta orilla, pero algo dentro de ti reconoce el lugar.',auto:4300,on:()=>{ch1CamTo({yaw:sea+.04,pitch:.17,roll:.07},4.8)}},
-    {t:'Solo el viento, el agua y el eco de tu propia respiración.',auto:4500,on:()=>{ch1CamTo({yaw:sea-.55,pitch:.1,roll:.02},5)}},
-    {t:'Te incorporas lentamente.',auto:3500,on:()=>{
+    {t:'No estás aquí para resolver un misterio. Volviste a un lugar hecho con tus propios recuerdos.',auto:4500,on:()=>{ch1CamTo({yaw:sea+.04,pitch:.17,roll:.07},4.8)}},
+    {t:'Solo el viento, el agua y tu propia respiración.',auto:4200,on:()=>{ch1CamTo({yaw:sea-.55,pitch:.1,roll:.02},5)}},
+    {t:'Te incorporas despacio.',auto:3500,on:()=>{
       ch1HeartStop();ch1AudioLevel(.6,2);ch1SfxSand();ch1CamShake(.016);
       ch1CamTo({y:gy+.8,pitch:.08,roll:0,yaw:sea-.2},2.5,ch1EaseOut);
       setTimeout(()=>{if(CH1.intro){ch1CamShake(.01);ch1CamTo({y:gy+1.7,fov:72},2.4)}},2300)}},
-    {t:'Cerca de ti, dos objetos brillan sobre la arena.',auto:3800,on:()=>{
+    {t:'Cerca de ti, dos objetos esperan sobre la arena.',auto:3800,on:()=>{
       ch1RevealItems();auChime();
       const it=window.__awakeItems;
       if(it&&it.cam)ch1LookAt(it.cam.position.x,it.cam.position.y+.35,it.cam.position.z,2.6,{fov:68})}}
@@ -299,7 +299,7 @@ function ch1IntroDone(){
   window.__boisWakeLock=false;
   ch1HeartStop();
   cam.position.set(S.x,S.y+1.7,S.z);cam.rotation.set(S.pitch,S.yaw,0,'YXZ');cam.updateMatrixWorld();
-  showMsg('Explora. Hay algo cerca.');
+  showMsg('Explora la orilla. Hay dos objetos cerca.');
   if(!touch&&$('c')&&$('c').requestPointerLock)$('c').requestPointerLock();
 }
 
@@ -316,11 +316,11 @@ function ch1PickCamera(it){
   ch1CamBegin(.45);ch1LookAt(g.position.x,g.position.y+.12,g.position.z,1.1,{fov:48});
   ch1SfxShutter();
   playCinematic([
-    {t:'Una cámara fotográfica. La correa está gastada, pero se adapta a tu mano como si siempre hubiera sido tuya.',on:()=>ch1Collect(g)},
-    {t:'Dentro quedan cuatro fotografías dañadas. Aunque el tiempo las borró en parte, todavía distinguen su forma:'},
-    {t:'Un bosque. Unos edificios. Una piscina. Y una figura humana cuyo rostro se ha perdido.',on:()=>ch1Pad([196,293.7,392,493.9],6.5,.042,true)},
-    {t:'El álbum aún tiene espacio. Sientes que hay más escenas dispersas por la isla.',on:()=>ch1CamTo({pitch:-.02,fov:72},2.4)}
-  ],()=>{ch1CamEnd();showMsg('Guardaste la cámara. Pulsa V para volver a examinar sus fotografías.');openCameraGallery()},{location:'LA PLAYA'});
+    {t:'Una cámara antigua. La correa está gastada, pero se adapta a tu mano sin esfuerzo.',on:()=>ch1Collect(g)},
+    {t:'Dentro conserva cuatro cápsulas de memoria de octubre y noviembre de 2025:'},
+    {t:'Un bosque. Unos salones. Una piscina vacía. Y una hoja doblada de Cátedra de Paz con cinco palabras escritas para ti.',on:()=>ch1Pad([196,293.7,392,493.9],6.5,.042,true)},
+    {t:'Todavía quedan seis instantes repartidos por la isla. No son pistas de un enigma: son cosas que valía la pena mirar otra vez.',on:()=>ch1CamTo({pitch:-.02,fov:72},2.4)}
+  ],()=>{ch1CamEnd();showMsg('Guardaste la cámara. Pulsa V para abrir tus cápsulas de memoria.');openCameraGallery()},{location:'LA PLAYA'});
 }
 function ch1NoteEl(){
   let n=document.getElementById('ch1Note');
@@ -338,10 +338,10 @@ function ch1PickNotebook(it){
   ch1CamBegin(.45);ch1LookAt(g.position.x,g.position.y+.05,g.position.z,1.1,{fov:50});
   ch1SfxPage();
   playCinematic([
-    {t:'Una pequeña libreta. La primera página contiene una frase escrita a mano:',on:()=>{ch1Collect(g);ch1NoteShow()}},
+    {t:'Tu libreta. En la primera página hay una frase escrita con tu letra:',on:()=>{ch1Collect(g);ch1NoteShow()}},
     {t:'«Si estás leyendo esto, significa que has vuelto.»',who:'Libreta',on:()=>ch1NoteWrite()},
-    {t:'La caligrafía es tuya. No entiendes todavía por qué regresaste, pero la guardas contigo.',on:()=>{ch1CamTo({pitch:-.02,fov:72},2.4)}}
-  ],()=>{ch1NoteHide();ch1CamEnd();showMsg('Guardaste la libreta. Sus páginas se irán revelando al recordar (J).')},{location:'LA PLAYA'});
+    {t:'También guarda fechas reales y cartas cerradas para los años que vienen. La guardas para aprender a leer lo que viviste sin juzgarte.',on:()=>{ch1CamTo({pitch:-.02,fov:72},2.4)}}
+  ],()=>{ch1NoteHide();ch1CamEnd();showMsg('Guardaste la libreta. Sus páginas se abrirán mientras recorres la isla (J).')},{location:'LA PLAYA'});
 }
 
 /* ───────── la isla y las dos torres ───────── */
@@ -358,17 +358,17 @@ function ch1Vista(){
   const tx=-17,tz=-16.5,dx=tx-S.x,dz=tz-S.z,yaw=Math.atan2(-dx,-dz),dist=Math.hypot(dx,dz);
   const hi=Math.atan2(70-cam.position.y,dist);
   playCinematic([
-    {t:'Levantas la vista. Más allá de la arena, la isla se extiende hasta las montañas.',auto:5000,on:()=>{ch1CamTo({yaw:yaw+.38,pitch:.05,fov:68},3.8)}},
-    {t:'Bosques. Praderas. Caminos y construcciones entre los árboles.',auto:4200,on:()=>{ch1CamTo({yaw:yaw+.12,pitch:Math.min(.14,hi),fov:56},4.2)}},
-    {t:'Y sobre el verde, dos torres de cristal sobresalen como agujas.',auto:5200,on:()=>{ch1CamTo({yaw:yaw,pitch:Math.max(.1,Math.min(.2,hi*1.4)),fov:38},5.6);ch1Pad([73.4,146.8,220,329.6,440],10.5,.055,true)}},
-    {t:'La libreta y la cámara esperan llenar sus vacíos. Seis recuerdos quedaron repartidos por la isla.',auto:4400},
-    {t:'Cerca de la arena también aguarda tu viejo auto. Recorre este lugar sin prisa.',auto:4600,on:()=>{
+    {t:'Levantas la vista. Más allá de la arena, la isla se abre hasta las lomas.',auto:4800,on:()=>{ch1CamTo({yaw:yaw+.38,pitch:.05,fov:68},3.8)}},
+    {t:'Bosques, caminos de tierra, unas graderías y un edificio de salones entre los árboles.',auto:4400,on:()=>{ch1CamTo({yaw:yaw+.12,pitch:Math.min(.14,hi),fov:56},4.2)}},
+    {t:'Y sobre el verde, dos torres de cristal: lo que fuiste y lo que apenas estás imaginando.',auto:5200,on:()=>{ch1CamTo({yaw:yaw,pitch:Math.max(.1,Math.min(.2,hi*1.4)),fov:38},5.6);ch1Pad([73.4,146.8,220,329.6,440],10.5,.055,true)}},
+    {t:'Seis cápsulas de memoria quedaron repartidas por la isla. Cada una separa lo que pasó de lo que pensaste aquel día.',auto:4800},
+    {t:'Tu viejo auto también espera junto a la orilla. No hay prisa: estabas aprendiendo a vivir.',auto:4600,on:()=>{
       const hasCar=typeof CAR!=='undefined'&&CAR&&CAR.g;
       const cx=hasCar?CAR.x:BEACH[0]-8,cz=hasCar?CAR.z:BEACH[1]+12,cy=hasCar?CAR.y:ground(cx,cz,300);
       if(Math.hypot(cx-S.x,cz-S.z)<65)ch1LookAt(cx,cy+.85,cz,2.8,{fov:64});
       else ch1CamTo({fov:72,pitch:.03},3.6);
     }}
-  ],()=>{ch1CamEnd();showMsg('Capítulo I completado · Explora la isla')},{location:'LA ISLA'});
+  ],()=>{ch1CamEnd();showMsg('Capítulo I completado · Recorre la isla sin prisa')},{location:'LA ISLA'});
 }
 
 /* ───────── bucle (se llama desde drawWorld, también durante cinemáticas) ───────── */

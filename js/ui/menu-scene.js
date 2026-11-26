@@ -18,7 +18,8 @@
     const photoKeys=Object.keys(f).filter(k=>k.indexOf('photo_')===0&&k!=='photo_puppy'&&f[k]);
     const photos=Math.min(6,photoKeys.length);
     let label='';
-    if(f.ch7_complete)label='Historia completada (I–VII) · Lago de los Cisnes';
+    if(f.ch7_presencia)label='Historia y Epílogo completados · Presencia frente al lago';
+    else if(f.ch7_complete)label='Capítulo VII completado · Epílogo de Presencia junto al lago';
     else if(f.ch6_complete)label='Capítulo VII disponible · Lago de los Cisnes';
     else if(f.ch5_complete)label='Capítulo VI · Las torres de cristal';
     else if(f.ch4_complete)label='Capítulo V · Bajo el lago';

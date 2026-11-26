@@ -7,48 +7,50 @@
 const CH4_FRAGMENTS = [
   {
     id: 'shelf',
-    name: 'Estantería',
+    name: 'Cátedra de Paz · Cinco palabras',
     loc: [-10, -9.2],
     r: 2.9,
     lines: [
-      { t: 'Los libros están ordenados por altura, no por tema. Entre ellos hay uno sin título.' },
-      { t: 'Sus márgenes están llenos de listas con dos encabezados: «Lo que quiero ser» y «Lo que debería ser».' },
-      { t: 'Las dos columnas casi no se parecen.' },
-      { who: 'Tú', t: '¿Cuál de las dos era la mía?' }
+      { layer: 'hecho', stamp: '29 / 10 / 2025 · CÁTEDRA DE PAZ', t: 'Actividad «Sé algo bueno de ti». Dieciocho estudiantes en dos grupos; te cambiaste para equilibrar nueve y nueve.' },
+      { layer: 'hecho', t: 'Sobre ti escribiste: «bueno para las matemáticas, muy analítico, hiper-empático».' },
+      { layer: 'hecho', t: 'Y Katherin escribió en tu hoja: «Lo mejor de ti es que eres muy inteligente, linda persona, reservado, amable y enfocado».' },
+      { layer: 'pensaste', t: 'Sudor frío, piernas temblando. «Esto es bonito, pero me abruma.»' },
+      { layer: 'hoy', t: 'Quizás las personas también te veían por quién eras, no solo por lo que sabías calcular.' }
     ]
   },
   {
     id: 'board',
-    name: 'Cartelera',
+    name: 'Cartelera · 382 en el ICFES',
     loc: [11.7, 10.0],
     r: 2.9,
     lines: [
-      { t: 'Papeles viejos, sujetos con cinta: plazos, calificaciones, avisos de concursos.' },
-      { t: 'Todos hablan de resultados. Ninguno menciona cómo se sentía quien los recibía.' },
-      { t: 'En una esquina, una nota con una caligrafía apurada: «Excelente. ¿Y ahora?».' }
+      { layer: 'hecho', stamp: '10 / 08 / 2025 · Y DESPUÉS', t: 'Al llegar al ensayo con las chicas de Golondrinas, la mamá de Sara te abrazó y te felicitó por tus 382 en el ICFES.' },
+      { layer: 'pensaste', t: 'Sentías que solo valías si alcanzabas un logro o resolvías lo que otros no podían.' },
+      { layer: 'hoy', t: 'El 382 fue real, pero tu valor no empezaba ni terminaba en una nota.' }
     ]
   },
   {
     id: 'pc',
-    name: 'Computadores apagados',
+    name: 'La mezcla y el audio para «Toro»',
     loc: [9, -1],
     r: 3.1,
     lines: [
-      { t: 'Las pantallas están apagadas. En una de ellas ves tu reflejo, borroso, sin rasgos claros.' },
-      { t: 'Un papel amarillo está pegado al marco: «Terminar antes de la cena».' },
-      { who: 'Tú', t: 'No sé si llegué a cenar.' }
+      { layer: 'hecho', stamp: '01 / 11 / 2025 · 10:41 A. M.', t: 'Secaste tu portátil, terminaste la mezcla del baile a las 10:41, se la enviaste a Valeria y prestaste tu computador.' },
+      { layer: 'hecho', t: 'Más tarde llegó un audio del grupo agradeciendo a «Toro» por ayudar.' },
+      { layer: 'pensaste', t: 'Esa misma noche te rompiste dudando de si de verdad encajabas.' },
+      { layer: 'hoy', t: 'No solo mirabas desde lejos: ibas, ayudabas al grupo y te quedabas.' }
     ]
   },
   {
     id: 'lockers',
-    name: 'Casilleros',
+    name: 'El espejo medio abierto',
     loc: [-11.5, 9.6],
     r: 2.9,
     lines: [
-      { t: 'Uno de los casilleros está entreabierto. Dentro hay una bufanda doblada con cuidado.' },
-      { t: 'Y una libreta pequeña. En los bordes de cada página hay cisnes dibujados con trazos mínimos.' },
-      { who: 'Tú', t: 'Los cisnes…' },
-      { t: 'Algo pequeño y cálido se mueve por dentro. No sabrías decir qué es.' }
+      { layer: 'hecho', stamp: '29 / 10 / 2025 · 15:43 – 16:12', t: 'Con los suecos puestos, tocando un pedacito de piel del dedo mientras sonaba vallenato afuera.' },
+      { layer: 'hecho', t: 'Miraste un espejo medio abierto y el reloj —3:43, 3:48, 3:51— hasta que Sara escribió a las 4:12: «Ya puedes subir».' },
+      { layer: 'pensaste', t: 'Esperar en silencio cansaba como si estuvieras rindiendo otro examen.' },
+      { layer: 'hoy', t: 'No estabas haciendo nada mal. Solo estabas esperando que empezara la tarde.' }
     ]
   }
 ];
@@ -426,10 +428,14 @@ try {
         addBox(0.46, 0.05, 0.48, lx, F + 2.28, 11.22, locker);
         addBox(0.46, 0.05, 0.48, lx, F + 0.03, 11.22, locker);
         addBox(0.42, 0.04, 0.42, lx, F + 1.18, 11.22, locker, false); // repisa interior
-        // Bufanda doblada y pequeña libreta dentro del casillero entreabierto
+        // Bufanda doblada, libreta y pequeño espejo entreabierto dentro del casillero
         addBox(0.28, 0.09, 0.28, lx - 0.04, F + 1.245, 11.16, scarfMat, false);
         addBox(0.16, 0.035, 0.22, lx + 0.08, F + 1.22, 11.12, lockerCoverMat, false);
         addBox(0.14, 0.025, 0.2, lx + 0.08, F + 1.25, 11.12, paper, false);
+        const mFrame = addBox(0.18, 0.28, 0.025, lx - 0.11, F + 1.56, 11.08, wood2, false);
+        mFrame.rotation.y = 0.34;
+        const mGlass = addBox(0.14, 0.24, 0.012, lx - 0.105, F + 1.56, 11.068, glass, false);
+        mGlass.rotation.y = 0.34;
         // Puerta entreabierta rotada desde la bisagra derecha
         const doorPivot = new THREE.Group();
         doorPivot.position.set(lx + 0.22, F + 1.15, 10.97);
@@ -542,6 +548,10 @@ try {
         bc.fillStyle = '#f4f7ee';
         bc.font = 'italic 44px Georgia';
         bc.fillText('−2', 182, 318);
+        bc.globalAlpha = 0.72;
+        bc.font = 'italic 26px Georgia';
+        bc.fillText('No todo problema', 700, 300);
+        bc.fillText('tiene una fórmula.', 700, 336);
         bc.restore();
         boardTex.needsUpdate = true;
       }
@@ -1016,11 +1026,142 @@ try {
 
     const lookVec = new THREE.Vector3();
     const look = (p, y = 2) => lookVec.set(p.x, by + y, p.z).clone();
-    const chapterCine = (lines, cb, point) => {
+    const chapterCine = (lines, cb, point, loc) => {
       playCinematic(lines, cb, {
-        location: 'CAPÍTULO IV · EL EDIFICIO DE LOS SALONES',
+        location: loc || 'CAPÍTULO IV · EL COLEGIO',
         lookAt: look(point, 2.0)
       });
+    };
+
+    // ---------- Micro-viñeta 1: Bus de las 06:27 -> 06:30 ----------
+    let ch4Vignette = null;
+    const closeCh4Vignette = () => {
+      if (!ch4Vignette) return;
+      try { ch4Vignette.stop(); } catch (_) {}
+      ch4Vignette = null;
+    };
+    const startBusVignette = () => {
+      closeCh4Vignette();
+      const wrap = document.createElement('div');
+      wrap.id = 'ch4BusVignette';
+      wrap.style.cssText = 'position:fixed;inset:0;z-index:72;pointer-events:none;background:#070a0f;display:flex;align-items:center;justify-content:center';
+      const cv = document.createElement('canvas');
+      cv.width = 960;
+      cv.height = 540;
+      cv.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block';
+      const clk = document.createElement('div');
+      clk.style.cssText = 'position:fixed;top:15vh;left:50%;transform:translateX(-50%);padding:6px 14px;background:rgba(7,10,14,.68);border:1px solid rgba(232,220,190,.28);color:#e9dfc9;font:600 13px/1.2 ui-monospace,Consolas,monospace;letter-spacing:3px';
+      clk.textContent = '06:27 · PARADERO';
+      wrap.appendChild(cv);
+      wrap.appendChild(clk);
+      document.body.appendChild(wrap);
+      const ctx = cv.getContext('2d');
+      let raf = 0, dead = false, moving = false, speed = 0, scroll = 0, last = performance.now();
+      const draw = (now) => {
+        if (dead) return;
+        const dt = Math.min(0.05, (now - last) / 1000);
+        last = now;
+        speed += ((moving ? 140 : 0) - speed) * Math.min(1, dt * 2.2);
+        scroll += speed * dt;
+        const w = cv.width, h = cv.height;
+        const sky = ctx.createLinearGradient(0, 0, 0, h * 0.72);
+        sky.addColorStop(0, '#101828');
+        sky.addColorStop(0.58, '#363b5a');
+        sky.addColorStop(1, '#c98e70');
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, w, h);
+        // Lomas lejanas
+        ctx.fillStyle = '#1b2232';
+        ctx.beginPath();
+        ctx.moveTo(0, h * 0.7);
+        for (let x = 0; x <= w; x += 24) {
+          const y = h * 0.54 + Math.sin((x + scroll * 0.14) * 0.008) * 26 + Math.cos((x + scroll * 0.14) * 0.02) * 10;
+          ctx.lineTo(x, y);
+        }
+        ctx.lineTo(w, h);
+        ctx.lineTo(0, h);
+        ctx.closePath();
+        ctx.fill();
+        // Casas, árboles y postes pasando tras la ventana
+        ctx.fillStyle = '#0e131c';
+        for (let i = 0; i < 16; i++) {
+          const rx = ((i * 110 - (scroll * 0.85)) % (w + 180) + (w + 180)) % (w + 180) - 90;
+          const bh = 42 + ((i * 37) % 68);
+          ctx.fillRect(rx, h * 0.72 - bh, 56, bh + 40);
+          if (i % 3 === 0) {
+            ctx.fillStyle = 'rgba(255,214,142,.48)';
+            ctx.fillRect(rx + 14, h * 0.72 - bh + 14, 10, 12);
+            ctx.fillStyle = '#0e131c';
+          }
+        }
+        for (let i = 0; i < 6; i++) {
+          const lx = ((i * 220 - (scroll * 1.6)) % (w + 220) + (w + 220)) % (w + 220) - 110;
+          ctx.fillStyle = '#090c11';
+          ctx.fillRect(lx, h * 0.34, 5, h * 0.42);
+          ctx.fillStyle = 'rgba(255,220,155,.55)';
+          ctx.beginPath();
+          ctx.arc(lx + 2, h * 0.34, 6, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        // Marco interior de la ventana del bus
+        ctx.fillStyle = '#080a0d';
+        ctx.fillRect(0, 0, w, 64);
+        ctx.fillRect(0, h * 0.72, w, h * 0.28);
+        ctx.fillRect(0, 0, 68, h);
+        ctx.fillRect(w - 68, 0, 68, h);
+        ctx.fillRect(w * 0.52, 64, 18, h * 0.66);
+        ctx.strokeStyle = 'rgba(210,220,230,.12)';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(70, 66, w - 140, h * 0.65);
+        raf = requestAnimationFrame(draw);
+      };
+      raf = requestAnimationFrame(draw);
+      ch4Vignette = {
+        depart: () => {
+          moving = true;
+          clk.textContent = '06:30 · EN MARCHA';
+          try { if (typeof auHit === 'function') auHit(110, 0.35, 0.04, 'lowpass'); } catch (_) {}
+        },
+        stop: () => {
+          dead = true;
+          cancelAnimationFrame(raf);
+          wrap.remove();
+        }
+      };
+    };
+
+    // ---------- Micro-viñeta 2: Espejo medio abierto y espera (15:43 -> 16:12) ----------
+    const startWaitVignette = () => {
+      closeCh4Vignette();
+      const wrap = document.createElement('div');
+      wrap.id = 'ch4WaitVignette';
+      wrap.style.cssText = 'position:fixed;inset:0;z-index:72;pointer-events:none;background:radial-gradient(circle at 50% 44%,rgba(28,32,36,.88),rgba(8,11,14,.96));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding-bottom:14vh';
+      wrap.innerHTML =
+        '<div id="ch4WaitClock" style="padding:6px 15px;border:1px solid rgba(232,220,190,.28);background:rgba(10,14,17,.7);color:#ebe1cc;font:600 15px/1.2 ui-monospace,Consolas,monospace;letter-spacing:3px">15:43</div>' +
+        '<svg viewBox="0 0 260 190" style="width:min(300px,68vw);opacity:.92" aria-hidden="true">' +
+        '<rect x="18" y="14" width="224" height="162" rx="3" fill="#181f24" stroke="#464d52" stroke-width="2"/>' +
+        '<polygon points="48,26 154,26 140,164 48,164" fill="#2c3a42" stroke="#98a8b0" stroke-width="1.5"/>' +
+        '<polygon points="56,34 114,34 86,156 56,156" fill="rgba(225,235,245,0.09)"/>' +
+        '<circle cx="106" cy="86" r="14" fill="rgba(235,228,210,0.22)"/>' +
+        '<path d="M84,132 Q106,104 128,132" fill="rgba(235,228,210,0.18)"/>' +
+        '<line x1="154" y1="26" x2="178" y2="34" stroke="#7d6448" stroke-width="3"/>' +
+        '<line x1="140" y1="164" x2="164" y2="156" stroke="#7d6448" stroke-width="3"/>' +
+        '</svg>' +
+        '<div id="ch4SaraMsg" style="opacity:0;transform:translateY(8px);transition:opacity .6s,transform .6s;padding:10px 16px;background:rgba(28,54,44,.9);border:1px solid rgba(158,194,173,.55);color:#e6f2ea;font:13.5px/1.45 system-ui,sans-serif;max-width:min(320px,84vw);text-align:left"><small style="display:block;font-size:10px;letter-spacing:1.6px;color:#a8d5bc;margin-bottom:3px">SARA · 4:12 P. M.</small>Ya puedes subir · Ya llegaron</div>';
+      document.body.appendChild(wrap);
+      const clockEl = wrap.querySelector('#ch4WaitClock');
+      const saraEl = wrap.querySelector('#ch4SaraMsg');
+      ch4Vignette = {
+        setTime: (txt, notify) => {
+          if (clockEl) clockEl.textContent = txt;
+          if (notify && saraEl) {
+            saraEl.style.opacity = '1';
+            saraEl.style.transform = 'none';
+            try { if (typeof auChime === 'function') auChime(); } catch (_) {}
+          }
+        },
+        stop: () => { wrap.remove(); }
+      };
     };
 
     const canInteractCh4 = () =>
@@ -1038,20 +1179,24 @@ try {
       chapter4.entered = true;
       storyFlag('ch4_entered', 1);
       enterCh4Chord();
+      startBusVignette();
       chapterCine(
         [
-          { pause: 800 },
-          { t: 'El edificio no tiene nombre. Tampoco hay indicaciones en la entrada.' },
-          { pause: 1600 },
-          { t: 'El aire del interior es más frío. Tus pasos resuenan entre los escritorios vacíos.' },
+          { layer: 'hecho', stamp: '29 / 10 / 2025 · 06:27', t: 'Estás sentado junto a la ventana del bus. Todavía hace frío de madrugada.' },
+          { pause: 1500 },
+          { layer: 'hecho', stamp: '06:30', t: 'El bus arranca puntual. La ciudad pasa afuera sin música épica: solo el motor y una mañana normal de tu vida.', on: () => { if (ch4Vignette && ch4Vignette.depart) ch4Vignette.depart(); } },
           { pause: 1900 },
-          { t: 'Hay pizarras, estanterías, casilleros y mesas individuales. Todo parece haber sido utilizado durante años.' },
-          { pause: 1900 },
-          { t: 'No sabes qué lugar es este. Pero algo en él te resulta extrañamente familiar.' },
-          { pause: 1600 }
+          { t: 'Cuando la imagen del bus se desvanece, ya estás dentro del salón.', on: () => closeCh4Vignette() },
+          { pause: 1400 },
+          { t: 'Pupitres, pizarra, un casillero con espejo, los computadores. No es un edificio anónimo: es tu colegio.' },
+          { pause: 1700 }
         ],
-        () => showMsg('Capítulo IV · Lo que fuimos · busca un cuaderno abierto sobre las mesas'),
-        point || chapter4.door
+        () => {
+          closeCh4Vignette();
+          showMsg('Capítulo IV · El Colegio · busca el cuaderno abierto y los 4 recuerdos del salón');
+        },
+        point || chapter4.door,
+        'CAPÍTULO IV · EL BUS DE LAS 6:30'
       );
     };
 
@@ -1074,29 +1219,17 @@ try {
         pageSound();
         chapterCine(
           [
-            { pause: 800 },
-            { t: 'El cuaderno está abierto sobre uno de los escritorios.' },
-            { pause: 1400 },
-            { t: 'Hay ejercicios matemáticos, operaciones y correcciones escritas a mano.' },
+            { pause: 700 },
+            { layer: 'hecho', stamp: 'CUADERNO DE ÁLGEBRA', t: 'El cuaderno está abierto sobre la mesa: ejercicios resueltos, márgenes ordenados y correcciones en rojo.' },
             { pause: 1600 },
-            { t: 'Algunas respuestas están tachadas. Otras tienen pequeñas anotaciones en los márgenes.' },
-            { pause: 1600 },
-            { t: 'En una esquina aparece una frase:' },
-            { pause: 900 },
-            { who: 'Cuaderno', t: '«Si puedo resolver esto, entonces puedo resolver lo demás».' },
+            { layer: 'pensaste', t: '«Si puedo resolver esto, entonces puedo resolver lo demás. No debería conformarme con hacerlo bien.»' },
             { pause: 2100 },
-            { t: 'Debajo, con una letra más pequeña:' },
-            { pause: 900 },
-            { who: 'Cuaderno', t: '«No debería conformarme con hacerlo bien. Podría hacerlo mejor».' },
-            { pause: 2100 },
-            { who: 'Tú', t: '¿Yo escribí esto?' },
-            { pause: 2200 },
-            { t: 'No recuerdas haberlo escrito. Pero reconoces algo en aquella letra.' },
-            { pause: 1700 }
+            { layer: 'hoy', t: 'Durante mucho tiempo usaste el estudio y los resultados para sentirte seguro. Pero no todo en la vida se deja despejar como una ecuación.' },
+            { pause: 1900 }
           ],
           () => {
             storyFlag('ch4_notebook', 1);
-            showMsg('Has encontrado un fragmento de tu pasado · mira ahora hacia la pizarra');
+            showMsg('Recuerdo guardado · acércate ahora a la pizarra');
           },
           chapter4.notebook
         );
@@ -1104,30 +1237,24 @@ try {
       }
       if (dBoard < 3.8 && !STORY.flags.ch4_chalk) {
         if (!STORY.flags.ch4_notebook) {
-          showMsg('Hay una operación incompleta en la pizarra… busca primero el cuaderno abierto.');
+          showMsg('Hay una ecuación sin terminar en la pizarra… revisa primero el cuaderno abierto.');
           return true;
         }
         chalkSound();
         chapterCine(
           [
-            { pause: 700 },
-            { t: 'Una línea de tiza cruza la pizarra. Hay una operación incompleta.' },
+            { pause: 650 },
+            { layer: 'hecho', stamp: 'PIZARRA DEL SALÓN', t: 'Una ecuación queda a medio resolver. Una tiza cae al suelo con un golpe seco.' },
             { pause: 1500 },
-            { t: 'Te acercas para verla mejor.' },
-            { pause: 900 },
-            { t: 'Entonces escuchas un golpe seco: una tiza acaba de caer al suelo.' },
-            { pause: 1300 },
-            { who: 'Voz distante', t: '¿Ya terminaste?' },
-            { pause: 2400 },
-            { t: 'Te giras. El salón está vacío.' },
+            { t: 'En el eco del pasillo alguien te llama por tu apodo: «Toro, ¿ya tienes la mezcla?»' },
             { pause: 1800 },
-            { t: 'No sabes de quién era aquella voz. Solo sabes que, por un instante, sentiste que habías vuelto.' },
+            { layer: 'hoy', t: 'Había preguntas —como qué pensaban los demás o qué sentía Katherin— para las que no existía fórmula ni dato suficiente.' },
             { pause: 1900 }
           ],
           () => {
             storyFlag('ch4_chalk', 1);
             chapter4.boardDone();
-            showMsg('El eco de un recuerdo permanece contigo · acércate al ventanal del fondo');
+            showMsg('Acércate ahora al ventanal del fondo (también quedan fragmentos en los rincones)');
           },
           chapter4.board
         );
@@ -1135,48 +1262,56 @@ try {
       }
       if (dWin < 4.2 && !STORY.flags.ch4_complete) {
         if (!STORY.flags.ch4_chalk) {
-          showMsg('Afuera el bosque espera en calma… revisa primero el cuaderno y la pizarra.');
+          showMsg('Afuera espera la tarde… revisa primero el cuaderno y la pizarra.');
           return true;
         }
         const nFrag = ch4FragmentCount(STORY.flags);
         const all = nFrag >= CH4_FRAGMENTS.length;
         const night = (typeof PC !== 'undefined' && PC && PC.night) > 0.5;
+        startWaitVignette();
         const lines = [
-          { pause: 900 },
+          { pause: 650 },
+          { layer: 'hecho', stamp: '29 / 10 / 2025 · 15:43', t: 'Con los suecos puestos, mirando un espejo medio abierto mientras afuera suena un vallenato suave.', on: () => { if (ch4Vignette) ch4Vignette.setTime('15:43', false); } },
+          { pause: 1500 },
+          { layer: 'pensaste', stamp: '15:48 · 15:51', t: '«No estoy haciendo nada. Solo estoy esperando.» El reloj avanza despacio.', on: () => { if (ch4Vignette) ch4Vignette.setTime('15:51', false); } },
+          { pause: 1600 },
+          { layer: 'hecho', stamp: '16:12 · MENSAJE RECIBIDO', t: 'A las 4:12 p. m. llega por fin el mensaje de Sara: «Ya puedes subir · Ya llegaron».', on: () => { if (ch4Vignette) ch4Vignette.setTime('16:12 · YA PUEDES SUBIR', true); } },
+          { pause: 2100 },
           {
             t: night
-              ? 'Al fondo del edificio, el ventanal deja ver el bosque a oscuras. Una luz tenue se apoya en los árboles.'
-              : 'Al fondo del edificio, el ventanal deja ver el bosque inmóvil.'
+              ? 'El espejo se cierra y vuelves al ventanal del salón. Afuera, el bosque descansa a oscuras.'
+              : 'El espejo se cierra y vuelves al ventanal del salón. La luz de la tarde entra despacio entre el polvo.',
+            on: () => closeCh4Vignette()
           },
-          { pause: 1800 },
-          { t: 'La luz entra despacio. El polvo flota en el aire.' },
-          { pause: 1700 },
-          { who: 'Tú', t: 'Parece que pasé mucho tiempo aquí…' },
-          { pause: 2100 },
-          { who: 'Tú', t: 'Pero no recuerdo si me gustaba.' },
-          { pause: 2300 }
+          { pause: 1700 }
         ];
         if (all) {
           lines.push(
-            { t: 'Entonces recuerdas, de golpe y sin esfuerzo, la libreta con cisnes en los márgenes. Eso sí lo disfrutabas.' },
-            { pause: 2600 },
-            { who: 'Tú', t: 'Quizás no todo era tarea. Quizás había cosas que hacía solo porque sí.' },
-            { pause: 2400 }
+            { layer: 'hoy', t: 'Recordaste las cinco palabras de Cátedra de Paz, el 382, la mezcla para el grupo y la espera de las 4:12.' },
+            { pause: 2200 },
+            { layer: 'hoy', t: 'Ese chico de 16 años iba a los ensayos, prestaba su computador y ayudaba en silencio. No era ridículo: estaba aprendiendo a vivir.' },
+            { pause: 2200 }
           );
         } else if (nFrag > 0) {
           lines.push(
-            { t: 'Todavía quedan ecos pequeños en los rincones del salón, pero la luz de afuera se siente más liviana.' },
-            { pause: 2200 }
+            { layer: 'hoy', t: 'Aún quedan recuerdos pequeños en los rincones del salón, pero empiezas a mirar a aquel chico con menos dureza.' },
+            { pause: 2000 }
+          );
+        } else {
+          lines.push(
+            { layer: 'hoy', t: 'Por primera vez miras el paisaje sin exigirte tener todas las respuestas.' },
+            { pause: 1900 }
           );
         }
-        lines.push({ t: 'Te quedas mirando el paisaje. Por primera vez, no intentas encontrar una respuesta.' }, { pause: 2100 });
         chapterCine(
           lines,
           () => {
+            closeCh4Vignette();
             storyFlag('ch4_complete', 1);
-            showMsg('Capítulo IV completado · Algo espera bajo la superficie del lago' + (all ? ' (4/4 fragmentos)' : ''));
+            showMsg('Capítulo IV completado · Algo espera bajo la superficie del lago' + (all ? ' (4/4 recuerdos)' : ''));
           },
-          chapter4.window
+          chapter4.window,
+          'CAPÍTULO IV · EL ESPEJO Y LAS 4:12 P. M.'
         );
         return true;
       }
@@ -1184,9 +1319,9 @@ try {
         const fr = ch4FragmentNear(STORY.flags, S.x - cx, S.z - cz);
         if (fr) {
           pageSound();
-          const timed = [{ pause: 650 }];
+          const timed = [{ pause: 550 }];
           for (const l of fr.lines) {
-            timed.push(l, { pause: Math.min(2800, 850 + l.t.length * 28) });
+            timed.push(l, { pause: Math.min(2700, 850 + l.t.length * 26) });
           }
           chapterCine(
             timed,
@@ -1195,11 +1330,12 @@ try {
               const n = ch4FragmentCount(STORY.flags);
               showMsg(
                 n >= CH4_FRAGMENTS.length
-                  ? 'Has reunido todos los fragmentos del edificio (' + n + '/' + CH4_FRAGMENTS.length + ')'
-                  : 'Fragmento de tu pasado (' + n + '/' + CH4_FRAGMENTS.length + ')'
+                  ? 'Reuniste los 4 recuerdos del colegio (' + n + '/' + CH4_FRAGMENTS.length + ')'
+                  : 'Recuerdo del colegio (' + n + '/' + CH4_FRAGMENTS.length + ')'
               );
             },
-            { x: cx + fr.loc[0], z: cz + fr.loc[1] }
+            { x: cx + fr.loc[0], z: cz + fr.loc[1] },
+            'CAPÍTULO IV · ' + fr.name.toUpperCase()
           );
           return true;
         }
@@ -1238,16 +1374,16 @@ try {
       let next = '', msg = '';
       if (!chapter4.entered && dDoor < 8.5) {
         next = 'door';
-        msg = 'Edificio sin identificar · E: entrar';
+        msg = 'El Colegio · E: entrar';
       } else if (chapter4.entered && !STORY.flags.ch4_notebook && dNote < 4.2) {
         next = 'note';
-        msg = 'Cuaderno abierto · E: examinar';
+        msg = 'Cuaderno de álgebra · E: examinar';
       } else if (STORY.flags.ch4_notebook && !STORY.flags.ch4_chalk && dBoard < 5.0) {
         next = 'board';
         msg = 'Pizarra · E: acercarte';
       } else if (STORY.flags.ch4_chalk && !STORY.flags.ch4_complete && dWin < 5.2) {
         next = 'window';
-        msg = 'Ventanal · E: mirar hacia el bosque';
+        msg = 'Ventanal · E: mirar y esperar';
       }
       if (!next && chapter4.entered) {
         const fr = ch4FragmentNear(STORY.flags, S.x - cx, S.z - cz, 1.2);
@@ -1371,31 +1507,31 @@ try {
       if (STORY.flags.metKatherin && bgCollected() >= PHOTOS.length && !STORY.flags.ch4_complete) {
         if (!STORY.flags.ch4_entered) {
           return {
-            title: 'Capítulo IV · El edificio de los salones',
-            clue: 'Sigue la brújula hacia el edificio sin nombre en el bosque.'
+            title: 'Capítulo IV · El Colegio (06:30 a. m.)',
+            clue: 'Sigue la brújula hacia El Colegio en el bosque.'
           };
         }
         if (!STORY.flags.ch4_notebook) {
           return {
-            title: 'Capítulo IV · Lo que fuimos',
-            clue: 'Explora el salón. Un cuaderno abierto descansa sobre una de las mesas (E).'
+            title: 'Capítulo IV · El Colegio',
+            clue: 'Explora el salón. Un cuaderno de álgebra descansa abierto sobre la mesa (E).'
           };
         }
         if (!STORY.flags.ch4_chalk) {
           return {
-            title: 'Capítulo IV · Lo que fuimos',
-            clue: 'Acércate a la pizarra del frente; hay una operación incompleta (E).'
+            title: 'Capítulo IV · El Colegio',
+            clue: 'Acércate a la pizarra del frente; hay una ecuación sin terminar (E).'
           };
         }
         return {
-          title: 'Capítulo IV · Lo que fuimos',
-          clue: 'Mira hacia el bosque por el ventanal del fondo (E). También hay cuatro recuerdos en los rincones.'
+          title: 'Capítulo IV · El Colegio',
+          clue: 'Mira hacia el bosque por el ventanal del fondo (E). También quedan 4 recuerdos en el salón.'
         };
       }
       if (STORY.flags.ch4_complete) {
         return {
           title: 'Capítulo IV completado',
-          clue: 'Has encontrado un fragmento de tu pasado. Algo espera bajo la superficie del lago.'
+          clue: 'Empezaste a mirar a tu yo de 16 años sin juzgarlo. Algo espera bajo la superficie del lago.'
         };
       }
       return oldMission();
@@ -1404,10 +1540,10 @@ try {
     const oldTarget = bgTarget;
     bgTarget = function () {
       if (STORY.flags.metKatherin && bgCollected() >= PHOTOS.length && !STORY.flags.ch4_complete) {
-        if (!STORY.flags.ch4_entered) return { name: 'Edificio sin identificar', x: cx, z: cz };
+        if (!STORY.flags.ch4_entered) return { name: 'El Colegio', x: cx, z: cz };
         if (!STORY.flags.ch4_notebook) return { name: 'Cuaderno abierto', x: chapter4.notebook.x, z: chapter4.notebook.z };
         if (!STORY.flags.ch4_chalk) return { name: 'La pizarra', x: chapter4.board.x, z: chapter4.board.z };
-        return { name: 'Ventanal al bosque', x: chapter4.window.x, z: chapter4.window.z };
+        return { name: 'Ventanal y espera', x: chapter4.window.x, z: chapter4.window.z };
       }
       return oldTarget();
     };

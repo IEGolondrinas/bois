@@ -22,11 +22,12 @@ function frame(){
   if(document.hidden){typeof carSoundMute==='function'&&carSoundMute();for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0;return}
   const cinActive=(typeof CIN!=='undefined'&&!!CIN.on)||!!window.__boisWakeLock;
   if(cinActive&&typeof CAR!=='undefined'&&CAR.on&&typeof carSoundMute==='function')carSoundMute();
-  if(window.__boisGuideOverlayOpen&&!cinActive){typeof carSoundMute==='function'&&carSoundMute();if(!PERF.worldPaused){drawWorld();PERF.worldPaused=true}return}
+  if(window.__boisGuideOverlayOpen&&!cinActive){typeof carSoundMute==='function'&&carSoundMute();window.__boisUpdateMinimap?.(performance.now());if(!PERF.worldPaused){drawWorld();PERF.worldPaused=true}return}
   PERF.worldPaused=false;
   // Si el jugador está en el menú/pausa y NO hay cinemática ni despertar activo, no gastar recursos del bucle.
   if(!S.on&&!cinActive){
     typeof carSoundMute==='function'&&carSoundMute();
+    window.__boisUpdateMinimap?.(performance.now());
     if(!idleRendered){drawWorld();idleRendered=true}
     return;
   }
@@ -145,6 +146,7 @@ function frame(){
   if(S.on&&!cinActive){
     if(!inSubZone&&PERF.photos>=.10){PERF.photos=0;checkPhotos();}
     bgUpdate();
+    window.__boisUpdateMinimap?.(now);
     if(!inSubZone&&window.__awakeItems){
       const it=window.__awakeItems;
       const dCam=Math.hypot(S.x-it.cam.position.x,S.z-it.cam.position.z);
@@ -155,6 +157,7 @@ function frame(){
   }else{
     window.__boisCamFinderClose?.();
     bgUpdate();
+    window.__boisUpdateMinimap?.(now);
   }
 
   cam.updateMatrixWorld();cam.matrixWorldInverse.copy(cam.matrixWorld).invert();

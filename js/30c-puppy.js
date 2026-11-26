@@ -1,12 +1,18 @@
 /* BOIS.IO · 30c-puppy.js — El cachorro de pañoleta roja · Capítulo III Remastered
    Un perrito con pañoleta roja juega y descansa cerca de Katherin. Si te quedas quieto mirándolo desde
    lejos (PU_WATCH s), la cámara guarda una fotografía especial, intacta, en el álbum (V). */
-const PU_WATCH = 8.5, PU_DIST = [8, 38];
+const PU_WATCH = 7.5, PU_DIST = [4, 38];
 const PU_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f7fb0"/><stop offset=".55" stop-color="#f3b48a"/><stop offset="1" stop-color="#ffd9a8"/></linearGradient><linearGradient id="l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9a97f"/><stop offset="1" stop-color="#5d6f94"/></linearGradient></defs><rect width="400" height="300" fill="url(#s)"/><circle cx="300" cy="150" r="26" fill="#fff0c9" opacity=".85"/><rect y="150" width="400" height="70" fill="url(#l)"/><path d="M0 220Q120 205 240 222T400 214V300H0Z" fill="#46583d"/><path d="M0 240Q150 228 400 244V300H0Z" fill="#364a31"/><g fill="#2a2430"><circle cx="128" cy="200" r="15"/><path d="M110 258Q108 212 128 212Q150 214 152 258Z"/><path d="M112 224Q150 236 168 252L162 258Q140 246 112 238Z"/><path d="M112 190Q112 170 130 170Q148 170 146 192Q132 182 112 190Z"/></g><g fill="#c89b66"><ellipse cx="236" cy="248" rx="26" ry="14"/><circle cx="212" cy="236" r="12"/><ellipse cx="204" cy="226" rx="5" ry="10" fill="#8f6a3f" transform="rotate(-20 204 226)"/><path d="M214 242L228 246L218 258Z" fill="#c83737"/><rect x="218" y="256" width="6" height="14"/><rect x="246" y="256" width="6" height="14"/><path d="M258 240Q276 224 272 214L266 216Q268 226 254 238Z"/></g><circle cx="207" cy="234" r="1.8" fill="#222"/></svg>';
 const PU_PHOTO = {
   title: 'El cachorro y la pañoleta roja',
-  desc: 'Un perrito con pañoleta roja corre y salta frente a la banca de Katherin, arrancándole una sonrisa tranquila frente al lago.',
-  damage: 'Intacta. Es una escena que debías archivar para siempre.',
+  desc: 'Archivo guardado. Por unos segundos no buscaste ningún significado escondido; solo miraste.',
+  damage: 'Intacta. «Esta es una escena que debo archivar para siempre.»',
+  layers: {
+    stamp: 'PRESENCIA · 29 / 10 / 2025',
+    fact: 'El cachorro de pañoleta roja corre y salta frente a ti junto al lago.',
+    thought2025: 'No sabía por qué quería recordarlo tan fuerte; intuía que ese instante no volvería igual.',
+    insight2026: 'Por unos segundos estuviste presente, simplemente observando y sintiéndote bien.'
+  },
   img: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(PU_SVG)
 };
 
@@ -15,13 +21,16 @@ const puEsc = (v) => String(v == null ? '' : v).replace(/[&<>"']/g, (m) => ({ '&
 function puRenderAlbum() {
   if (!STORY.flags.photo_puppy || CAM_PHOTOS.includes(PU_PHOTO)) return;
   CAM_PHOTOS.push(PU_PHOTO);
-  camAlbum.querySelector('.cam-grid').innerHTML = CAM_PHOTOS.map((p, i) =>
-    '<article class="cam-photo"><img loading="lazy" src="' + puEsc(p.img) + '" alt="Fotografía: ' + puEsc(p.title) + '"><h3>' + (i + 1) + '. ' + puEsc(p.title) + '</h3><p>' + puEsc(p.desc) + '</p><small>' + puEsc(p.damage) + '</small></article>'
-  ).join('');
-  const k = camAlbum.querySelector('.cam-kicker');
-  if (k) k.textContent = 'ARCHIVO FOTOGRÁFICO · ' + String(CAM_PHOTOS.length).padStart(2, '0') + ' IMÁGENES';
-  const p = camAlbum.querySelector('.cam-head p');
-  if (p) p.textContent = 'Cuatro recuerdos que sobrevivieron al deterioro, y uno que guardaste intacto.';
+  if (typeof window.__boisRefreshAlbum === 'function') {
+    window.__boisRefreshAlbum();
+  } else if (typeof camAlbum !== 'undefined' && camAlbum) {
+    const grid = camAlbum.querySelector('.cam-grid');
+    if (grid) {
+      grid.innerHTML = CAM_PHOTOS.map((p, i) =>
+        '<article class="cam-photo"><img loading="lazy" src="' + puEsc(p.img) + '" alt="Fotografía: ' + puEsc(p.title) + '"><h3>' + (i + 1) + '. ' + puEsc(p.title) + '</h3><p>' + puEsc(p.desc) + '</p><small>' + puEsc(p.damage) + '</small></article>'
+      ).join('');
+    }
+  }
 }
 
 function puBuildDog() {
@@ -159,7 +168,7 @@ function puTick() {
     d.userData.legs.forEach((l, i) => (l.position.y = 0.095 + (i % 2 ? bob : -bob) * 0.025));
   }
 
-  // --- La fotografía intacta (solo si miras hacia Katherin y el cachorro quieto desde lejos) ---
+  // --- Cápsula de presencia (solo quedarte quieto mirando sin prisa) ---
   const F = STORY.flags;
   if (F.photo_puppy || !F.gotCam || !(F.glasses || F.metKatherin) || !S.on || CIN.on || window.__boisSitting || Math.abs(S.y - k.position.y) >= 12) {
     puAcc = 0;
@@ -170,46 +179,47 @@ function puTick() {
   puLX = S.x;
   puLZ = S.z;
 
-  // Comprueba que la cámara realmente apunte hacia la banca de Katherin
-  let lookingAtPark = true;
+  // Comprueba que la cámara mire hacia el cachorro o la banca
+  let lookingAtPuppy = true;
   if (typeof cam !== 'undefined' && cam && cam.getWorldDirection) {
     cam.getWorldDirection(_puLookVec);
-    const toKx = k.position.x - S.x, toKz = k.position.z - S.z;
-    const len = Math.hypot(toKx, toKz) || 1;
-    const dot = (_puLookVec.x * toKx + _puLookVec.z * toKz) / len;
-    lookingAtPark = dot > 0.55;
+    const toDx = d.position.x - S.x, toDz = d.position.z - S.z;
+    const len = Math.hypot(toDx, toDz) || 1;
+    const dot = (_puLookVec.x * toDx + _puLookVec.z * toDz) / len;
+    lookingAtPuppy = dot > 0.52;
   }
 
-  if (distFromPlayer < PU_DIST[0] || distFromPlayer > PU_DIST[1] || moved || !lookingAtPark) {
+  if (distFromPlayer < PU_DIST[0] || distFromPlayer > PU_DIST[1] || moved || !lookingAtPuppy) {
     puAcc = 0;
     puMsg = false;
     return;
   }
 
   puAcc += dt;
-  if (puAcc > 2.2 && !puMsg) {
+  if (puAcc > 2.4 && !puMsg) {
     puMsg = true;
-    showMsg('Te quedas quieto, encuadrando la escena…');
+    showMsg('Te quedas quieto unos segundos, mirando sin pensar en nada…');
   }
   if (puAcc >= PU_WATCH) {
     puAcc = 0;
     puMsg = false;
     storyFlag('photo_puppy', 1);
     puFlash();
-    const lookAt = new THREE.Vector3(k.position.x, k.position.y + 0.9, k.position.z);
+    const lookAt = new THREE.Vector3(d.position.x, d.position.y + 0.35, d.position.z);
+    window.__boisRevealPhoto = { title: PU_PHOTO.title, img: PU_PHOTO.img };
     playCinematic([
-      { t: 'A lo lejos, Katherin se inclina un poco. El cachorro de pañoleta roja salta hacia ella y ella se ríe, bajito.' },
-      { pause: 2400 },
-      { t: 'No sabe que la miras. Y no necesitas que lo sepa.' },
-      { pause: 2200 },
-      { t: 'Levantas la cámara. Clic.' },
+      { layer: 'presencia', stamp: '29 / 10 / 2025', t: 'No sabes por qué la fotografiaste.' },
       { pause: 1600 },
-      { t: 'Esta es una escena que debías archivar para siempre.' },
-      { pause: 2200 }
+      { t: 'El perrito de pañoleta roja corre frente a ti. Supongo que intuías que este instante no iba a repetirse igual.' },
+      { pause: 1900 },
+      { layer: 'hoy', t: 'Por unos segundos no pensaste en qué significaba nada. Solo miraste, presente y tranquilo.' },
+      { pause: 1900 },
+      { label: 'ARCHIVO GUARDADO', t: '«Esta es una escena que debo archivar para siempre.»' },
+      { pause: 1800 }
     ], () => {
       puRenderAlbum();
-      showMsg('Nueva fotografía intacta en la cámara · V para verla');
-    }, { lookAt, location: 'FOTOGRAFÍA INTACTA · PARQUE DE LOS CISNES' });
+      showMsg('Archivo guardado en tu álbum · V para volver a verlo');
+    }, { lookAt, location: 'PRESENCIA · ARCHIVO GUARDADO' });
   }
 }
 

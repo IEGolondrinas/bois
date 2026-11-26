@@ -33,13 +33,20 @@ const compassStyle=document.createElement('style');compassStyle.textContent=`
 `;document.head.appendChild(compassStyle);
 const bgPhotoStyle=document.createElement('style');bgPhotoStyle.textContent=`
 .bgPhotoGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:11px;margin-top:10px}
-.bgPhotoCard{padding:7px;background:rgba(255,255,255,.045);border:1px solid rgba(220,215,195,.16)}
+.bgPhotoCard{padding:9px;background:rgba(255,255,255,.045);border:1px solid rgba(220,215,195,.16);display:flex;flex-direction:column;gap:5px}
 .bgPhotoCard img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;filter:sepia(.08) contrast(.97);border:4px solid #e4dbc8;box-shadow:0 3px 10px #0007}
-.bgPhotoCard span{display:block;margin-top:7px;font:13px Georgia,serif;color:#e9dfca}
+.bgPhotoCard span{display:block;margin-top:4px;font:13.5px Georgia,serif;color:#e9dfca}
+.bgPhotoStamp{font:600 9.5px/1.2 system-ui;letter-spacing:1.4px;color:#b8ad94;text-transform:uppercase}
+.bgPhotoLayer{font:11.5px/1.45 Georgia,serif;color:#cbc4b6;padding-left:7px;border-left:2px solid rgba(200,185,142,.4)}
+.bgPhotoLayer.l2025{border-color:rgba(228,182,111,.55)}
+.bgPhotoLayer.l2026{border-color:rgba(158,194,173,.6)}
+.bgPhotoLayer b{font:600 9px/1.2 system-ui;letter-spacing:1.3px;text-transform:uppercase;color:#dfd4bb;margin-right:5px}
 `;document.head.appendChild(bgPhotoStyle);
 const bgHud=document.createElement('div');bgHud.id='bgHud';bgHud.innerHTML='<small>BOIS.IO · LO QUE SIGUE</small><b id="bgObjective">Explora la isla</b><div id="bgClue" style="color:#c5c1b5;margin-top:3px"></div>';document.body.appendChild(bgHud);
 const bgCompass=document.createElement('div');bgCompass.id='bgCompass';bgCompass.innerHTML='<div class="bgDial"><div class="bgRose" id="bgRose"><b class="bgCardinal n">N</b><b class="bgCardinal e">E</b><b class="bgCardinal s">S</b><b class="bgCardinal w">O</b></div><i class="bgNeedle" id="bgNeedle"></i><i class="bgHub"></i></div><div class="bgCompText"><small>BRÚJULA · NORTE Y PISTA</small><strong id="bgCompassTarget">Explora</strong><span id="bgCompassInfo">Buscando dirección…</span></div>';document.body.appendChild(bgCompass);
-const bgJournal=document.createElement('div');bgJournal.className='bgPanel';bgJournal.id='bgJournal';bgJournal.innerHTML='<section class="bgCard"><button class="bgClose" data-close="journal">CERRAR · J</button><h2>Diario de exploración</h2><p class="bgSub">No todo lo que encuentres tendrá una explicación. Algunas cosas merecen quedarse contigo.</p><div id="bgJournalBody"></div><div class="bgControls"><button data-open="map">CONSULTAR MAPA · M</button></div></section>';document.body.appendChild(bgJournal);
+const bgMinimap=document.createElement('div');bgMinimap.id='gtaMinimap';bgMinimap.setAttribute('aria-hidden','true');bgMinimap.title='Abrir mapa completo (M)';bgMinimap.innerHTML='<div class="gtaMiniFrame"><canvas id="gtaMinimapCanvas" width="352" height="236"></canvas><div class="gtaMiniVignette"></div><span id="gtaMiniNorth">N</span></div><div class="gtaMiniBar"><span id="gtaMiniZone">Isla Bois</span><span class="gtaMiniHint">M · MAPA</span></div>';document.body.appendChild(bgMinimap);
+bgMinimap.addEventListener('click',e=>{e.stopPropagation();if(typeof S!=='undefined'&&S.on&&!(typeof CIN!=='undefined'&&CIN.on)&&!window.__boisGuideOverlayOpen)bgOpen('map')});
+const bgJournal=document.createElement('div');bgJournal.className='bgPanel';bgJournal.id='bgJournal';bgJournal.innerHTML='<section class="bgCard"><button class="bgClose" data-close="journal">CERRAR · J</button><h2>Diario de memoria</h2><p class="bgSub">Separar lo que pasó de lo que pensaste aquel día. Estabas aprendiendo a vivir.</p><div id="bgJournalBody"></div><div class="bgControls"><button data-open="map">CONSULTAR MAPA · M</button></div></section>';document.body.appendChild(bgJournal);
 const bgMap=document.createElement('div');bgMap.className='bgPanel';bgMap.id='bgMap';bgMap.innerHTML='<section class="bgCard"><button class="bgClose" data-close="map">CERRAR · M</button><h2>Mapa de la isla</h2><p class="bgSub">El mapa se revela a medida que recorres la isla. Las zonas punteadas con «?» son pistas aproximadas: la fotografía está en algún punto dentro de ellas.</p><div class="bgMapWrap"><canvas id="bgMapCanvas" width="800" height="800"></canvas></div><div class="bgLegend"><span><i class="bgDot" style="background:#fff4d4"></i>Tú (la flecha marca hacia dónde miras)</span><span><i class="bgDot" style="background:#4eb8a8"></i>Tu auto</span><span><i class="bgDot" style="background:#8fd0b0"></i>Fotografía recuperada</span><span><i class="bgDot" style="background:#ffcc76"></i>Zona de pista</span><span><i class="bgDot" style="background:#96463a"></i>Construcciones</span><span><i class="bgDot" style="background:#b89868"></i>Senderos</span><span><i class="bgDot" style="background:#d2a36f"></i>Punto personal (modo desarrollador)</span></div><div class="bgControls"><button type="button" id="bgCallCar">TRAER EL AUTO CERCA</button><button data-open="journal">ABRIR DIARIO · J</button></div><p class="bgMuted" style="margin-top:12px">Norte arriba · Lo oscuro aún no lo has recorrido · M o Esc para cerrar · J abre el diario con las pistas.</p></section>';document.body.appendChild(bgMap);
 const bgDev=document.createElement('div');bgDev.className='bgDev';bgDev.id='bgDev';bgDev.innerHTML='<div><b>BOIS.IO · HERRAMIENTAS PRIVADAS</b></div><div id="bgCoords">X: 0 · Y: 0 · Z: 0</div><div style="margin-top:6px;color:#c8d5ce">G · Activar/desactivar vuelo</div><div style="color:#aebbb5">WASD · desplazarse · Espacio subir · C bajar · Shift acelerar</div><div class="bgControls"><button id="bgSavePoint">GUARDAR ESTE LUGAR · F4</button><button id="bgShowPhotos">VER FOTOS · F5</button></div><div class="bgDevList" id="bgDevList"></div>';document.body.appendChild(bgDev);
 function bgCollected(){return PHOTOS.filter(p=>!!STORY.flags['photo_'+p.id]).length}
@@ -76,7 +83,7 @@ function bgTarget(){
 }
 const bgEsc=v=>String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 function bgRenderJournal(){const el=document.getElementById('bgJournalBody');if(!el)return;const m=bgMission(),n=bgCollected(),pct=Math.round(n/PHOTOS.length*100);const ch4N=(STORY.flags.ch4_entered&&typeof ch4FragmentCount==='function'&&typeof CH4_FRAGMENTS!=='undefined')?ch4FragmentCount(STORY.flags):null;const ch5On=!!(STORY.flags.ch5_entered||STORY.flags.ch5_empty||STORY.flags.ch5_small||STORY.flags.ch5_sky||STORY.flags.ch5_complete);const ch5N=ch5On?['ch5_empty','ch5_small','ch5_sky'].filter(k=>STORY.flags[k]).length:null;const ejN=STORY.flags.emoji_n?Math.min(3,STORY.flags.emoji_n):0;let html='<div class="bgBlock"><strong>Objetivo actual</strong><p>'+bgEsc(m.title)+'</p><p>'+bgEsc(m.clue)+'</p><div class="bgProgress"><i style="width:'+pct+'%"></i></div><p class="bgMuted">Fotografías recuperadas: '+n+' de '+PHOTOS.length+(ch4N!==null?' · Recuerdos del edificio: '+ch4N+' de '+CH4_FRAGMENTS.length:'')+(ch5N!==null?' · Poolrooms: '+ch5N+' de 3 recuerdos':'')+(ejN>0?' · Tableros: '+ejN+'/3':'')+'</p></div>';
- html+='<div class="bgBlock"><strong>Fotografías recuperadas</strong>';const found=PHOTOS.filter(p=>STORY.flags['photo_'+p.id]);html+=(found.length?'<div class="bgPhotoGrid">'+found.map(p=>'<article class="bgPhotoCard"><img src="'+bgEsc(p.img)+'" alt="'+bgEsc(p.title)+'"><span>'+bgEsc(p.title)+'</span></article>').join('')+'</div>':'<p class="bgMuted">Todavía no has recuperado ninguna fotografía.</p>')+'</div>';
+ html+='<div class="bgBlock"><strong>Cápsulas recuperadas</strong>';const found=PHOTOS.filter(p=>STORY.flags['photo_'+p.id]);html+=(found.length?'<div class="bgPhotoGrid">'+found.map(p=>{const L=p.layers||{};return '<article class="bgPhotoCard"><img src="'+bgEsc(p.img)+'" alt="'+bgEsc(p.title)+'"><span>'+bgEsc(p.title)+'</span>'+(L.stamp?'<div class="bgPhotoStamp">'+bgEsc(L.stamp)+'</div>':'')+(L.fact?'<div class="bgPhotoLayer"><b>Hecho</b>'+bgEsc(L.fact)+'</div>':'')+(L.thought2025?'<div class="bgPhotoLayer l2025"><b>2025</b>'+bgEsc(L.thought2025)+'</div>':'')+(L.insight2026?'<div class="bgPhotoLayer l2026"><b>Hoy</b>'+bgEsc(L.insight2026)+'</div>':'')+'</article>';}).join('')+'</div>':'<p class="bgMuted">Todavía no has recuperado ninguna cápsula fotográfica.</p>')+'</div>';
  const pend=bgKnownPending();if(pend.length)html+='<div class="bgBlock"><strong>Pistas</strong>'+pend.map(p=>'<p><span class="bgMuted">'+bgEsc(p.zone)+'</span><br>'+bgEsc(p.clue)+'</p>').join('')+'<p class="bgMuted">La brújula apunta hacia una fotografía cuando entras en su zona cercana. El resto depende de ti.</p></div>';
  html+='<div class="bgBlock"><strong>Primeros pasos</strong><p>Explora sin prisa, a pie o en tu auto. Acércate a los objetos y pulsa E para interactuar. Las seis fotografías se encuentran en distintos puntos de la isla.</p></div><div class="bgBlock"><strong>Controles</strong><p>WASD · moverse o conducir · Shift · correr · Espacio · saltar o freno de mano<br>Ratón · mirar alrededor (también en el auto) · E · interactuar o subir/bajar · C · vista interior/exterior · R · radio<br>P · abrir visor de cámara / fotografiar (Mayús+P descarga PNG) · V · álbum y tus fotos<br>M · mapa (muestra tu auto y zonas) · J · diario y libreta<br>Brújula · señala la fotografía cuando entras en su zona cercana<br>N · sonido · U · sonidos de la naturaleza · O · estación · H · hora<br>F3 · herramientas privadas de desarrollo</p></div>';
  if(typeof ntbPagesHTML==="function")try{html+=ntbPagesHTML()}catch(e){typeof __bw==='function'&&__bw('26-guide-map#1',e)}
@@ -88,7 +95,7 @@ function bgRenderJournal(){const el=document.getElementById('bgJournalBody');if(
 }
 // ═══ v133 · Mapa remasterizado: terreno real (relieve, lago, mar, playas, senderos, construcciones), niebla de exploración,
 // nombres de lugares, flecha del jugador con su orientación, rosa de los vientos y escala. ═══
-const BGM={base:null,W:400,exp:new Uint8Array(2500),dirty:false,last:0,seeded:false,fog:null};
+const BGM={base:null,W:400,exp:new Uint8Array(2500),dirty:false,last:0,seeded:false,fog:null,fogImg:null,fogDirty:true};
 (function scheduleMapBase(delay){
  const run=()=>{
   if(BGM.base)return;
@@ -102,7 +109,7 @@ const BGM={base:null,W:400,exp:new Uint8Array(2500),dirty:false,last:0,seeded:fa
  },delay);
 })(5500);
 try{const q=localStorage.getItem('bois_explored');if(q&&q.length===2500)for(let i=0;i<2500;i++)BGM.exp[i]=q.charCodeAt(i)===49?1:0}catch(e){typeof __bw==='function'&&__bw('26-guide-map#2',e)}
-function bgExploreMark(x,z,r){let ch=false;const c=Math.ceil(r/20),ci=Math.floor((x+500)/20),cj=Math.floor((z+500)/20);for(let a=-c;a<=c;a++)for(let b=-c;b<=c;b++){const i=ci+a,j=cj+b;if(i<0||j<0||i>49||j>49)continue;const dx=(i+.5)*20-500-x,dz=(j+.5)*20-500-z;if(dx*dx+dz*dz<=r*r&&!BGM.exp[j*50+i]){BGM.exp[j*50+i]=1;ch=true}}if(ch)BGM.dirty=true}
+function bgExploreMark(x,z,r){let ch=false;const c=Math.ceil(r/20),ci=Math.floor((x+500)/20),cj=Math.floor((z+500)/20);for(let a=-c;a<=c;a++)for(let b=-c;b<=c;b++){const i=ci+a,j=cj+b;if(i<0||j<0||i>49||j>49)continue;const dx=(i+.5)*20-500-x,dz=(j+.5)*20-500-z;if(dx*dx+dz*dz<=r*r&&!BGM.exp[j*50+i]){BGM.exp[j*50+i]=1;ch=true}}if(ch){BGM.dirty=true;BGM.fogDirty=true}}
 function bgExplored(x,z){const i=Math.floor((x+500)/20),j=Math.floor((z+500)/20);return i>=0&&j>=0&&i<50&&j<50&&!!BGM.exp[j*50+i]}
 function bgExploreTick(){if(!S.on)return;if(!BGM.seeded){BGM.seeded=true;if(!BGM.exp.some(v=>v))bgExploreMark(BEACH[0],BEACH[1],110)}bgExploreMark(S.x,S.z,75);const n=performance.now();if(BGM.dirty&&n-BGM.last>6000)bgFlushExplored()}
 /* v181: volcado inmediato del mapa explorado (también al cerrar u ocultar la pestaña; antes se perdían hasta 6 s de exploración) */
@@ -132,18 +139,26 @@ function bgBuildBase(){
  x.fillStyle='rgba(205,232,238,.95)';x.strokeStyle='#27414a';x.lineWidth=1.5;for(const t of[[-46.67,-24.97,-27.23,-6.53],[-10.09,11.61,-26.6,-5.9]]){x.fillRect(P(t[0]),P(t[2]),(t[1]-t[0])/k,(t[3]-t[2])/k);x.strokeRect(P(t[0]),P(t[2]),(t[1]-t[0])/k,(t[3]-t[2])/k)}
  x.strokeStyle='rgba(255,255,255,.07)';x.lineWidth=1;for(let g=100;g<1000;g+=100){x.beginPath();x.moveTo(g/k,0);x.lineTo(g/k,W);x.moveTo(0,g/k);x.lineTo(W,g/k);x.stroke()}
  return c}
+function bgSyncFog(force){
+ if(!BGM.fog){BGM.fog=document.createElement('canvas');BGM.fog.width=BGM.fog.height=50;BGM.fogDirty=true}
+ if(!force&&!BGM.fogDirty)return;
+ const f=BGM.fog.getContext('2d');
+ if(!BGM.fogImg)BGM.fogImg=f.createImageData(50,50);
+ const d=BGM.fogImg.data;
+ for(let q=0;q<2500;q++){const o=q*4;d[o]=14;d[o+1]=22;d[o+2]=27;d[o+3]=BGM.exp[q]?0:236}
+ f.putImageData(BGM.fogImg,0,0);BGM.fogDirty=false;
+}
 function bgDrawMap(){const c=document.getElementById('bgMapCanvas');if(!c)return;const x=c.getContext('2d'),w=c.width;
  if(!BGM.base){try{BGM.base=bgBuildBase()}catch(e){console.warn('mapa',e)}}
  x.clearRect(0,0,w,w);if(BGM.base)x.drawImage(BGM.base,0,0,w,w);else{x.fillStyle='#142126';x.fillRect(0,0,w,w)}
  const px=v=>((v+500)/1000)*w,py=px;
  // niebla de exploración (suavizada al escalar)
- if(!BGM.fog){BGM.fog=document.createElement('canvas');BGM.fog.width=BGM.fog.height=50}
- {const f=BGM.fog.getContext('2d'),im=f.createImageData(50,50);for(let q=0;q<2500;q++){im.data[q*4]=14;im.data[q*4+1]=22;im.data[q*4+2]=27;im.data[q*4+3]=BGM.exp[q]?0:236}f.putImageData(im,0,0);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(BGM.fog,0,0,w,w)}
+ bgSyncFog(false);{x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(BGM.fog,0,0,w,w)}
  // nombres de lugares: los fijos siempre; el resto cuando la zona ya fue explorada
  const sw=w/800,lab=(t,X,Z,always)=>{if(!always&&!bgExplored(X,Z))return;x.font=(15*sw*1.25)+'px Georgia';x.textAlign='center';x.lineWidth=4;x.strokeStyle='rgba(8,14,16,.85)';x.fillStyle='#f2e9cf';const hw=x.measureText(t).width/2+6,cx=Math.max(hw,Math.min(w-hw,px(X)));x.strokeText(t,cx,py(Z));x.fillText(t,cx,py(Z))};
  lab('Playa del regreso',BEACH[0],BEACH[1]+26,true);lab('Torres gemelas',-18,-34,true);lab('El lago',-125,110,false);lab('La cumbre',-176,-295,false);
  if(typeof arSpots!=='undefined'&&arSpots[0])lab('Parque de los Cisnes',arSpots[0].x,arSpots[0].z-14,false);
- if(STORY.flags.metKatherin&&window.__boisCh4Bounds&&(STORY.flags.ch4_entered||bgExplored(window.__boisCh4Bounds.cx,window.__boisCh4Bounds.cz))){const c4=window.__boisCh4Bounds;x.fillStyle='rgba(150,70,55,.95)';x.strokeStyle='rgba(60,25,20,.85)';x.lineWidth=1.2;const bw=28*w/1000,bd=24*w/1000;x.fillRect(px(c4.cx)-bw/2,py(c4.cz)-bd/2,bw,bd);x.strokeRect(px(c4.cx)-bw/2,py(c4.cz)-bd/2,bw,bd);lab('Edificio sin nombre',c4.cx,c4.cz-16,true)}
+ if(STORY.flags.metKatherin&&window.__boisCh4Bounds&&(STORY.flags.ch4_entered||bgExplored(window.__boisCh4Bounds.cx,window.__boisCh4Bounds.cz))){const c4=window.__boisCh4Bounds;x.fillStyle='rgba(150,70,55,.95)';x.strokeStyle='rgba(60,25,20,.85)';x.lineWidth=1.2;const bw=28*w/1000,bd=24*w/1000;x.fillRect(px(c4.cx)-bw/2,py(c4.cz)-bd/2,bw,bd);x.strokeRect(px(c4.cx)-bw/2,py(c4.cz)-bd/2,bw,bd);lab('El Colegio',c4.cx,c4.cz-16,true)}
  x.textAlign='left';
  // zonas de pista (siempre visibles sobre la niebla) y fotografías recuperadas
  x.save();x.setLineDash([8,6]);x.lineWidth=2.4;for(const p of bgKnownPending()){const z=bgZone(p);x.strokeStyle='rgba(255,204,118,.95)';x.fillStyle='rgba(255,204,118,.14)';x.beginPath();x.arc(px(z.x),py(z.z),z.r*w/1000,0,Math.PI*2);x.fill();x.stroke();x.setLineDash([]);x.fillStyle='#ffd58a';x.font='bold 26px Georgia';x.textAlign='center';x.strokeStyle='rgba(8,14,16,.9)';x.lineWidth=4;x.strokeText('?',px(z.x),py(z.z)+9);x.fillText('?',px(z.x),py(z.z)+9);x.setLineDash([8,6])}x.restore();
@@ -157,10 +172,127 @@ function bgDrawMap(){const c=document.getElementById('bgMapCanvas');if(!c)return
  x.save();x.translate(w-46,46);x.strokeStyle='rgba(240,232,205,.85)';x.fillStyle='rgba(10,16,19,.6)';x.lineWidth=1.5;x.beginPath();x.arc(0,0,26,0,Math.PI*2);x.fill();x.stroke();x.fillStyle='#e4b66f';x.beginPath();x.moveTo(0,-22);x.lineTo(6,0);x.lineTo(-6,0);x.closePath();x.fill();x.fillStyle='#d7d8cb';x.beginPath();x.moveTo(0,22);x.lineTo(6,0);x.lineTo(-6,0);x.closePath();x.fill();x.font='bold 13px Georgia';x.textAlign='center';x.fillStyle='#f2e9cf';x.fillText('N',0,-31);x.restore();
  x.fillStyle='rgba(10,16,19,.6)';x.fillRect(14,w-34,w*.1+16,22);x.strokeStyle='#f2e9cf';x.lineWidth=2;x.beginPath();x.moveTo(22,w-16);x.lineTo(22,w-22);x.lineTo(22+w*.1,w-22);x.lineTo(22+w*.1,w-16);x.stroke();x.fillStyle='#f2e9cf';x.font='11px system-ui';x.fillText('100 m',26,w-26);
 }
-const _bgVd=new THREE.Vector3(),_bgViewDir=new THREE.Vector3();
-function bgOpen(which){window.__boisGuideOverlayOpen=true;if(document.pointerLockElement)window.__boisGuideIgnoreNextUnlock=true;if(which==='journal'){bgRenderJournal();bgJournal.classList.add('open');BOIS_GUIDE.journal=true}else{bgDrawMap();bgMap.classList.add('open');BOIS_GUIDE.map=true}if(document.pointerLockElement)document.exitPointerLock()}
+const _bgVd=new THREE.Vector3(),_bgViewDir=new THREE.Vector3(),_bgMiniDir=new THREE.Vector3();
+let _bgMiniLast=0,_bgMiniZoneText='',_bgMiniFw=174,_bgMiniFh=118,_bgMiniDimT=0;
+function bgCurrentZone(x,z){
+ if(Math.hypot(x+18,z+34)<68)return'Torres gemelas';
+ if(STORY.flags.metKatherin&&window.__boisCh4Bounds&&Math.hypot(x-window.__boisCh4Bounds.cx,z-window.__boisCh4Bounds.cz)<64)return'El Colegio';
+ if(typeof arSpots!=='undefined'&&arSpots[0]&&Math.hypot(x-arSpots[0].x,z-arSpots[0].z)<82)return'Parque de los Cisnes';
+ if(Math.hypot(x+176,z+295)<95)return'La Cumbre';
+ if((window.__inLake&&window.__inLake(x,z))||Math.hypot(x+125,z-110)<112)return'El Lago';
+ if(typeof BEACH!=='undefined'&&Math.hypot(x-BEACH[0],z-BEACH[1])<95)return'Playa del regreso';
+ return'Isla Bois';
+}
+function bgClampRect(px,py,cx,cy,w,h,pad){
+ if(px>=pad&&px<=w-pad&&py>=pad&&py<=h-pad)return{x:px,y:py,clamped:false};
+ const dx=px-cx,dy=py-cy;
+ let t=1;
+ if(dx>1e-5)t=Math.min(t,(w-pad-cx)/dx);else if(dx<-1e-5)t=Math.min(t,(pad-cx)/dx);
+ if(dy>1e-5)t=Math.min(t,(h-pad-cy)/dy);else if(dy<-1e-5)t=Math.min(t,(pad-cy)/dy);
+ return{x:cx+dx*t,y:cy+dy*t,clamped:true};
+}
+function bgUpdateMinimap(now){
+ const tNow=now||performance.now();
+ const vis=!!(typeof S!=='undefined'&&S.on&&!(typeof CIN!=='undefined'&&CIN.on)&&!window.__boisWakeLock&&!window.__boisGuideOverlayOpen&&!(typeof PR!=='undefined'&&PR.on)&&!(window.__boisCh6&&window.__boisCh6.on)&&!(window.__boisCamFinder&&window.__boisCamFinder.on));
+ if(!vis){bgMinimap.classList.remove('on');return}
+ bgMinimap.classList.add('on');
+ const inCar=typeof CAR!=='undefined'&&!!CAR.on;
+ if(tNow-_bgMiniLast<(inCar?33:65))return;
+ _bgMiniLast=tNow;
+ const c=document.getElementById('gtaMinimapCanvas');if(!c)return;
+ if(!BGM.base){try{BGM.base=bgBuildBase()}catch(e){}}
+ bgSyncFog(false);
+ const zText=bgCurrentZone(S.x,S.z);
+ if(zText!==_bgMiniZoneText){_bgMiniZoneText=zText;const zEl=document.getElementById('gtaMiniZone');if(zEl)zEl.textContent=zText}
+ cam.getWorldDirection(_bgMiniDir);
+ const heading=Math.atan2(_bgMiniDir.x,-_bgMiniDir.z);
+ if(tNow-_bgMiniDimT>500){
+  _bgMiniDimT=tNow;
+  const fr=bgMinimap.firstElementChild;
+  if(fr&&fr.clientWidth>0){_bgMiniFw=fr.clientWidth;_bgMiniFh=fr.clientHeight}
+ }
+ const nEl=document.getElementById('gtaMiniNorth');
+ if(nEl){
+  const nPos=bgClampRect(_bgMiniFw*.5-Math.sin(heading)*400,_bgMiniFh*.5-Math.cos(heading)*400,_bgMiniFw*.5,_bgMiniFh*.5,_bgMiniFw,_bgMiniFh,10);
+  nEl.style.transform='translate3d('+nPos.x.toFixed(1)+'px,'+nPos.y.toFixed(1)+'px,0)';
+ }
+ const ctx=c.getContext('2d'),w=c.width,h=c.height,cx=w*.5,cy=h*.60;
+ const spd=inCar?Math.abs(CAR.speed||0):0;
+ const span=inCar?Math.min(340,248+spd*3.1):205,sc=w/span;
+ ctx.fillStyle='#132630';ctx.fillRect(0,0,w,h);
+ ctx.save();
+ ctx.translate(cx,cy);ctx.rotate(-heading);ctx.scale(sc,sc);ctx.translate(-S.x,-S.z);
+ if(BGM.base){ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='medium';ctx.drawImage(BGM.base,-500,-500,1000,1000)}
+ if(STORY.flags.metKatherin&&window.__boisCh4Bounds){
+  const c4=window.__boisCh4Bounds;
+  ctx.fillStyle='rgba(150,70,55,.95)';ctx.strokeStyle='rgba(60,25,20,.85)';ctx.lineWidth=1.4;
+  ctx.fillRect(c4.cx-14,c4.cz-12,28,24);ctx.strokeRect(c4.cx-14,c4.cz-12,28,24);
+ }
+ if(BGM.fog){ctx.save();ctx.globalAlpha=.72;ctx.drawImage(BGM.fog,-500,-500,1000,1000);ctx.restore()}
+ ctx.restore();
+ const cs=Math.cos(-heading),sn=Math.sin(-heading);
+ const toMini=(wx,wz)=>{const dx=wx-S.x,dz=wz-S.z;return{x:cx+(dx*cs-dz*sn)*sc,y:cy+(dx*sn+dz*cs)*sc}};
+ // zonas de pista pendientes
+ ctx.save();
+ for(const p of bgKnownPending()){
+  const z=bgZone(p),mp=toMini(z.x,z.z),mr=z.r*sc;
+  if(mp.x+mr<-10||mp.x-mr>w+10||mp.y+mr<-10||mp.y-mr>h+10)continue;
+  ctx.setLineDash([6,5]);ctx.lineWidth=2;ctx.strokeStyle='rgba(255,204,118,.92)';ctx.fillStyle='rgba(255,204,118,.16)';
+  ctx.beginPath();ctx.arc(mp.x,mp.y,mr,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.setLineDash([]);ctx.font='bold 15px Georgia';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.lineWidth=3;ctx.strokeStyle='rgba(8,14,16,.9)';ctx.fillStyle='#ffd68a';
+  ctx.strokeText('?',mp.x,mp.y);ctx.fillText('?',mp.x,mp.y);
+ }
+ ctx.restore();
+ // fotografías ya recuperadas
+ for(const p of PHOTOS){
+  if(!STORY.flags['photo_'+p.id])continue;
+  const mp=toMini(p.x,p.z);
+  if(mp.x<-10||mp.x>w+10||mp.y<-10||mp.y>h+10)continue;
+  ctx.fillStyle='#8fd0b0';ctx.strokeStyle='#10221c';ctx.lineWidth=2;
+  ctx.beginPath();ctx.arc(mp.x,mp.y,5,0,Math.PI*2);ctx.fill();ctx.stroke();
+ }
+ // auto estacionado (si no estás conduciendo)
+ if(!inCar&&typeof CAR!=='undefined'&&CAR.g&&Number.isFinite(CAR.x)&&Number.isFinite(CAR.z)){
+  const mp=toMini(CAR.x,CAR.z),cp=bgClampRect(mp.x,mp.y,cx,cy,w,h,12);
+  ctx.save();ctx.translate(cp.x,cp.y);
+  if(!cp.clamped){
+   ctx.rotate(-CAR.yaw-heading);ctx.fillStyle='#4eb8a8';ctx.strokeStyle='#f5efe0';ctx.lineWidth=1.8;
+   ctx.fillRect(-4.5,-7.5,9,15);ctx.strokeRect(-4.5,-7.5,9,15);
+   ctx.fillStyle='#fff6d2';ctx.fillRect(-3.4,-7,2.2,2);ctx.fillRect(1.2,-7,2.2,2);
+  }else{
+   ctx.fillStyle='#4eb8a8';ctx.strokeStyle='#0f181c';ctx.lineWidth=2;
+   ctx.fillRect(-5,-5,10,10);ctx.strokeRect(-5,-5,10,10);
+   ctx.fillStyle='#f6f0e0';ctx.fillRect(-2.5,-2,5,4);
+  }
+  ctx.restore();
+ }
+ // objetivo actual (diamante dorado tipo GTA, fijo al borde si está lejos)
+ const target=bgTarget();
+ if(target){
+  const mp=toMini(target.x,target.z),tp=bgClampRect(mp.x,mp.y,cx,cy,w,h,12);
+  ctx.save();ctx.translate(tp.x,tp.y);
+  ctx.fillStyle='#f6cb78';ctx.strokeStyle='#0f171a';ctx.lineWidth=2.2;
+  ctx.beginPath();ctx.moveTo(0,-7.5);ctx.lineTo(7.5,0);ctx.lineTo(0,7.5);ctx.lineTo(-7.5,0);ctx.closePath();
+  ctx.fill();ctx.stroke();ctx.restore();
+ }
+ // silueta del auto bajo el jugador al conducir
+ if(inCar){
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(-CAR.yaw-heading);
+  ctx.fillStyle='rgba(78,184,168,.88)';ctx.strokeStyle='#f7f2e4';ctx.lineWidth=1.6;
+  ctx.fillRect(-5.5,-9,11,18);ctx.strokeRect(-5.5,-9,11,18);
+  ctx.restore();
+ }
+ // flecha central del jugador
+ ctx.save();ctx.translate(cx,cy);
+ ctx.fillStyle='#fff4d4';ctx.strokeStyle='#0e171a';ctx.lineWidth=2.2;
+ ctx.beginPath();ctx.moveTo(0,-10);ctx.lineTo(7.5,8);ctx.lineTo(0,4);ctx.lineTo(-7.5,8);ctx.closePath();
+ ctx.fill();ctx.stroke();ctx.restore();
+}
+window.__boisUpdateMinimap=bgUpdateMinimap;
+function bgOpen(which){window.__boisGuideOverlayOpen=true;if(document.pointerLockElement)window.__boisGuideIgnoreNextUnlock=true;if(which==='journal'){bgRenderJournal();bgJournal.classList.add('open');BOIS_GUIDE.journal=true}else{bgDrawMap();bgMap.classList.add('open');BOIS_GUIDE.map=true}bgMinimap.classList.remove('on');if(document.pointerLockElement)document.exitPointerLock()}
 function bgClose(which){if(which==='journal'){bgJournal.classList.remove('open');BOIS_GUIDE.journal=false}else{bgMap.classList.remove('open');BOIS_GUIDE.map=false}window.__boisGuideOverlayOpen=BOIS_GUIDE.journal||BOIS_GUIDE.map;if(S.on&&!touch&&!window.__boisGuideOverlayOpen)document.getElementById('c').requestPointerLock?.()}
-function bgUpdate(){const now=performance.now();if(now-BOIS_GUIDE.lastUI<450)return;BOIS_GUIDE.lastUI=now;if(!S.on){bgHud.classList.remove('on');bgCompass.classList.remove('on');return}try{bgExploreTick()}catch(e){typeof __bw==='function'&&__bw('26-guide-map#4',e)}const m=bgMission();document.getElementById('bgObjective').textContent=m.title;document.getElementById('bgClue').textContent=m.clue;bgHud.classList.add('on');const target=bgTarget();if(target){const dx=target.x-S.x,dz=target.z-S.z,dist=Math.hypot(dx,dz),bearing=Math.atan2(dx,-dz);cam.getWorldDirection(_bgViewDir);const heading=Math.atan2(_bgViewDir.x,-_bgViewDir.z);document.getElementById('bgRose').style.transform='rotate('+(-heading)+'rad)';let rel=bearing-heading;while(rel>Math.PI)rel-=Math.PI*2;while(rel<-Math.PI)rel+=Math.PI*2;document.getElementById('bgNeedle').style.transform='rotate('+rel+'rad)';document.getElementById('bgCompassTarget').textContent=target.name;document.getElementById('bgCompassInfo').textContent=bgDirection(dx,dz)+' · '+Math.round(dist)+' u';bgCompass.classList.add('on')}else bgCompass.classList.remove('on');const ae=document.activeElement,jBusy=!!window.__boisNtbEditing||(ae&&bgJournal.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));if(BOIS_GUIDE.journal&&!jBusy)bgRenderJournal();if(BOIS_GUIDE.map)bgDrawMap();if(BOIS_GUIDE.dev){document.getElementById('bgCoords').textContent='X: '+S.x.toFixed(1)+' · Y: '+S.y.toFixed(1)+' · Z: '+S.z.toFixed(1)+(S.fly?' · VUELO':'');document.getElementById('bgDevList').textContent=BOIS_GUIDE.points.map((p,i)=>(i+1)+'. '+p.name+' ['+p.x+', '+p.z+']').join('\n')||'Sin puntos guardados.'}}
+function bgUpdate(){const now=performance.now();if(now-BOIS_GUIDE.lastUI<450)return;BOIS_GUIDE.lastUI=now;if(!S.on){bgHud.classList.remove('on');bgCompass.classList.remove('on');bgMinimap.classList.remove('on');return}try{bgExploreTick()}catch(e){typeof __bw==='function'&&__bw('26-guide-map#4',e)}const m=bgMission();document.getElementById('bgObjective').textContent=m.title;document.getElementById('bgClue').textContent=m.clue;bgHud.classList.add('on');const target=bgTarget();if(target){const dx=target.x-S.x,dz=target.z-S.z,dist=Math.hypot(dx,dz),bearing=Math.atan2(dx,-dz);cam.getWorldDirection(_bgViewDir);const heading=Math.atan2(_bgViewDir.x,-_bgViewDir.z);document.getElementById('bgRose').style.transform='rotate('+(-heading)+'rad)';let rel=bearing-heading;while(rel>Math.PI)rel-=Math.PI*2;while(rel<-Math.PI)rel+=Math.PI*2;document.getElementById('bgNeedle').style.transform='rotate('+rel+'rad)';document.getElementById('bgCompassTarget').textContent=target.name;document.getElementById('bgCompassInfo').textContent=bgDirection(dx,dz)+' · '+Math.round(dist)+' u';bgCompass.classList.add('on')}else bgCompass.classList.remove('on');const ae=document.activeElement,jBusy=!!window.__boisNtbEditing||(ae&&bgJournal.contains(ae)&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName));if(BOIS_GUIDE.journal&&!jBusy)bgRenderJournal();if(BOIS_GUIDE.map)bgDrawMap();if(BOIS_GUIDE.dev){document.getElementById('bgCoords').textContent='X: '+S.x.toFixed(1)+' · Y: '+S.y.toFixed(1)+' · Z: '+S.z.toFixed(1)+(S.fly?' · VUELO':'');document.getElementById('bgDevList').textContent=BOIS_GUIDE.points.map((p,i)=>(i+1)+'. '+p.name+' ['+p.x+', '+p.z+']').join('\n')||'Sin puntos guardados.'}}
 let bgPromptEl=null;
 function bgSavePoint(){
  if(bgPromptEl){bgPromptEl.querySelector('input').focus();return}

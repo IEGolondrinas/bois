@@ -21,6 +21,13 @@ cinStyle.textContent=`
 #cinTxt{min-height:1.65em;opacity:0;transform:translateY(7px);transition:opacity .55s,transform .55s}
 #cinTxt.visible{opacity:1;transform:translateY(0)}
 #cinTxt b{display:block;font:600 10px system-ui;letter-spacing:3px;margin-bottom:8px;color:#d9c9a9}
+#cinTxt .cin-meta{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:9px;font:600 10px/1.2 system-ui;letter-spacing:2.4px;text-transform:uppercase}
+#cinTxt .cin-layer{padding:3px 9px;border:1px solid rgba(217,201,169,.38);color:#e7dcc2;background:rgba(12,17,20,.45)}
+#cinTxt .cin-layer.l-hecho{border-color:rgba(243,238,228,.45);color:#f3eee4}
+#cinTxt .cin-layer.l-pensaste{border-color:rgba(228,182,111,.6);color:#f2ce8d;background:rgba(68,46,18,.32)}
+#cinTxt .cin-layer.l-hoy{border-color:rgba(158,194,173,.6);color:#b7dec7;background:rgba(22,46,38,.34)}
+#cinTxt .cin-layer.l-presencia{border-color:rgba(205,220,235,.5);color:#dce8f2;background:rgba(24,36,48,.34)}
+#cinTxt .cin-stamp{color:rgba(220,212,194,.68);font-weight:500;letter-spacing:2px}
 #cinHint{margin-top:16px;font:9px system-ui;letter-spacing:3px;color:rgba(240,235,224,.48);transition:opacity .3s}
 #cin.pause #cinHint{opacity:.18}
 #cin .cin-grain{position:absolute;inset:0;pointer-events:none;z-index:2;opacity:.08;background-image:radial-gradient(rgba(255,255,255,.6) .5px,transparent .7px);background-size:4px 4px;mix-blend-mode:soft-light}
@@ -102,7 +109,9 @@ function playCinematic(lines,cb,opts={}){
 }
 function showCinLine(){
   if(CIN.i>=CIN.lines.length){endCinematic();return}
-  const l=CIN.lines[CIN.i],hint=cinBox.querySelector('#cinHint');
+  const raw=CIN.lines[CIN.i],hint=cinBox.querySelector('#cinHint');
+  if(!raw||(typeof raw!=='object'&&typeof raw!=='string')){CIN.i++;showCinLine();return}
+  const l=typeof raw==='string'?{t:raw}:raw;
   clearTimeout(CIN.timer);CIN.timer=null;
   clearTimeout(CIN.fadeTimer);CIN.fadeTimer=null;
   flushCinPending();
@@ -111,7 +120,7 @@ function showCinLine(){
   // La frase anterior se desvanece antes de cambiar; la nueva entra con el fade-in habitual.
   const renderLine=()=>{
     CIN.fadeTimer=null;
-    if(!CIN.on||CIN.lines[CIN.i]!==l)return;
+    if(!CIN.on||CIN.lines[CIN.i]!==raw)return;
     // v131: l.on = gancho al mostrarse la línea (cámara, audio…); l.auto = avance automático (ms)
     flushCinPending();
     if(l.pause){
@@ -121,14 +130,25 @@ function showCinLine(){
       CIN.timer=setTimeout(()=>cinAdvance(),l.pause);
       return;
     }
+    const text=l.t!=null?String(l.t):(l.text!=null?String(l.text):'');
+    if(!text&&!l.layer&&!l.stamp){cinAdvance();return}
     cinBox.classList.remove('pause');
-    const body=/[<&]/.test(l.t)?l.t:l.t.split(' ').map((w,k)=>'<span class="w" style="transition-delay:'+Math.min(k*65,1300)+'ms">'+w+'</span>').join(' ');
-    if(l.who==='Katherin')cinTxt.innerHTML='<b>KATHERIN</b>'+body;
-    else if(l.who==='Tú')cinTxt.innerHTML='<b>TÚ</b>'+body;
-    else if(l.label)cinTxt.innerHTML='<b>'+l.label+'</b>'+body;
-    else cinTxt.innerHTML=body;
+    const body=!text?'':(/[<&]/.test(text)?text:text.split(' ').map((w,k)=>'<span class="w" style="transition-delay:'+Math.min(k*65,1300)+'ms">'+w+'</span>').join(' '));
+    const layerNames={hecho:'HECHO',pensaste:'LO QUE PENSASTE · 2025',hoy:'LO QUE SABES HOY · 2026',presencia:'PRESENCIA'};
+    const escCin=v=>String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    let head='';
+    if(l.layer||l.stamp){
+      head+='<div class="cin-meta">';
+      if(l.stamp)head+='<span class="cin-stamp">'+escCin(l.stamp)+'</span>';
+      if(l.layer)head+='<span class="cin-layer l-'+escCin(l.layer)+'">'+escCin(l.layerLabel||layerNames[l.layer]||l.layer)+'</span>';
+      head+='</div>';
+    }
+    if(l.who==='Katherin')cinTxt.innerHTML=head+'<b>KATHERIN</b>'+body;
+    else if(l.who==='Tú')cinTxt.innerHTML=head+'<b>TÚ</b>'+body;
+    else if(l.label)cinTxt.innerHTML=head+'<b>'+escCin(l.label)+'</b>'+body;
+    else cinTxt.innerHTML=head+body;
     hint.textContent='CLIC O ESPACIO';
-    if(l.auto)CIN.timer=setTimeout(()=>{if(CIN.on&&CIN.lines[CIN.i]===l)cinAdvance()},l.auto);
+    if(l.auto)CIN.timer=setTimeout(()=>{if(CIN.on&&CIN.lines[CIN.i]===raw)cinAdvance()},l.auto);
     requestAnimationFrame(()=>requestAnimationFrame(()=>cinTxt.classList.add('visible')));
     CIN.t=0;
   };
@@ -156,4 +176,15 @@ document.addEventListener('click',e=>{
 },true);
 
 document.addEventListener('keydown',e=>{if(CIN.on&&!window.__boisWakeLock&&(e.code==='Space'||e.code==='Enter')){e.preventDefault();e.stopPropagation();if(!e.repeat)cinAdvance()}},true);
+window.__boisMemoryLines=function(p){
+  if(p&&p.layers){
+    const L=p.layers,out=[];
+    if(L.fact)out.push({layer:'hecho',stamp:L.stamp||'',t:L.fact});
+    if(L.thought2025)out.push({layer:'pensaste',t:L.thought2025});
+    if(L.insight2026)out.push({layer:'hoy',t:L.insight2026});
+    if(L.echo)out.push({t:L.echo});
+    return out;
+  }
+  return Array.isArray(p&&p.mem)?p.mem.map(t=>typeof t==='string'?{t}:t):[];
+};
 

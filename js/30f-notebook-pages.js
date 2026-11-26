@@ -15,16 +15,20 @@ const NTB_PAGES=[
   t:'Una profesora estuvo pendiente de mí sin que nadie se lo pidiera. No se lo dije como debía. Si algún día vuelvo a ese pasillo, empiezo por ahí: gracias.'},
  {id:'sep',date:'Septiembre de 2025',sort:1,cond:()=>bgCollected()>=3,
   t:'Hoy cerré una historia. No hubo pelea: solo acepté que terminó de otro modo del que yo esperaba. Y empecé a fijarme en alguien que quizás siempre estuvo ahí, amable, y yo sin mirar bien.'},
- {id:'oct',date:'29 de octubre de 2025',sort:2,cond:()=>!!STORY.flags.ch5_complete,
-  t:'Alguien escribió cinco palabras sobre mí. Me temblaban las manos y me sudaba la frente. Las leí tantas veces que dejaron de parecer palabras. No sabía que se me notaba lo reservado, ni lo amable, ni lo enfocado.'},
+ {id:'oct',date:'29 de octubre de 2025 · Cátedra de Paz',sort:2,cond:()=>!!STORY.flags.ch5_complete||!!STORY.flags.photo_empty,
+  t:'Actividad «Sé algo bueno de ti». Yo escribí sobre mí: bueno para las matemáticas, muy analítico, hiper-empático. Y Katherin escribió cinco cosas: inteligente, linda persona, reservado, amable y enfocado. Me temblaban las piernas y me sudaba la frente. No sabía que alguien podía mirar lo que yo no medía con notas.'},
+ {id:'nov1',date:'1 de noviembre de 2025 · Posdata de 2026',sort:2.6,cond:()=>!!STORY.flags.photo_rain||!!STORY.flags.ch4_complete,
+  t:'Ese día terminé la mezcla a las 10:41, la envié y presté mi computador. El grupo mandó un audio agradeciendo a «Toro», y horas después igual sentí que solo valía si lograba algo. Hoy lo leo distinto: no sería justo juzgar al chico de 16 años con las herramientas que he construido después. Confundía interpretaciones con hechos. Estaba aprendiendo a vivir.'},
  {id:'nov',date:'5 de noviembre de 2025',sort:3,cond:()=>!!STORY.flags.ch4_complete,
   t:'Hoy volvió a sentarse frente a mí. Se acomodó el cabello hacia atrás y quedó tan cerca que no supe dónde poner los ojos. Desde fuera no pasó nada. Para mí pasó todo. Cuando falta, la clase se siente rara.'},
- {id:'ago',date:'10 de agosto de 2025',sort:0.5,cond:()=>!!STORY.flags.ch4_complete,
-  t:'Hoy terminé antes que casi todos y casi no dudé. Me dijeron que salió bien. Lo guardo como lo que es: una fotografía de un día, no una definición de quién soy.'},
+ {id:'ago',date:'10 de agosto de 2025 · 382 en el ICFES',sort:0.5,cond:()=>!!STORY.flags.ch4_complete||!!STORY.flags.photo_path,
+  t:'Terminé antes que casi todos y me dijeron que salió bien: 382. Lo guardo como lo que es: una fotografía de un día, no la medida completa de quién soy.'},
  {id:'ano',date:'1 de noviembre de 2026',sort:3.5,cond:()=>!!STORY.flags.ch6_complete,
   t:'Por fin pasó un año. Sigo aquí, mirando el lago, y esta vez no hace falta que nadie vuelva para que yo empiece.'},
  {id:'ch7',date:'2 de noviembre de 2026',sort:3.7,cond:()=>!!STORY.flags.ch7_complete,
   t:'Hablé con ella sin buscar una respuesta. Llevaba tanto tiempo ensayando conversaciones que nunca ocurrieron que olvidé escuchar la que sí estaba pasando. No quiero esperar a que alguien vuelva para empezar. Por primera vez, el momento no tuvo que durar para siempre.'},
+ {id:'presencia',date:'Epílogo · Presencia frente al lago',sort:3.75,cond:()=>!!STORY.flags.ch7_presencia,
+  t:'Por unos segundos dejé de preguntarme qué significaba cada detalle. Miré el viento sobre el agua, los árboles y el reflejo quieto de las torres. Solo estaba ahí. Quizá eso también cuenta como recordar.'},
  {id:'cap20261122',date:'22 de noviembre de 2026',from:'2026-11-22',sort:3.8,cond:()=>!!STORY.flags.gotNb,
   t:'Ya se cumple un año desde aquel momento en que escribí esas palabras tan profundas y significativas, dándole palabras a lo que llevaba dentro. Aunque nunca envié la carta, sí fue real lo que sentí.<br><br>Quiero decirte, yo del futuro, que si lees esto espero que las condiciones hayan cambiado y que te hayas atrevido a dar el primer paso cuando alguien te guste, o simplemente sea una persona importante para ti.<br><br>Yo todavía sigo aprendiendo. A veces tiendo a tener altibajos, pero voy en camino a ser tú. Gracias por leer.'},
  {id:'cap20270308',date:'8 de marzo de 2027',from:'2027-03-08',sealed:true,sort:3.9,cond:()=>!!STORY.flags.gotNb,
@@ -61,11 +65,25 @@ function ntbRepliesBlock(id,all,btnLabel){
   return s;
 }
 function ntbDate(p){if(p.date)return p.date;try{return new Date().toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'})}catch(e){return 'Hoy'}}
+function ntbVoiceStage(){
+  try{
+    const F=(typeof STORY!=='undefined'&&STORY.flags)||{};
+    const n=typeof bgCollected==='function'?bgCollected():0;
+    if(F.ch7_presencia)return {label:'Solo estaba ahí',note:'Por unos segundos dejé de buscar respuestas en cada gesto. Estar presente también cuenta como recordar.'};
+    if(F.ch7_complete)return {label:'No necesito saberlo todo',note:'Ya no hace falta resolver cada silencio para empezar a vivir.'};
+    if(F.ch5_complete||F.ch6_complete)return {label:'Esto fue lo que yo pensé que ocurrió',note:'En 2025 confundía mis interpretaciones con hechos. Hoy puedo mirar ambas cosas por separado.'};
+    if(n>=4||F.metKatherin||F.ch4_complete)return {label:'Esto sí ocurrió',note:'Empiezo a recordar detalles concretos sin inventarles un misterio encima.'};
+    if(n>=1)return {label:'Creo que esto ocurrió',note:'Algunas escenas vuelven por fragmentos: un reloj, un espejo medio abierto, un audio del grupo.'};
+    return {label:'No recuerdo',note:'Solo sé que guardé esta libreta porque algo en aquella época merecía ser mirado con más calma.'};
+  }catch(e){return {label:'No recuerdo',note:''}}
+}
 function ntbPagesHTML(){
   const ok=NTB_PAGES.filter(ntbOpen).sort((a,b)=>a.sort-b.sort);
   const sealed=NTB_PAGES.filter(p=>p.sealed&&p.from&&!ntbReached(p)).sort((a,b)=>a.from<b.from?-1:1);
   const all=ntbLoadReplies();
-  let h='<div class="bgBlock"><strong>Libreta · páginas con fecha</strong>';
+  const vs=ntbVoiceStage();
+  let h='<div class="bgBlock"><strong>Libreta · «'+ntbEsc(vs.label)+'»</strong>';
+  if(vs.note)h+='<p class="bgMuted" style="margin:4px 0 8px;font-style:italic">'+ntbEsc(vs.note)+'</p>';
   if(window.__boisSpecialDate)h+='<p style="border-left:2px solid #e4b66f;padding:6px 10px;margin:10px 0;background:rgba(228,182,111,.08);color:#f0dec0">✨ '+ntbEsc(window.__boisSpecialDate.wish)+'</p>';
   if(!ok.length)h+='<p class="bgMuted">La libreta tiene páginas en blanco. Se irán escribiendo a medida que recuerdes.</p>';
   else h+=ok.map(p=>'<div style="border-left:2px solid #c8b98e;padding-left:10px;margin:12px 0"><p style="margin:0"><span class="bgMuted" style="font-style:italic">'+ntbDate(p)+'</span><br>'+p.t+'</p>'+(p.from?ntbRepliesBlock(p.id,all,'Responder a esta carta'):'')+'</div>').join('');

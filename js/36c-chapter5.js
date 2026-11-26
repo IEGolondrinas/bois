@@ -24,11 +24,12 @@ try{(()=>{
  function beaconOff(){const n=BC.n,C=AU.ctx;if(!n||!C)return;BC.n=null;n.g.gain.setTargetAtTime(0,C.currentTime,.2);if(BC.offTimer)clearTimeout(BC.offTimer);BC.offTimer=setTimeout(()=>{BC.offTimer=0;try{n.os.forEach(o=>o.stop());n.g.disconnect();n.lp.disconnect()}catch(e){typeof __bw==='function'&&__bw('36c-chapter5#3',e)}},900)}
  // ---------- elección de salas según la arquitectura generada ----------
  function pickCells(){const g=PR.geo,L=[];
-  for(let i=0;i<g.N;i++)for(let j=0;j<g.N;j++){if(i===5&&j===5)continue;L.push({i,j,k:g.ty(i,j),d:Math.max(Math.abs(i-5),Math.abs(j-5))*100+Math.hypot(i-5,j-5)})}
+  for(let i=0;i<g.N;i++)for(let j=0;j<g.N;j++){if((i===5&&j===5)||(i===5&&j===4))continue;L.push({i,j,k:g.ty(i,j),d:Math.max(Math.abs(i-5),Math.abs(j-5))*100+Math.hypot(i-5,j-5)})}
   L.sort((a,b)=>a.d-b.d);const used=new Set();
   const pick=(...ps)=>{for(const f of ps){const c=L.find(c=>!used.has(c)&&f(c));if(c){used.add(c);return c}}const c=L.find(c=>!used.has(c));used.add(c);return c};
   const sky=c=>c.k===3&&hs(c.i+11,c.j+17)>.75;
   return{empty:pick(c=>c.k===0&&!(hs(c.i+11,c.j+17)>.75)),small:pick(c=>c.k===1,c=>c.k===2),sky:pick(sky,c=>c.k===3),table:pick(c=>c.k===0&&c.d>=200,c=>c.k===0)}}
+ window.__boisCh5Pts=C5.pts;
  const OFF=[[0,0],[2.6,0],[-2.6,0],[0,2.6],[0,-2.6],[3.8,3.8],[-3.8,3.8],[3.8,-3.8],[-3.8,-3.8],[6,0],[-6,0],[0,6],[0,-6]];
  function centre(c){const g=PR.geo,x=g.O+c.i*g.CW+g.CW/2,z=g.O+c.j*g.CW+g.CW/2;for(const o of OFF)if(!g.hit(x+o[0],z+o[1]))return{x:x+o[0],z:z+o[1]};return{x,z}}
  // ---------- fotografía: Katherin y tú, en el salón (foto restaurada) ----------
@@ -116,20 +117,22 @@ try{(()=>{
   if(C5.kat&&!unlocked)C5.kat.visible=false}
  // ---------- escenas ----------
  const TXT={
-  empty:[{t:'Una habitación completamente vacía.'},{pause:1700},{t:'Ni un objeto. Ni una marca en las paredes. Solo el eco de tus pasos.'},{pause:2200},{who:'Tú',t:'Se siente como una conversación que nunca empezó.'},{pause:2400}],
-  small:[{t:'Una piscina demasiado pequeña para el tamaño de la sala.'},{pause:1900},{t:'Alrededor sobra tanto espacio que parece guardado para alguien que nunca llegó.'},{pause:2300},{who:'Tú',t:'A veces dejamos más lugar del necesario… por si acaso.'},{pause:2400}],
-  sky:[{t:'El agua refleja un cielo que no existe.'},{pause:1800},{t:'Nubes lentas. Una luz de atardecer. Levantas la vista: solo hay techo.'},{pause:2300},{who:'Tú',t:'Estoy viendo algo que nunca ocurrió… y aun así lo siento mío.'},{pause:2500}]};
+  empty:[{t:'Una habitación completamente vacía.'},{pause:1600},{t:'Ni un objeto. Ni una marca en las paredes. Solo el silencio de dos personas que no saben cómo empezar a hablar.'},{pause:2300},{who:'Tú',t:'A veces me quedaba tan callado para no incomodar… que desaparecía del cuarto.'},{pause:2400}],
+  small:[{t:'Una piscina demasiado pequeña para el tamaño de la sala.'},{pause:1800},{t:'Alrededor sobra espacio, como cuando encoges los hombros o miras al suelo creyendo que no eres suficiente.'},{pause:2400},{who:'Tú',t:'Siempre pensé que valía solo si hacía algo perfecto.'},{pause:2400}],
+  sky:[{t:'El agua refleja un cielo que no existe.'},{pause:1800},{t:'Nubes lentas, una luz cálida. Levantas la vista y solo hay baldosas.'},{pause:2300},{who:'Tú',t:'A veces confundía lo que imaginaba por dentro con lo que de verdad estaba pasando afuera.'},{pause:2500}]};
  function room(k){const p=C5.pts.find(p=>p.id===k);
   cine(TXT[k],()=>{storyFlag(p.flag,1);refresh(true);const n=roomsN();
    if(roomsDone()){sting([262,330,392,523],SV*1.1,3.2,.32);showMsg('Recuerdo 3/3 · al fondo se enciende una luz cálida · busca la mesa')}
    else{sting([392,587],SV,2.2,.28);showMsg('Recuerdo '+n+'/3 · algo se movió en el agua… aún hay luces azules')}},{lookAt:new THREE.Vector3(p.x,PR.geo.fyAt(p.x,p.z)+1.2,p.z)})}
  function table(t,fy){
-  window.__boisRevealPhoto={img:PHOTO_DATA,title:'Dos personas sentadas juntas'};sting([220,330],SV,3.6,.5);
-  cine([{pause:900},{t:'Una mesa. Sobre ella, una fotografía.'},{pause:1800},{t:'Dos personas sentadas juntas. Una de ellas es Katherin. La otra eres tú.'},{pause:2400},{t:'Ambos parecen más jóvenes.'},{pause:2200},
-   {t:'Sientes una presión en el pecho.'},{pause:1900},{t:'Por primera vez, recuerdas algo concreto. Una actividad escolar. Un papel. Una frase escrita por alguien:'},{pause:2000},
+  window.__boisRevealPhoto={img:PHOTO_DATA,title:'Cátedra de Paz · Cinco palabras en tu cuaderno',layers:{stamp:'29 / 10 / 2025 · 14:48 · 9 y 9',fact:'Actividad «Sé algo bueno de ti». Te cambiaste de subgrupo para quedar 9 y 9. Katherin escribió cinco palabras en tu cuaderno.',thought2025:'Me sudaron frío las axilas y fingí calma para no parecer raro. Pensé que valía solo por mi 382 y que ella me vería insuficiente.',insight2026:'Por primera vez alguien nombró «linda persona, reservado, amable y enfocado» antes que tus notas. Tu valor no dependía de un logro.'}};
+  sting([220,330],SV,3.6,.5);
+  cine([{pause:900},{t:'Una mesa. Sobre ella, iluminada por la lámpara, la hoja de un cuaderno.'},{pause:1900},{t:'29 de octubre de 2025. Cátedra de Paz: «Sé algo bueno de ti».'},{pause:2300},{t:'Dieciocho compañeros divididos en dos grupos de nueve. Tú mismo te pasaste al otro grupo para que quedaran pares.'},{pause:2500},
+   {t:'Habías escrito de ti mismo: «bueno para las matemáticas, muy analítico, hiper-empático».'},{pause:2400},{t:'Pero alguien más escribió cinco palabras que no eran solo un promedio ni un puntaje del ICFES:'},{pause:2200},
    {t:'«Lo mejor de ti es que eres muy inteligente, linda persona, reservado, amable y enfocado.»'},{pause:3600},
-   {t:'No recuerdas todo lo que sucedió después. Pero recuerdas cómo se sintió.'},{pause:2000},{t:'La alegría. La sorpresa. El miedo. Las ganas de responder algo que nunca lograste expresar del todo.'},{pause:3000},
-   {t:'Y entiendes algo doloroso: hubo momentos en los que alguien intentó acercarse a ti, y no supiste cómo permitirlo.'},{pause:3200}],
+   {type:'layer',layer:'pensaste',t:'A las 14:53 te temblaban las piernas y sudabas frío, fingiendo que no te importaba para que no se notara el nudo en el pecho.'},{pause:2800},
+   {type: 'layer',layer:'hoy',t:'Y al mismo tiempo, el resto del salón te daba las gracias: «Oye Toro, gracias por la mezcla y por prestar tu computador».'},{pause:2800},
+   {who:'Tú',t:'Quizá las personas también veían quién era yo… incluso cuando yo no hacía nada excepcional.'},{pause:3000}],
    ()=>{storyFlag('ch5_photo',1);katherin(t,fy)},{lookAt:new THREE.Vector3(t.x,fy+.85,t.z)})}
  function katherin(t,fy){
   ensureKat();
@@ -138,8 +141,8 @@ try{(()=>{
    for(const d of [3.2,2.6,3.8,2.1]){for(const da of [0,.6,-.6,1.2,-1.2]){const qx=S.x+Math.sin(S.yaw+da)*d,qz=S.z+Math.cos(S.yaw+da)*d;if(!PR.geo.hit(qx,qz)&&(Math.abs(qx-t.x)>1.5||Math.abs(qz-t.z)>1.0)&&PR.geo.fyAt(qx,qz)>=-0.35){kx=qx;kz=qz;found=true;break}}if(found)break}
    k.position.set(kx,PR.geo.fyAt(kx,kz),kz);k.rotation.set(0,Math.atan2(S.x-kx,S.z-kz),0);k.visible=true;look=new THREE.Vector3(kx,k.position.y+1.5,kz)}
   sting([294],SV*.8,3,0);
-  cine([{pause:700},{t:'Escuchas una voz detrás de ti.'},{pause:1500},{who:'Katherin',t:'¿Lo recuerdas?'},{pause:1700},{t:'Te giras.'},{pause:1000},{who:'Tú',t:'¿Tú estuviste ahí?'},{pause:1900},{t:'Katherin observa la fotografía.'},{pause:1400},{who:'Katherin',t:'No exactamente.'},{pause:2000},
-   {who:'Tú',t:'Entonces, ¿quién eres?'},{pause:2600},{t:'Katherin guarda silencio.'},{pause:2400},{who:'Katherin',t:'Alguien que no quieres olvidar.'},{pause:3200}],
+  cine([{pause:700},{t:'Un paso suave suena detrás de ti sobre las baldosas húmedas.'},{pause:1600},{who:'Katherin',t:'¿Te acuerdas de esa clase?'},{pause:1700},{t:'Te giras. No hay enigmas en su rostro; solo la calma tranquila de siempre.'},{pause:1600},{who:'Tú',t:'Por fuera me quedé quieto. Por dentro sentía que mi cuerpo no podía sostener lo que estaba sintiendo.'},{pause:2400},{t:'Katherin mira la hoja sobre la mesa.'},{pause:1500},{who:'Katherin',t:'Yo solo escribí lo que veía en ti ese día.'},{pause:2200},
+   {type:'layer',layer:'hoy',t:'Tal vez nunca sepas todo lo que pasaba por su cabeza cuando escribió esas líneas.'},{pause:2400},{who:'Tú',t:'Pero sí sé cuánto significó para mí. Y eso ya es suficiente.'},{pause:2800}],
    ()=>{if(C5.kat)C5.kat.visible=false;storyFlag('ch5_complete',1);refresh(true);sting([196,294,392],SV,4,.45);showMsg('Capítulo V completado · Lo que permanece debajo · Retroceso para salir')},{lookAt:look})}
  // ---------- interacción, pistas y actualización sincronizada con PR.step ----------
  const nearPt=()=>{let b=null,bd=3.2;for(const p of C5.pts){if(FL()[p.flag]||(p.id==='table'&&!roomsDone()))continue;const d=Math.hypot(S.x-p.x,S.z-p.z);if(d<bd){bd=d;b=p}}return b};

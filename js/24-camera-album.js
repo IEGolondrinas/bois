@@ -17,7 +17,7 @@
       const inCar = typeof CAR !== 'undefined' && CAR.on;
       const suffix = inCar ? ' · desde el auto' : '';
       const c4 = window.__boisCh4Bounds;
-      if (c4 && Math.abs(x - c4.cx) <= c4.hx + 8 && Math.abs(z - c4.cz) <= c4.hz + 8) return 'Edificio sin nombre' + suffix;
+      if (c4 && Math.abs(x - c4.cx) <= c4.hx + 8 && Math.abs(z - c4.cz) <= c4.hz + 8) return 'El Colegio' + suffix;
       if (typeof arSpots !== 'undefined' && arSpots[0] && Math.hypot(x - arSpots[0].x, z - arSpots[0].z) < 44) return 'Parque de los Cisnes' + suffix;
       if (Math.hypot(x - 99, z + 174.4) < 76) return 'El puente sobre el mar' + suffix;
       if (Math.hypot(x + 18, z + 34) < 52) return 'Torres gemelas' + suffix;
@@ -142,11 +142,22 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
 #camAlbum .cam-photo h3{font:18px Georgia,serif;font-weight:400;margin:12px 2px 6px;color:#e9dfca}
 #camAlbum .cam-photo p{font:12px/1.55 system-ui,sans-serif;color:#c5c0b4;margin:0 2px 6px}
 #camAlbum .cam-photo small{display:block;font:italic 11px/1.45 Georgia,serif;color:#938d80;margin:0 2px 2px}
+#camAlbum .cam-layers{margin-top:9px;padding-top:8px;border-top:1px solid rgba(220,205,175,.14);display:flex;flex-direction:column;gap:5px}
+#camAlbum .cam-layer{font:11.5px/1.48 Georgia,serif;color:#cfc9bc;padding:4px 8px;border-left:2px solid rgba(220,205,175,.35);background:rgba(255,255,255,.02)}
+#camAlbum .cam-layer b{display:block;font:600 9px/1.2 system-ui,sans-serif;letter-spacing:1.8px;text-transform:uppercase;margin-bottom:2px;color:#d7cbb0}
+#camAlbum .cam-layer.l-hecho{border-color:rgba(243,238,228,.55)}
+#camAlbum .cam-layer.l-hecho b{color:#f3eee4}
+#camAlbum .cam-layer.l-2025{border-color:rgba(228,182,111,.6)}
+#camAlbum .cam-layer.l-2025 b{color:#f0ca86}
+#camAlbum .cam-layer.l-2026{border-color:rgba(158,194,173,.65)}
+#camAlbum .cam-layer.l-2026 b{color:#b3dac3}
+#camAlbum .cam-stamp{display:inline-block;margin-bottom:6px;font:600 9.5px/1.2 system-ui,sans-serif;letter-spacing:1.8px;color:#b8ad94;text-transform:uppercase}
 #camAlbum .cam-photo::after{content:'';position:absolute;top:14px;left:14px;right:14px;aspect-ratio:4/3;pointer-events:none;mix-blend-mode:multiply;opacity:.8}
 #camAlbum .cam-photo:nth-child(1)::after{background:radial-gradient(ellipse at 100% 0%,rgba(70,40,10,.75),transparent 46%),linear-gradient(115deg,transparent 60%,rgba(120,90,50,.28) 61%,transparent 62%)}
 #camAlbum .cam-photo:nth-child(2)::after{background:radial-gradient(ellipse at 0% 100%,rgba(60,70,60,.65),transparent 42%),radial-gradient(circle at 70% 30%,rgba(110,95,60,.35),transparent 24%)}
 #camAlbum .cam-photo:nth-child(3)::after{background:linear-gradient(80deg,transparent 48%,rgba(30,25,20,.55) 48.4%,transparent 49%),linear-gradient(100deg,transparent 52%,rgba(30,25,20,.35) 52.3%,transparent 52.8%),radial-gradient(ellipse at 50% 120%,rgba(60,45,30,.5),transparent 50%)}
-#camAlbum .cam-photo:nth-child(4)::after{background:radial-gradient(ellipse at 50% 50%,rgba(210,200,180,.0) 30%,rgba(200,190,170,.55) 100%)}
+#camAlbum .cam-photo:nth-child(4)::after{display:none}
+#camAlbum .cam-photo.is-clean::after{display:none}
 
 #camAlbum .cam-mine-card{min-width:0;background:rgba(255,255,255,.035);border:1px solid rgba(220,205,175,.18);padding:10px;display:flex;flex-direction:column;gap:8px}
 #camAlbum .cam-mine-card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;border:4px solid #ded5c0;box-shadow:0 4px 16px #0008;cursor:zoom-in}
@@ -345,10 +356,10 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
   camAlbum.id = 'camAlbum';
   camAlbum.innerHTML =
     '<section class="cam-sheet">' +
-    '<header class="cam-head"><div><div class="cam-kicker">ARCHIVO FOTOGRÁFICO · BOIS.IO</div><h2>Álbum de la cámara</h2><p id="camSubtitle">Cuatro recuerdos velados por el tiempo y tus propias fotografías de la isla.</p></div><button class="cam-close" type="button" aria-label="Cerrar álbum">× <span>Cerrar</span></button></header>' +
-    '<div class="cam-tabs" role="tablist"><button type="button" class="cam-tab" data-tab="story" role="tab">Cámara antigua (4)</button><button type="button" class="cam-tab" data-tab="mine" role="tab">Mis fotos de la isla (<span id="camMineCount">0</span>)</button></div>' +
+    '<header class="cam-head"><div><div class="cam-kicker">CÁPSULAS DE MEMORIA · BOIS.IO</div><h2>Álbum de la cámara</h2><p id="camSubtitle">Lo que ocurrió, lo que pensaste en 2025 y lo que sabes hoy.</p></div><button class="cam-close" type="button" aria-label="Cerrar álbum">× <span>Cerrar</span></button></header>' +
+    '<div class="cam-tabs" role="tablist"><button type="button" class="cam-tab" data-tab="story" role="tab">Cámara antigua (<span id="camStoryCount">4</span>)</button><button type="button" class="cam-tab" data-tab="island" role="tab">Cápsulas de la isla (<span id="camIslandCount">0</span>/6)</button><button type="button" class="cam-tab" data-tab="mine" role="tab">Mis fotos de la isla (<span id="camMineCount">0</span>)</button></div>' +
     '<div class="cam-grid" id="camGrid"></div>' +
-    '<footer class="cam-foot"><span>«Fragmentos de una isla que todavía me reconoce...»</span><kbd>P</kbd> visor y foto · <kbd>V</kbd> volver a abrir · <kbd>ESC</kbd> cerrar</footer>' +
+    '<footer class="cam-foot"><span>«No confundir las interpretaciones con los hechos. Estaba aprendiendo a vivir.»</span><kbd>P</kbd> visor y foto · <kbd>V</kbd> volver a abrir · <kbd>ESC</kbd> cerrar</footer>' +
     '</section>';
   document.body.appendChild(camAlbum);
   window.camAlbum = camAlbum;
@@ -395,11 +406,29 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
   document.getElementById('clClose').addEventListener('click', closeLightbox);
   lightEl.addEventListener('click', e => { if (e.target === lightEl) closeLightbox(); });
 
+  function renderLayersHTML(L) {
+    if (!L) return '';
+    return '<div class="cam-layers">' +
+      (L.stamp ? '<span class="cam-stamp">' + camEsc(L.stamp) + '</span>' : '') +
+      (L.fact ? '<div class="cam-layer l-hecho"><b>Hecho</b>' + camEsc(L.fact) + '</div>' : '') +
+      (L.thought2025 ? '<div class="cam-layer l-2025"><b>Lo que pensaste · 2025</b>' + camEsc(L.thought2025) + '</div>' : '') +
+      (L.insight2026 ? '<div class="cam-layer l-2026"><b>Lo que sabes hoy · 2026</b>' + camEsc(L.insight2026) + '</div>' : '') +
+      '</div>';
+  }
+
   function renderAlbum() {
     const grid = document.getElementById('camGrid');
     const countEl = document.getElementById('camMineCount');
+    const storyCountEl = document.getElementById('camStoryCount');
+    const islandCountEl = document.getElementById('camIslandCount');
     const subEl = document.getElementById('camSubtitle');
+    const camList = typeof CAM_PHOTOS !== 'undefined' ? CAM_PHOTOS : [];
+    const islandList = typeof PHOTOS !== 'undefined' && typeof STORY !== 'undefined'
+      ? PHOTOS.filter(p => !!STORY.flags['photo_' + p.id])
+      : [];
     if (countEl) countEl.textContent = String(userPhotos.length);
+    if (storyCountEl) storyCountEl.textContent = String(camList.length);
+    if (islandCountEl) islandCountEl.textContent = String(islandList.length);
     camAlbum.querySelectorAll('.cam-tab').forEach(b => {
       const on = b.dataset.tab === activeTab;
       b.classList.toggle('on', on);
@@ -407,13 +436,27 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
     });
 
     if (activeTab === 'story') {
-      if (subEl) subEl.textContent = 'Cuatro recuerdos velados por el tiempo, aún reconocibles.';
+      if (subEl) subEl.textContent = camList.length > 4
+        ? 'Cuatro recuerdos iniciales y una escena guardada en presencia.'
+        : 'Cuatro cápsulas iniciales de tu cámara, cada una con sus tres capas de memoria.';
       if (typeof STORY !== 'undefined' && !STORY.flags.gotCam) {
         grid.innerHTML = '<div class="cam-empty">Todavía no has recogido la cámara antigua en la playa del despertar.</div>';
         return;
       }
-      grid.innerHTML = (typeof CAM_PHOTOS !== 'undefined' ? CAM_PHOTOS : []).map((p, i) =>
-        '<article class="cam-photo"><img loading="lazy" src="' + camEsc(p.img) + '" alt="Fotografía dañada: ' + camEsc(p.title) + '"><h3>' + (i + 1) + '. ' + camEsc(p.title) + '</h3><p>' + camEsc(p.desc) + '</p><small>' + camEsc(p.damage) + '</small></article>'
+      grid.innerHTML = camList.map((p, i) =>
+        '<article class="cam-photo' + (i >= 3 ? ' is-clean' : '') + '"><img loading="lazy" src="' + camEsc(p.img) + '" alt="Cápsula: ' + camEsc(p.title) + '"><h3>' + (i + 1) + '. ' + camEsc(p.title) + '</h3><p>' + camEsc(p.desc) + '</p><small>' + camEsc(p.damage) + '</small>' + renderLayersHTML(p.layers) + '</article>'
+      ).join('');
+      return;
+    }
+
+    if (activeTab === 'island') {
+      if (subEl) subEl.textContent = 'Cápsulas recogidas en la isla (' + islandList.length + '/6): hecho, interpretación de 2025 y calma de 2026.';
+      if (!islandList.length) {
+        grid.innerHTML = '<div class="cam-empty">Todavía no has recogido ninguna cápsula fotográfica en la isla.<br>Consulta el mapa (<b>M</b>) o el diario (<b>J</b>) para seguir las zonas de pista.</div>';
+        return;
+      }
+      grid.innerHTML = islandList.map((p, i) =>
+        '<article class="cam-photo is-clean"><img loading="lazy" src="' + camEsc(p.img) + '" alt="Cápsula de la isla: ' + camEsc(p.title) + '"><h3>' + (i + 1) + '. ' + camEsc(p.title) + '</h3><p>' + camEsc(p.zone || '') + '</p>' + renderLayersHTML(p.layers) + '</article>'
       ).join('');
       return;
     }
@@ -528,7 +571,7 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
     const hasCam = typeof STORY !== 'undefined' && !!STORY.flags.gotCam;
     if (!hasCam && userPhotos.length === 0) return;
     closeFinder();
-    if (tab === 'story' || tab === 'mine') activeTab = tab;
+    if (tab === 'story' || tab === 'island' || tab === 'mine') activeTab = tab;
     else if (!hasCam) activeTab = 'mine';
     else activeTab = preferredTab || 'story';
     editingId = null;
@@ -556,6 +599,7 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
 
   window.openCameraGallery = openCameraGallery;
   window.closeCameraGallery = closeCameraGallery;
+  window.__boisRefreshAlbum = () => { if (camAlbum.style.display !== 'none') renderAlbum(); };
 
   camAlbum.querySelector('.cam-close').addEventListener('click', closeCameraGallery);
   camAlbum.addEventListener('click', e => { if (e.target === camAlbum) closeCameraGallery(); });

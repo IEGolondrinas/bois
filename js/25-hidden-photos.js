@@ -83,20 +83,21 @@ function interactPhoto(){
       ch2Pad(n>=tot?[196,293.7,392]:[220+n*12,293.7+n*10,392],4.8,.034);
       // v73: la imagen real acompaña los fragmentos narrativos de esta fotografía.
       window.__boisRevealPhoto={title:p.title,img:p.img};
-      const locLabel='FOTOGRAFÍA '+n+'/'+tot+(p.zone?' · '+String(p.zone).toUpperCase():'');
-      playCinematic(p.mem.map(t=>({t})),()=>{
+      const locLabel='CÁPSULA '+n+'/'+tot+(p.zone?' · '+String(p.zone).toUpperCase():'');
+      const lines=typeof window.__boisMemoryLines==='function'?window.__boisMemoryLines(p):p.mem.map(t=>({t}));
+      playCinematic(lines,()=>{
         if(n>=tot){
           storyFlag('ch2_complete',1);
           if(window.__katherin)window.__katherin.visible=true;
           if(window.__glasses&&!STORY.flags.glasses)window.__glasses.visible=true;
           ch2Pad([196,261.6,329.6,392],7.5,.042);
           playCinematic([
-            {t:'Las seis fotografías vuelven a encajar en tu memoria.'},
-            {t:'No reconstruyeron una vida cualquiera: te trajeron de vuelta a este lugar.'},
-            {t:'Algo cambia en el aire. Alguien ya te espera junto al lago, en el Parque de los Cisnes.'}
-          ],()=>{showMsg('Capítulo III · El Parque de los Cisnes · busca a quien espera junto al lago')},{location:'CAPÍTULO II · COMPLETADO'});
+            {t:'Las seis cápsulas vuelven a su sitio en la cámara.'},
+            {t:'No resolviste un misterio: empezaste a distinguir lo que pasó de lo que imaginaste.'},
+            {t:'Junto al lago, en el Parque de los Cisnes, Katherin espera sentada en la banca.'}
+          ],()=>{showMsg('Capítulo III · El Parque de los Cisnes · acércate al lago')},{location:'CAPÍTULO II · COMPLETADO'});
         }else{
-          showMsg('Fotografía '+n+'/'+tot+' guardada'+(n===3?' · Nueva página en tu libreta (J)':''));
+          showMsg('Cápsula '+n+'/'+tot+' guardada'+(n===3?' · Nueva página en tu libreta (J)':''));
           if(typeof bgGuided==='function'){const gd=bgGuided();if(gd)setTimeout(()=>{if(S.on&&!CIN.on)showMsg('Siguiente pista · '+gd.zone+' · pulsa J o M')},3200)}
         }
       },{location:locLabel});

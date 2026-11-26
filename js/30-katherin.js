@@ -1077,47 +1077,117 @@ function katherinStage() {
 
 const KATHERIN_OPENERS = {
   rain: [
-    { t: 'La lluvia golpea el agua en pequeños círculos. Katherin no parece tener prisa por irse.' },
-    { who: 'Katherin', t: 'Me gusta cómo suena el lago cuando llueve.' }
+    { t: 'La lluvia cae despacio sobre el agua. Katherin apoya los codos en las rodillas y observa las ondas.' },
+    { who: 'Katherin', t: 'Me gusta cómo suena la lluvia sobre el lago.' }
   ],
   night: [
-    { t: 'La banca queda al borde de la luz. Katherin sigue allí, con el lago oscuro enfrente.' },
-    { who: 'Katherin', t: 'De noche se oye mejor lo que uno piensa.' }
+    { t: 'La banca queda justo al borde de la luz. Katherin mira el reflejo oscuro del agua.' },
+    { who: 'Katherin', t: 'De noche todo suena más tranquilo.' }
   ],
-  dawn: [{ t: 'La luz del amanecer se posa sobre el agua. Katherin la mira sin parpadear.' }],
+  dawn: [{ t: 'La luz clara del amanecer toca el agua. Katherin mira hacia la otra orilla en silencio.' }],
   sunset: [
-    { t: 'El atardecer tiñe el lago de un color que casi no tiene nombre.' },
-    { who: 'Katherin', t: 'Todo se ve más amable a esta hora.' }
+    { t: 'La tarde tiñe el lago de naranja suave. Ninguno de los dos dice nada durante unos segundos.' },
+    { who: 'Katherin', t: 'A esta hora el parque se siente menos pesado.' }
   ]
 };
 
 const KATHERIN_TALKS = {
   1: [
-    [{ who: 'Katherin', t: '¿Qué estás buscando?' }, { who: 'Tú', t: 'No lo sé.' }, { who: 'Katherin', t: 'Entonces quizás todavía no deberías buscarlo.' }, { t: 'No añade nada más. Y, por alguna razón, esta vez eso basta.' }],
-    [{ who: 'Katherin', t: 'Los cisnes llevan un rato en el mismo sitio.' }, { who: 'Tú', t: '¿Los has contado?' }, { who: 'Katherin', t: 'Dos. Siempre dos. No sé por qué eso me tranquiliza.' }],
-    [{ who: 'Katherin', t: '¿Alguna vez has sentido que ya estuviste en un lugar, pero no recuerdas cuándo?' }, { who: 'Tú', t: 'Desde que desperté.' }, { who: 'Katherin', t: 'Entonces no soy la única.' }]
+    [
+      { who: 'Katherin', t: '¿Estabas buscando algo en el parque?' },
+      { who: 'Tú', t: 'No estoy seguro… solo sentía que tenía que entender qué pasó aquí.' },
+      { who: 'Katherin', t: 'Yo solo vine a sentarme un rato. A veces uno piensa demasiado cuando nadie dice nada.' },
+      { type: 'layer', layer: 'hoy', t: 'Su cara era neutral. En 2025 llenabas cada silencio con hipótesis.' }
+    ],
+    [
+      { who: 'Katherin', t: 'Los cisnes llevan rato dando vueltas en el mismo punto.' },
+      { who: 'Tú', t: 'Dos. Siempre los cuento.' },
+      { who: 'Katherin', t: 'Eso se parece bastante a ti: fijarte en los detalles que los demás pasan por alto.' }
+    ],
+    [
+      { who: 'Katherin', t: 'No hace falta que inventes un tema de conversación.' },
+      { who: 'Tú', t: 'Es que cuando hay silencio siento que estoy incomodando.' },
+      { who: 'Katherin', t: 'No incomodas. Yo también suelo quedarme callada cuando me gusta estar tranquila.' }
+    ]
   ],
   2: [
-    [{ who: 'Katherin', t: 'Toro… así te decían, ¿no?' }, { who: 'Tú', t: 'Así me decían.' }, { who: 'Katherin', t: 'Me gusta. Suena a alguien que no se mueve fácil de su sitio.' }],
-    [{ who: 'Katherin', t: 'Vi que has estado cerca del edificio de la orilla.' }, { who: 'Tú', t: 'Había algo ahí dentro que no entendía.' }, { who: 'Katherin', t: 'Quizás no se trata de entenderlo. A veces basta con haber estado.' }],
-    [{ who: 'Katherin', t: 'Cada vez que vuelves traes un poco más de ruido en la cabeza.' }, { who: 'Tú', t: '¿Se nota?' }, { who: 'Katherin', t: 'Un poco. Pero también se nota que estás menos perdido.' }],
-    [{ who: 'Katherin', t: '¿Puedo preguntarte algo?' }, { who: 'Tú', t: 'Claro.' }, { who: 'Katherin', t: '¿Tienes miedo de recordar?' }, { t: 'Tardas en responder. Ella no te apresura.' }]
+    [
+      { who: 'Katherin', t: 'Toro… así te decían en el salón, ¿no?' },
+      { who: 'Tú', t: 'Sí. Aunque a veces sentía que solo me veían cuando resolvía algo.' },
+      { who: 'Katherin', t: 'Yo también vi el día que prestaste tu computador e hiciste la mezcla. Todos te lo agradecieron de verdad.' }
+    ],
+    [
+      { who: 'Katherin', t: 'Estuviste en El Colegio.' },
+      { who: 'Tú', t: 'Me acordé del bus de las seis y media. Y de esperar un mensaje mirando el reloj.' },
+      { who: 'Katherin', t: 'Qué largo se hace esperar cuando uno no sabe qué va a pasar.' }
+    ],
+    [
+      { who: 'Katherin', t: '¿Sigues intentando calcular si hiciste todo perfecto?' },
+      { who: 'Tú', t: 'Un poco. Me cuesta creer que valgo si no saco un buen resultado.' },
+      { who: 'Katherin', t: 'No todo problema tiene una fórmula, Toro. Tampoco tú.' }
+    ],
+    [
+      { who: 'Katherin', t: 'A veces miras el suelo cuando hablas.' },
+      { who: 'Tú', t: 'No es indiferencia. Es que me da pena sostener la mirada demasiado tiempo.' },
+      { who: 'Katherin', t: 'Lo sé. Se nota que estabas haciendo tu mejor esfuerzo.' }
+    ]
   ],
   3: [
-    [{ who: 'Katherin', t: 'Bajaste. Lo noto en cómo caminas.' }, { who: 'Tú', t: 'Había un lugar debajo del lago. Pasillos que no deberían existir.' }, { who: 'Katherin', t: 'Lo que permanece debajo suele ser lo que más duele mirar.' }],
-    [{ who: 'Katherin', t: 'La fotografía… ¿la guardaste?' }, { who: 'Tú', t: 'Sí.' }, { who: 'Katherin', t: 'Bien. Algunas cosas merecen que alguien las cuide.' }, { t: 'Aparta la mirada, pero sonríe un poco.' }],
-    [{ who: 'Katherin', t: '¿Te acuerdas de quién eras antes de llegar aquí?' }, { who: 'Tú', t: 'Cada vez un poco más. No todo me gusta.' }, { who: 'Katherin', t: 'Eso significa que es verdad.' }]
+    [
+      { who: 'Katherin', t: '¿Te acuerdas de la actividad de Cátedra de Paz?' },
+      { who: 'Tú', t: 'Nos dividimos nueve y nueve. Yo pensé que todos iban a poner solo que era bueno en matemáticas.' },
+      { who: 'Katherin', t: 'Y escribimos lo que de verdad veíamos en ti. Eso también era real.' }
+    ],
+    [
+      { who: 'Katherin', t: 'Guardaste la hoja del cuaderno.' },
+      { who: 'Tú', t: 'Me temblaron las piernas cuando la leí. Cinco palabras me hicieron ruido todo el año.' },
+      { who: 'Katherin', t: 'Solo escribí lo que eras: reservado, amable y enfocado. Sin ningún misterio.' }
+    ],
+    [
+      { who: 'Katherin', t: 'A veces confundías un gesto pequeño con un examen.' },
+      { who: 'Tú', t: 'Cada vez lo veo más claro. Yo imaginaba una película entera donde tú solo estabas ahí.' },
+      { who: 'Katherin', t: 'Y aun así, estar ahí también valía.' }
+    ]
   ],
   4: [
-    [{ who: 'Katherin', t: 'Vi las torres desde aquí. Brillan distinto de noche.' }, { who: 'Tú', t: 'Dentro vi lo que fui y lo que podría ser.' }, { who: 'Katherin', t: '¿Y cuál de los dos te dio más miedo?' }],
-    [{ who: 'Katherin', t: 'No puedes recordar el futuro porque todavía no ha ocurrido.' }, { who: 'Tú', t: 'Eso mismo decía el suelo.' }, { who: 'Katherin', t: 'Entonces el suelo tiene razón. Y tú, por fin, también.' }],
-    [{ who: 'Katherin', t: 'Gracias por volver a sentarte conmigo.' }, { who: 'Tú', t: 'Fue buena idea volver.' }, { who: 'Katherin', t: 'Casi siempre lo es.' }, { t: 'El lago sigue moviéndose frente a ustedes, sin ninguna prisa.' }]
+    [
+      { who: 'Katherin', t: 'Te ves distinto desde que subiste a las torres.' },
+      { who: 'Tú', t: 'Estaba mirando cuánto tiempo pasé midiendo mi vida como si fuera una ecuación.' },
+      { who: 'Katherin', t: '¿Y encontraste alguna respuesta?' },
+      { who: 'Tú', t: 'Que no tenía que hacerlo perfectamente. Tenía dieciséis años y estaba aprendiendo.' }
+    ],
+    [
+      { who: 'Katherin', t: 'Recuerdo aquel ensayo en la casa grande… las dos ventanas.' },
+      { who: 'Tú', t: 'Tú mirabas por una y yo me fui a la contraria para no estorbar.' },
+      { who: 'Katherin', t: 'Dos personas reservadas mirando el mismo paisaje desde lados opuestos. No estuvo mal.' }
+    ],
+    [
+      { who: 'Katherin', t: 'Gracias por sentarte aquí sin querer resolver nada.' },
+      { who: 'Tú', t: 'Hoy solo quería acompañar el silencio.' },
+      { t: 'El lago sigue moviéndose frente a ustedes, sin ninguna prisa.' }
+    ]
   ],
   5: [
-    [{ who: 'Katherin', t: 'Ya no te veo mirar hacia atrás cada pocos pasos.' }, { who: 'Tú', t: '¿Tanto se notaba?' }, { who: 'Katherin', t: 'Lo suficiente. Ahora caminas como alguien que sabe adónde vuelve.' }],
-    [{ who: 'Katherin', t: '¿Sigues imaginando conversaciones?' }, { who: 'Tú', t: 'Menos. Y las que imagino ya no tienen guion.' }, { who: 'Katherin', t: 'Esas son las únicas que valen la pena.' }],
-    [{ who: 'Katherin', t: 'Hoy el lago está quieto.' }, { who: 'Tú', t: 'No me hace falta que se mueva para sentirme acompañado.' }, { who: 'Katherin', t: 'Entonces ya aprendiste lo que vinimos a hablar.' }],
-    [{ who: 'Katherin', t: 'Cuando me vaya, no quiero que te quedes esperando en esta banca.' }, { who: 'Tú', t: 'No prometo no venir.' }, { who: 'Katherin', t: 'Está bien. Pero ven a mirar el agua, no a buscarme.' }, { t: 'Sonríe, y por primera vez no aparta la mirada.' }]
+    [
+      { who: 'Katherin', t: 'Ya no miras cada gesto mío como si escondiera una clave.' },
+      { who: 'Tú', t: 'Creo que entendí la diferencia entre lo que pasa y lo que mi cabeza construye encima.' },
+      { who: 'Katherin', t: 'Eso da mucha paz.' }
+    ],
+    [
+      { who: 'Katherin', t: 'Tal vez nunca sepamos exactamente qué pensaba el otro en cada ensayo.' },
+      { who: 'Tú', t: 'No necesito saber qué significó para ti para saber cuánto significó para mí.' },
+      { who: 'Katherin', t: 'Con eso basta.' }
+    ],
+    [
+      { who: 'Katherin', t: 'Hoy el agua está quieta.' },
+      { who: 'Tú', t: 'Y por unos segundos no estoy pensando en qué significa. Solo estoy aquí.' },
+      { who: 'Katherin', t: 'Quizá de eso se trataba aprender a estar presente.' }
+    ],
+    [
+      { who: 'Katherin', t: 'Cuando sigas tu camino, no te quedes esperando señales en esta banca.' },
+      { who: 'Tú', t: 'Volveré cuando quiera mirar el lago, sin guiones en la cabeza.' },
+      { t: 'Sonríe con naturalidad. A lo lejos, los cisnes siguen flotando sobre el agua.' }
+    ]
   ]
 };
 
@@ -1156,42 +1226,34 @@ function interactKatherin() {
       ? [{ t: 'Llueve despacio. Aun así, hay alguien sentada en uno de los bancos.' }, { pause: 1500 }]
       : [];
     playCinematic(intro.concat([
-      { pause: 1300 },
-      { t: 'El parque está casi vacío. Los cisnes avanzan lentamente sobre el agua.' },
-      { pause: 1800 },
-      { t: 'En uno de los bancos hay una joven. Mira el lago, con las manos descansando sobre el regazo y un cuaderno cerrado a su lado.' },
-      { pause: 2100 },
-      { t: 'Tus pasos suenan sobre el camino.' },
       { pause: 1100 },
-      { t: 'Ella los escucha. No se levanta; solo gira un poco la cabeza.' },
-      { pause: 1300 },
-      { who: 'Katherin', t: 'Pensé que ya no ibas a volver.' },
-      { pause: 2000 },
-      { who: 'Tú', t: '¿Me conoces?' },
-      { pause: 1600 },
-      { who: 'Katherin', t: 'Conozco la forma en que dudas antes de acercarte a este lugar.' },
-      { pause: 2200 },
-      { t: 'Vuelve la mirada hacia el lago. Un pétalo de cerezo cae al agua y se aleja despacio.' },
+      { t: 'El parque está casi vacío. Dos cisnes avanzan despacio sobre el agua.' },
+      { pause: 1700 },
+      { t: 'En la banca hay una joven con un cuaderno cerrado a su lado. Su expresión es tranquila, difícil de leer.' },
+      { pause: 2100 },
+      { t: 'Tus pasos crujen sobre la grava.' },
+      { pause: 1100 },
+      { t: 'Ella gira apenas la cabeza y hace un gesto pequeño con la mano.' },
+      { pause: 1200 },
+      { who: 'Katherin', t: 'Hola.' },
+      { pause: 1400 },
+      { type: 'layer', layer: 'pensaste', t: 'Me quedé en blanco un segundo. Pensé: tengo que responder algo normal para no parecer raro.' },
       { pause: 2200 },
       { who: 'Katherin', t: 'Me llamo Katherin.' },
-      { pause: 1200 },
-      { who: 'Tú', t: 'Todo aquí me resulta familiar… pero siento que dejé demasiadas cosas a medias.' },
+      { pause: 1400 },
+      { who: 'Tú', t: 'Hola… siento que ya había estado en un silencio parecido contigo, pero mi cabeza intenta adivinarlo todo.' },
+      { pause: 2300 },
+      { who: 'Katherin', t: 'No tienes que adivinar nada. Yo también soy algo callada.' },
       { pause: 2000 },
-      { who: 'Katherin', t: 'Quizás por eso regresaste. No para entenderlo de golpe, sino para mirar con calma.' },
+      { t: 'Por un momento ninguno intenta llenar la pausa. Un pétalo de cerezo cae al agua y sigue su curso.', on: () => katherinCh3Pad([196, 293.7, 392, 493.9], 5.5, 0.030) },
       { pause: 2200 },
-      { t: 'Por un momento, ninguno de los dos intenta llenar el silencio.' },
-      { pause: 2200 },
-      { who: 'Tú', t: '¿Tú también estás esperando algo?' },
-      { pause: 1600 },
-      { who: 'Katherin', t: 'Solo guardo un sitio tranquilo junto al agua, por si te cansas de correr.', on: () => katherinCh3Pad([196, 293.7, 392, 493.9], 5.5, 0.030) },
-      { pause: 2100 },
-      { t: 'Una pequeña sonrisa aparece en su rostro. Señala suavemente hacia tierra firme.' },
-      { pause: 1500 },
-      { who: 'Katherin', t: 'Cuando quieras seguir recordando, el viejo edificio de salones vuelve a estar abierto. Puedes sentarte antes, si quieres. (F)' },
+      { type: 'layer', layer: 'hoy', t: 'No había enigmas en su mirada. Solo dos personas reservadas coincidiendo junto al agua.' },
       { pause: 2400 },
-      { t: 'Te quedas allí, a una distancia prudente. El lago sigue moviéndose frente a ustedes.' },
-      { pause: 2600 }
-    ]), () => showMsg('Capítulo III completado · Puedes sentarte (F) o buscar el edificio sin nombre'), { lookAt, location: 'CAPÍTULO III · EL PARQUE DE LOS CISNES' });
+      { who: 'Katherin', t: 'Si sigues hacia tierra firme, El Colegio vuelve a estar abierto. Puedes sentarte antes, si quieres. (F)' },
+      { pause: 2400 },
+      { t: 'Te quedas allí, a una distancia cómoda. El lago sigue moviéndose frente a ustedes.' },
+      { pause: 2400 }
+    ]), () => showMsg('Capítulo III completado · Puedes sentarte (F) o buscar El Colegio'), { lookAt, location: 'CAPÍTULO III · EL PARQUE DE LOS CISNES' });
   } else {
     const stage = katherinStage();
     const pool = KATHERIN_TALKS[stage] || KATHERIN_TALKS[1];

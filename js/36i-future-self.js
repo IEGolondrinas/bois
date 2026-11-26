@@ -356,11 +356,12 @@ try {
       ].map(([v, l]) => '<button type="button" data-fr-wx="' + v + '" style="padding:5px 9px;background:transparent;border:1px solid #ffffff30;color:#e6dfce;font:11px system-ui;cursor:pointer">' + l + '</button>').join('');
       const goBtns = SPOTS.map(s => '<button type="button" data-fr-go="' + s.id + '" style="padding:5px 9px;background:rgba(200,185,142,.12);border:1px solid rgba(200,185,142,.38);color:#eee6d4;font:11px system-ui;cursor:pointer">' + fsEsc(s.label) + '</button>').join('');
       return '<div class="bgBlock"><strong>Paseo tranquilo · elegir momento y lugar</strong>' +
-        '<p class="bgMuted">Completaste los 7 capítulos. Puedes ajustar al instante la luz, el clima o ir directo a tus rincones favoritos.</p>' +
+        '<p class="bgMuted">Completaste los 7 capítulos. Puedes ajustar al instante la luz, el clima, volver a tus rincones o sentarte frente al lago sin buscar nada.</p>' +
         '<div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="bgMuted" style="min-width:46px">Hora:</span>' + todBtns + '</div>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="bgMuted" style="min-width:46px">Clima:</span>' + wxBtns + '</div>' +
         '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="bgMuted" style="min-width:46px">Ir a:</span>' + goBtns + '</div>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:2px"><button type="button" data-fr-presence="1" style="padding:6px 11px;background:rgba(158,194,173,.14);border:1px solid rgba(158,194,173,.48);color:#d7efe0;font:11px system-ui;cursor:pointer">Epílogo · Momento de presencia junto al lago</button></div>' +
         '</div></div>';
     };
 
@@ -497,12 +498,61 @@ try {
         teleportSpot(goBtn.dataset.frGo);
         return;
       }
+      const presBtn = e.target.closest('[data-fr-presence]');
+      if (presBtn) {
+        if (typeof bgClose === 'function') bgClose('journal');
+        teleportSpot('park');
+        setTimeout(() => playPresenceEpilogue(false), 320);
+        return;
+      }
       const bkBtn = e.target.closest('[data-bk-now]');
       if (bkBtn) {
         document.getElementById('bkExport')?.click();
         setTimeout(() => { if (typeof bgRenderJournal === 'function') bgRenderJournal(); }, 150);
       }
     });
+
+    // ---------- 6. Epílogo: Presencia (quedarse quieto mirando el lago tras Cap. VII) ----------
+    let presencePlaying = false;
+    let stillMs = 0;
+    let lastPx = null;
+    let lastPz = null;
+    let presenceHintShown = false;
+
+    function playPresenceEpilogue(isFirstUnlock) {
+      if (presencePlaying || typeof playCinematic !== 'function' || (typeof CIN !== 'undefined' && CIN.on)) return;
+      if (typeof CAR !== 'undefined' && CAR.on && typeof exitCar === 'function') exitCar();
+      if (typeof PR !== 'undefined' && PR.on) return;
+      if (window.__boisCh6 && window.__boisCh6.on) return;
+      presencePlaying = true;
+      stillMs = 0;
+      const ly = typeof ground === 'function' ? ground(-125, 110, 50) + 1.2 : (typeof WL !== 'undefined' ? WL + 0.5 : 2);
+      const look = typeof THREE !== 'undefined' && THREE.Vector3 ? new THREE.Vector3(-125, ly, 110) : null;
+      if (typeof auHit === 'function') auHit(220, 0.025, 0.5);
+      const lines = [
+        { pause: 1300 },
+        { layer: 'presencia', stamp: 'AQUÍ Y AHORA', t: 'No estás buscando pistas en el horizonte. No estás esperando que nadie aparezca ni intentando descifrar una señal.' },
+        { pause: 2400 },
+        { layer: 'presencia', t: 'El viento mueve apenas los árboles de la orilla. Un cisne cruza despacio el agua. El reflejo de las torres tiembla y vuelve a calmarse.' },
+        { pause: 2400 },
+        { layer: 'presencia', t: 'Por unos segundos no pensaste en qué significaba.' },
+        { pause: 2000 },
+        { layer: 'presencia', t: 'Solo estabas ahí.' },
+        { pause: 2200 },
+        { layer: 'presencia', t: 'Quizá eso también cuenta como recordar.' },
+        { pause: 1600 },
+        { layer: 'hoy', stamp: 'PARA TU YO DEL FUTURO', t: 'No tenías que resolver toda tu vida para permitirte vivirla. Gracias por llegar hasta aquí, Julián.' }
+      ];
+      playCinematic(lines, () => {
+        presencePlaying = false;
+        if (isFirstUnlock && typeof storyFlag === 'function' && !(typeof STORY !== 'undefined' && STORY.flags && STORY.flags.ch7_presencia)) {
+          storyFlag('ch7_presencia', 1);
+          if (typeof auHit === 'function') auHit(330, 0.025, 0.45);
+          if (typeof showMsg === 'function') showMsg('Epílogo completado · La isla sigue abierta para volver cuando quieras');
+        }
+      }, look ? { lookAt: look, location: 'EL LAGO · EPÍLOGO · PRESENCIA' } : { location: 'EL LAGO · EPÍLOGO · PRESENCIA' });
+    }
+    window.__boisPlayPresenceEpilogue = playPresenceEpilogue;
 
     document.addEventListener('keydown', e => {
       const jb = document.getElementById('bgJournal');
@@ -515,7 +565,7 @@ try {
       }
     });
 
-    // ---------- Tick suave (easel del parque + luciérnagas en fechas clave) ----------
+    // ---------- Tick suave (easel del parque + luciérnagas en fechas clave + quietud de Presencia) ----------
     setInterval(() => {
       if (document.hidden) return;
       try {
@@ -528,6 +578,38 @@ try {
           easelNear = n;
         } else {
           easelNear = false;
+        }
+
+        // Epílogo de Presencia: tras Cap. VII, si te sientas en la banca (F) o te quedas quieto mirando el lago
+        const fl = typeof STORY !== 'undefined' && STORY.flags ? STORY.flags : null;
+        if (fl && fl.ch7_complete && !fl.ch7_presencia && !presencePlaying && !inSub && typeof S !== 'undefined' && S.on && !(typeof CIN !== 'undefined' && CIN.on) && !(typeof CAR !== 'undefined' && CAR.on) && !window.__boisGuideOverlayOpen) {
+          const kg = window.__katherin;
+          const nearBench = kg && kg.visible && Math.hypot(S.x - kg.position.x, S.z - kg.position.z) < 26;
+          const nearLake = nearBench || Math.hypot(S.x + 125, S.z - 110) < 92;
+          if (nearLake) {
+            if (!presenceHintShown && typeof showMsg === 'function') {
+              presenceHintShown = true;
+              showMsg('Quédate quieto mirando el lago o siéntate en la banca (F)…');
+            }
+            const moved = lastPx !== null && Math.hypot(S.x - lastPx, S.z - lastPz) > 0.14;
+            lastPx = S.x;
+            lastPz = S.z;
+            if (moved && !window.__boisSitting) {
+              stillMs = 0;
+            } else {
+              stillMs += 550;
+              const needed = window.__boisSitting ? 3850 : 7150;
+              if (stillMs >= needed) {
+                playPresenceEpilogue(true);
+              }
+            }
+          } else {
+            stillMs = 0;
+            lastPx = null;
+            lastPz = null;
+          }
+        } else {
+          stillMs = 0;
         }
 
         if (special) {

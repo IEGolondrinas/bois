@@ -52,7 +52,8 @@ document.addEventListener('keydown',e=>{if(ej.open&&e.code==='Escape'){e.prevent
 function ejBuild(){
   if(ej.board||typeof PR==='undefined'||!PR.geo||!PR.scene)return;
   const g=PR.geo,c={i:5,j:4};let x=g.O+c.i*g.CW+g.CW/2,z=g.O+c.j*g.CW+g.CW/2;
-  const O=[[0,0],[2.6,0],[-2.6,0],[0,2.6],[0,-2.6],[4,4],[-4,4]];for(const o of O)if(!g.hit(x+o[0],z+o[1])){x+=o[0];z+=o[1];break}
+  const nearCh5=(px,pz)=>Array.isArray(window.__boisCh5Pts)&&window.__boisCh5Pts.some(p=>Math.hypot(px-p.x,pz-p.z)<6);
+  const O=[[0,0],[2.6,0],[-2.6,0],[0,2.6],[0,-2.6],[4,4],[-4,4]];for(const o of O)if(!g.hit(x+o[0],z+o[1])&&!nearCh5(x+o[0],z+o[1])){x+=o[0];z+=o[1];break}
   const fy=g.fyAt(x,z),cv=document.createElement('canvas');cv.width=280;cv.height=400;
   const tx=new THREE.CanvasTexture(cv);tx.encoding=THREE.sRGBEncoding;ej.cv=cv;ej.tx=tx;ejPaintBoard();
   const grp=new THREE.Group(),wood=new THREE.MeshStandardMaterial({color:0x6b4a2f,roughness:.85}),legGeo=new THREE.BoxGeometry(.06,.82,.06);
