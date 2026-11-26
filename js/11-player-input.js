@@ -86,13 +86,30 @@ if(e.code==='KeyE'&&!e.repeat&&S.on){if(interactCar())return;if(interactPhoto())
     return;
   }
 }
-if(e.code==='KeyV'&&!e.repeat&&S.on&&!CIN.on&&STORY.flags.gotCam){openCameraGallery();return;}
+if(e.target&&/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;
+if(e.code==='KeyV'&&!e.repeat&&S.on&&!CIN.on&&(STORY.flags.gotCam||(typeof window.__boisUserPhotoCount==='function'&&window.__boisUserPhotoCount()>0))){window.__boisCamFinderClose?.();openCameraGallery();return;}
 if(!S.on)return;keys[e.code==='ShiftRight'?'ShiftLeft':e.code]=1;
  if(e.code==='Space'){jumpQ=true;e.preventDefault()}
- if(!e.repeat){if(e.code==='KeyP'&&S.on){shot=true;shotDl=e.shiftKey}if(e.code==='KeyR'&&S.on&&CAR.on){setRadio();e.preventDefault();}if(e.code==='KeyN'){AU.on=!AU.on;if(!AU.on&&typeof carSoundMute==='function')carSoundMute();window.__saveBoisCfg?.();showMsg(AU.on?'Sonido activado':'Sonido silenciado')}}});
-addEventListener('keyup',e=>{keys[e.code==='ShiftRight'?'ShiftLeft':e.code]=0});addEventListener('blur',()=>{for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0});document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0}});
+ if(!e.repeat){
+  const cf=window.__boisCamFinder;
+  if(e.code==='KeyP'&&S.on){
+   if(e.shiftKey){shot=true;shotDl=true}
+   else if(cf&&!cf.on&&typeof window.__boisCamFinderOpen==='function'){window.__boisCamFinderOpen()}
+   else{shot=true;shotDl=false}
+  }
+  if(cf&&cf.on&&!CIN.on){
+   if(e.code==='Equal'||e.code==='NumpadAdd'||e.code==='KeyZ'){e.preventDefault();window.__boisCamFinderZoom?.(1)}
+   else if(e.code==='Minus'||e.code==='NumpadSubtract'){e.preventDefault();window.__boisCamFinderZoom?.(-1)}
+  }
+  if(e.code==='KeyR'&&S.on&&CAR.on){setRadio();e.preventDefault();}
+  if(e.code==='KeyN'){AU.on=!AU.on;if(!AU.on&&typeof carSoundMute==='function')carSoundMute();window.__saveBoisCfg?.();showMsg(AU.on?'Sonido activado':'Sonido silenciado')}
+ }});
+addEventListener('keyup',e=>{if(e.target&&/^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName))return;keys[e.code==='ShiftRight'?'ShiftLeft':e.code]=0});addEventListener('blur',()=>{for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0});document.addEventListener('visibilitychange',()=>{if(document.hidden){for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0}});
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement&&S.on&&!CIN.on){S.yaw-=e.movementX*SENS*cam.fov/72;S.pitch=Math.max(-1.5,Math.min(1.5,S.pitch-(BOIS_OPT.invY?-1:1)*e.movementY*SENS*cam.fov/72))}});
-document.addEventListener('pointerlockchange',()=>{if(window.__boisGuideIgnoreNextUnlock&&!document.pointerLockElement){window.__boisGuideIgnoreNextUnlock=false;return}if(!touch&&S.on&&!document.pointerLockElement&&!window.__boisGuideOverlayOpen){for(const k in keys)keys[k]=0;jumpQ=false;S.on=false;$('go').textContent='Continuar';$('go').disabled=false;$('ov').style.display='flex'}});
+document.addEventListener('mousedown',e=>{const cf=window.__boisCamFinder;if(!cf||!cf.on||!S.on||CIN.on||window.__boisGuideOverlayOpen)return;if(e.button===0&&document.pointerLockElement){e.preventDefault();shot=true;shotDl=e.shiftKey}else if(e.button===2){e.preventDefault();window.__boisCamFinderClose?.()}});
+document.addEventListener('contextmenu',e=>{if(window.__boisCamFinder&&window.__boisCamFinder.on&&S.on&&!CIN.on)e.preventDefault()});
+document.addEventListener('wheel',e=>{if(window.__boisCamFinder&&window.__boisCamFinder.on&&S.on&&!CIN.on&&!window.__boisGuideOverlayOpen){window.__boisCamFinderZoom?.(e.deltaY<0?1:-1)}},{passive:true});
+document.addEventListener('pointerlockchange',()=>{if(window.__boisGuideIgnoreNextUnlock&&!document.pointerLockElement){window.__boisGuideIgnoreNextUnlock=false;return}if(!touch&&S.on&&!document.pointerLockElement&&!window.__boisGuideOverlayOpen){window.__boisCamFinderClose?.();for(const k in keys)keys[k]=0;jumpQ=false;S.on=false;$('go').textContent='Continuar';$('go').disabled=false;$('ov').style.display='flex'}});
 $('go').onclick=beginFromMenu;$('c').addEventListener('click',()=>{if(S.on&&!touch&&!document.pointerLockElement)$('c').requestPointerLock()});
 if(touch){$('tb').style.display='flex';$('bj').onclick=()=>jumpQ=true;$('be').onclick=()=>{for(const t of['keydown','keyup'])document.dispatchEvent(new KeyboardEvent(t,{code:'KeyE',key:'e',bubbles:true}))};
  const handbrakeButton=$('bh');

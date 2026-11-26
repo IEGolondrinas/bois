@@ -21,4 +21,6 @@ ok(JSON.parse(C({...good,bois_dev_points:JSON.stringify(Array.from({length:900},
 ok(!('bois_story' in C({...good,bois_story:'{"flags":[]}'})),'historia con flags en arreglo se rechaza');
 ok(!('bois_story' in C({...good,bois_story:5})),'valor que no es texto se ignora');
 ok(Object.keys(C({bois_story:story})).length===1,'las claves ausentes no se inventan');
+const up=JSON.parse(C({...good,bois_user_photos:JSON.stringify([null,{img:'javascript:alert(1)',place:'x'},{id:'p1',img:'data:image/jpeg;base64,AAAA',place:'El lago',note:'luz suave',extra:'<script>'}])}).bois_user_photos);
+ok(up.length===1&&up[0].place==='El lago'&&up[0].note==='luz suave'&&!('extra' in up[0]),'fotos personales importadas: se validan y limpian campos');
 console.log('\n'+n+' comprobaciones de la importación superadas.');
