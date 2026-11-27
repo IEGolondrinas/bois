@@ -133,9 +133,8 @@ body.vhs-active #vhsFx {
   z-index: 8;
   min-width: 196px;
   padding: 11px 14px;
-  background: rgba(10, 16, 20, .72);
+  background: rgba(10, 16, 20, .86);
   border: 1px solid rgba(220, 210, 185, .22);
-  backdrop-filter: blur(8px);
   color: #eee8d9;
   pointer-events: none;
   opacity: 0;
@@ -223,9 +222,8 @@ body.vhs-active #vhsFx {
   transform: translate(-50%, 6px);
   z-index: 8;
   padding: 7px 14px;
-  background: rgba(12, 17, 21, .76);
+  background: rgba(12, 17, 21, .88);
   border: 1px solid rgba(225, 215, 190, .28);
-  backdrop-filter: blur(6px);
   color: #f2ece0;
   font: 12px/1.3 Georgia, serif;
   letter-spacing: .4px;
@@ -274,9 +272,8 @@ body.vhs-active #vhsFx {
   gap: 6px;
   max-width: calc(100vw - 16px);
   padding: 6px 8px;
-  background: rgba(9, 14, 18, .64);
+  background: rgba(9, 14, 18, .84);
   border: 1px solid rgba(225, 215, 195, .2);
-  backdrop-filter: blur(8px);
 }
 #tb button {
   appearance: none;
@@ -479,12 +476,14 @@ body.vhs-active #vhsFx {
   display: inline-block;
   margin-top: 10px;
   padding: 5px 10px;
-  background: rgba(16, 24, 32, .66);
+  background: rgba(16, 24, 32, .82);
   border: 1px solid rgba(226, 194, 132, .35);
   font: 11px/1.35 system-ui, sans-serif;
   color: #eedcb6;
   letter-spacing: .4px;
-  backdrop-filter: blur(6px);
+}
+.mBadge[hidden] {
+  display: none;
 }
 .mNav {
   display: flex;
@@ -496,13 +495,12 @@ body.vhs-active #vhsFx {
   appearance: none;
   text-align: left;
   padding: 10px 14px;
-  background: rgba(14, 20, 28, .62);
+  background: rgba(14, 20, 28, .78);
   border: 1px solid rgba(235, 225, 205, .18);
   color: #ede5d4;
   font: 14px/1.3 Georgia, serif;
   letter-spacing: .4px;
   cursor: pointer;
-  backdrop-filter: blur(6px);
   transition: background .18s ease, border-color .18s ease, transform .18s ease;
 }
 .mNav button:hover:not(:disabled),
@@ -551,9 +549,8 @@ body.vhs-active #vhsFx {
   width: min(460px, calc(100vw - 380px));
   overflow: auto;
   padding: 22px 24px;
-  background: rgba(11, 17, 22, .9);
+  background: rgba(11, 17, 22, .96);
   border: 1px solid rgba(226, 214, 186, .24);
-  backdrop-filter: blur(12px);
   color: #eee8d9;
   box-shadow: 0 20px 70px rgba(0, 0, 0, .6);
   opacity: 0;

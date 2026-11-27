@@ -1178,7 +1178,7 @@ try {
       box.id = 'ch4WaitHud';
       box.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:8;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:min(380px,90vw)';
       box.innerHTML =
-        '<div style="display:flex;align-items:center;gap:10px;padding:7px 14px;background:rgba(10,16,19,.78);border:1px solid rgba(232,220,190,.3);backdrop-filter:blur(6px);color:#eee6d2;font:600 13px/1.2 ui-monospace,Consolas,monospace;letter-spacing:2.4px">' +
+        '<div style="display:flex;align-items:center;gap:10px;padding:7px 14px;background:rgba(10,16,19,.88);border:1px solid rgba(232,220,190,.3);color:#eee6d2;font:600 13px/1.2 ui-monospace,Consolas,monospace;letter-spacing:2.4px">' +
         '<span id="ch4WaitHudClk">15:43</span>' +
         '<span style="font:11px/1.3 Georgia,serif;letter-spacing:.2px;color:#cfc7b4">Espejo medio abierto · vallenato suave</span>' +
         '</div>' +

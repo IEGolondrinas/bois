@@ -109,8 +109,9 @@ try{(()=>{
   const tail=box(.3,.3,.3,0xff3030,0,0,0,true);tail.position.set(-4.5,2.2,0);cars[cars.length-1].add(tail);
   T.visible=false;scene.add(T);
   const sm=[],sg=new THREE.SphereGeometry(.55,8,6);
-  for(let i=0;i<12;i++){const m=new THREE.Mesh(sg,new THREE.MeshBasicMaterial({color:0xdfe3e8,transparent:true,opacity:0,depthWrite:false}));m.visible=false;m.userData.t=0;scene.add(m);sm.push(m)}
+  for(let i=0;i<12;i++){const m=new THREE.Mesh(sg,new THREE.MeshBasicMaterial({color:0xdfe3e8,transparent:true,opacity:0,depthWrite:false}));m.visible=false;m.userData.t=0;m.userData.vx=0;m.userData.vy=0;m.userData.vz=0;scene.add(m);sm.push(m)}
   train={T,loco,cars,offs,len:offs[offs.length-1]+(4.1+4.8)*K};smoke=sm}
+ const _trnV=new THREE.Vector3();
 
  function at(t){t=clamp(t,0,L);const f=t/STEP,i=Math.min(N-2,Math.floor(f)),u=f-i,a=P[i],b=P[i+1];
   return{x:a.x+(b.x-a.x)*u,y:a.y+(b.y-a.y)*u,z:a.z+(b.z-a.z)*u,dx:b.x-a.x,dy:b.y-a.y,dz:b.z-a.z}}
@@ -156,9 +157,9 @@ try{(()=>{
    if(!ST.w2&&d<90){ST.w2=true;whistle(Math.min(1,prox+.3))}
    if(!ST.told&&d<45){ST.told=true;showMsg('Un tren pasa despacio entre los árboles. No sale en ningún mapa.')}
    if((ST.chug-=dt)<=0){ST.chug=.3;if(prox>.05)auHit(260+Math.random()*120,.09,.05*prox*prox)}
-   if((ST.puff-=dt)<=0){ST.puff=.22;const m=smoke.find(q=>!q.visible);if(m){const w=train.loco.localToWorld(new THREE.Vector3(3.0,4.5,0));m.position.copy(w);m.userData.t=0;m.userData.v=[rnd(-.4,.4),rnd(1.6,2.4),rnd(-.4,.4)];m.scale.setScalar(.6*K);m.visible=true}}}
+   if((ST.puff-=dt)<=0){ST.puff=.22;const m=smoke.find(q=>!q.visible);if(m){const w=train.loco.localToWorld(_trnV.set(3.0,4.5,0));m.position.copy(w);const u=m.userData;u.t=0;u.vx=rnd(-.4,.4);u.vy=rnd(1.6,2.4);u.vz=rnd(-.4,.4);m.scale.setScalar(.6*K);m.visible=true}}}
   for(const m of smoke){if(!m.visible)continue;const u=m.userData;u.t+=dt;if(u.t>4){m.visible=false;continue}
-   m.position.x+=u.v[0]*dt;m.position.y+=u.v[1]*dt;m.position.z+=u.v[2]*dt;m.scale.setScalar((.6+u.t*.8)*K);m.material.opacity=.5*(1-u.t/4)}
+   m.position.x+=u.vx*dt;m.position.y+=u.vy*dt;m.position.z+=u.vz*dt;m.scale.setScalar((.6+u.t*.8)*K);m.material.opacity=.5*(1-u.t/4)}
   if(ST.s>L+train.len+10)stop()}
 
  const prev=globalThis.BOIS_LIFE;

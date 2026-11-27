@@ -847,7 +847,7 @@ function carInitFx() {
   for (let i = 0; i < N; i++) im.setMatrixAt(i, z);
   im.instanceMatrix.needsUpdate = true;
   scene.add(im);
-  CAR.skid = { im: im, N: N, i: 0, d: new THREE.Object3D(), last: [null, null] };
+  CAR.skid = { im: im, N: N, i: 0, d: new THREE.Object3D(), last: [{ x: 0, z: 0, on: false }, { x: 0, z: 0, on: false }] };
   const c = document.createElement('canvas');
   c.width = c.height = 64;
   const x = c.getContext('2d'), gr = x.createRadialGradient(32, 32, 2, 32, 32, 30);
@@ -1255,15 +1255,16 @@ function carResetDyn() {
   CAR.v = 0; CAR.r = 0; CAR.delta = 0; CAR.vy = 0; CAR.air = false; CAR.gear = 1; CAR.rpm = CAR_CFG.idle;
   CAR.ax = 0; CAR.ay = 0; CAR.slip = 0; CAR.thr = 0; CAR.brk = 0; CAR.shake = 0; CAR.kickP = 0; CAR.kickR = 0; CAR.shiftT = 0;
 }
-const __cw = [[-1.148, -1.566], [1.148, -1.566], [-1.148, 1.580], [1.148, 1.580]], __cwh = [0, 0, 0, 0];
-function carWheelWorld(i) {
-  const c = Math.cos(CAR.yaw), s = Math.sin(CAR.yaw), lx = __cw[i][0], lz = __cw[i][1];
-  return [CAR.x + lx * c + lz * s, CAR.z - lx * s + lz * c];
+const __cw = [[-1.148, -1.566], [1.148, -1.566], [-1.148, 1.580], [1.148, 1.580]], __cwh = [0, 0, 0, 0], __cwwTmp = [0, 0];
+function carWheelWorld(i, out) {
+  const c = Math.cos(CAR.yaw), s = Math.sin(CAR.yaw), lx = __cw[i][0], lz = __cw[i][1], o = out || [0, 0];
+  o[0] = CAR.x + lx * c + lz * s; o[1] = CAR.z - lx * s + lz * c;
+  return o;
 }
 function carWheelGround() {
   let sum = 0;
   for (let i = 0; i < 4; i++) {
-    const p = carWheelWorld(i);
+    const p = carWheelWorld(i, __cwwTmp);
     let h = ground(p[0], p[1], CAR.y + 0.75);
     if (!isFinite(h) || h - CAR.y > 1.05) h = CAR.y;
     __cwh[i] = h;
@@ -1380,18 +1381,22 @@ function carStep(dt) {
     let rn = r + ((C.a * Fyf * cd - C.b * Fyr) / C.Iz - r * 0.25) * h;
     if (grounded && thr === 0 && Math.abs(un) < 0.25 && Math.abs(Math.sin(pitchT)) < 0.22) { un = 0; vn = 0; rn = 0; }
 
-    // Proteger contra giros que enclavan una esquina en la pared
-    const nextYaw = CAR.yaw + rn * h;
-    const yawEval = carEvaluateSpot(CAR.x, CAR.z, nextYaw, CAR.y);
-    if (yawEval.hits > 0) {
-      const curEval = carEvaluateSpot(CAR.x, CAR.z, CAR.yaw, CAR.y);
-      if (yawEval.hits > curEval.hits) {
-        const nxP = CAR.x + yawEval.pushX * 0.14, nzP = CAR.z + yawEval.pushZ * 0.14;
-        if (carEvaluateSpot(nxP, nzP, nextYaw, CAR.y).hits <= curEval.hits) {
-          CAR.x = nxP; CAR.z = nzP;
-          CAR.yaw = nextYaw;
+    // Proteger contra giros que enclavan una esquina en la pared (omitir si el cambio angular es despreciable)
+    const dYaw = rn * h, nextYaw = CAR.yaw + dYaw;
+    if (Math.abs(dYaw) >= 1e-5) {
+      const yawEval = carEvaluateSpot(CAR.x, CAR.z, nextYaw, CAR.y);
+      if (yawEval.hits > 0) {
+        const curEval = carEvaluateSpot(CAR.x, CAR.z, CAR.yaw, CAR.y);
+        if (yawEval.hits > curEval.hits) {
+          const nxP = CAR.x + yawEval.pushX * 0.14, nzP = CAR.z + yawEval.pushZ * 0.14;
+          if (carEvaluateSpot(nxP, nzP, nextYaw, CAR.y).hits <= curEval.hits) {
+            CAR.x = nxP; CAR.z = nzP;
+            CAR.yaw = nextYaw;
+          } else {
+            rn *= 0.2;
+          }
         } else {
-          rn *= 0.2;
+          CAR.yaw = nextYaw;
         }
       } else {
         CAR.yaw = nextYaw;
@@ -1592,10 +1597,10 @@ function carFxStep(dt, sf) {
   const f = carForward(), vx = CAR.speed * f.x + CAR.v * f.z, vz = CAR.speed * f.z - CAR.v * f.x;
   const th = Math.hypot(vx, vz) > 1 ? Math.atan2(-vx, -vz) : CAR.yaw;
   for (let wi = 0; wi < 2; wi++) {
-    const p = carWheelWorld(2 + wi);
+    const p = carWheelWorld(2 + wi, __cwwTmp);
+    const L = K.last[wi];
     if (on) {
-      const L = K.last[wi];
-      if (!L || Math.hypot(p[0] - L[0], p[1] - L[1]) > 0.3) {
+      if (!L.on || Math.hypot(p[0] - L.x, p[1] - L.z) > 0.3) {
         const d = K.d;
         d.position.set(p[0], __cwh[2 + wi] + 0.04, p[1]);
         d.rotation.set(0, th, 0);
@@ -1604,14 +1609,14 @@ function carFxStep(dt, sf) {
         K.im.setMatrixAt(K.i, d.matrix);
         K.i = (K.i + 1) % K.N;
         K.im.instanceMatrix.needsUpdate = true;
-        K.last[wi] = [p[0], p[1]];
+        L.x = p[0]; L.z = p[1]; L.on = true;
       }
-    } else K.last[wi] = null;
+    } else L.on = false;
   }
   SM.t -= dt;
   if (on && CAR.slip > 0.3 && SM.t <= 0) {
     SM.t = 0.05;
-    const p = carWheelWorld(2 + (Math.random() < 0.5 ? 0 : 1)), q = SM.arr[SM.i];
+    const p = carWheelWorld(2 + (Math.random() < 0.5 ? 0 : 1), __cwwTmp), q = SM.arr[SM.i];
     SM.i = (SM.i + 1) % SM.arr.length;
     q.sp.position.set(p[0], __cwh[2] + 0.25, p[1]);
     q.sp.material.color.setHex(sf.sand ? 0xd8c79a : 0xcfd3d2);

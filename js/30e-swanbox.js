@@ -1,7 +1,7 @@
 /* BOIS.IO · 30e-swanbox.js — Caja de música · Capítulo III Remastered
    Una cajita de música sobre la banca de Katherin toca tu mp3 incrustado (data/swan-audio.js).
    Tapa articulada al sonar, temporizador seguro al alejarse y pausa/silencio limpios. */
-const sbx = { box: null, playing: false, timer: 0 };
+const sbx = { box: null, playing: false, rem: 0, lastMs: 0, pending: null };
 
 function sbxBuild() {
   const k = window.__katherin;
@@ -73,6 +73,38 @@ const SBX_QUIPS = [
   [{ t: 'La música se apaga despacio. Los cisnes no se han movido.' }]
 ];
 
+function sbxFinishPending() {
+  const p = sbx.pending, k = window.__katherin, b = sbx.box;
+  sbx.pending = null;
+  sbx.rem = 0;
+  sbx.lastMs = 0;
+  if (!sbx.playing) return;
+  if (!k || !b || !S.on || CIN.on || (typeof PR !== 'undefined' && PR.on) || (window.__boisCh6 && window.__boisCh6.on) || (typeof CAR !== 'undefined' && CAR.on) || Math.hypot(S.x - b.position.x, S.z - b.position.z) >= 12 || Math.abs(S.y - b.position.y) >= 5) {
+    sbx.playing = false;
+    return;
+  }
+  let lines;
+  if (p.first) {
+    storyFlag('swanbox', 1);
+    lines = [
+      { t: 'Es una melodía que has oído antes. En un ensayo, quizás.' }, { pause: 1800 },
+      { who: 'Katherin', t: 'Qué miedo.' }, { pause: 1400 },
+      { who: 'Tú', t: '¿La música?' }, { pause: 1200 },
+      { who: 'Katherin', t: 'Es de los cisnes. Suena bonita… y a la vez no.' }, { pause: 2000 },
+      { t: 'Aun así, no pide que la apagues. Se queda escuchando hasta el final.' }, { pause: 2200 }
+    ];
+  } else {
+    const q = SBX_QUIPS[(STORY.flags.swanbox_n || 0) % SBX_QUIPS.length];
+    storyFlag('swanbox_n', (STORY.flags.swanbox_n || 0) + 1);
+    lines = [];
+    for (const l of q) {
+      lines.push(l);
+      lines.push({ pause: Math.min(3000, 900 + l.t.length * 30) });
+    }
+  }
+  playCinematic(lines, () => { sbx.playing = false; }, { lookAt: p.look, location: 'PARQUE DE LOS CISNES · CAJITA DE MÚSICA' });
+}
+
 function interactSwanBox() {
   const k = window.__katherin, b = sbx.box;
   if (!k || !k.visible || !b || !S.on || CIN.on || sbx.playing || (typeof PR !== 'undefined' && PR.on) || (window.__boisCh6 && window.__boisCh6.on) || (typeof CAR !== 'undefined' && CAR.on) || Math.abs(S.y - b.position.y) >= 4) return false;
@@ -80,46 +112,28 @@ function interactSwanBox() {
   if (dB > 2.6) return false;
 
   sbx.playing = true;
-  if (sbx.timer) clearTimeout(sbx.timer);
   const first = !STORY.flags.swanbox;
   const dur = sbxPlay();
   showMsg('Le das cuerda a la cajita de música…');
   const look = new THREE.Vector3(k.position.x, k.position.y + 1.35, k.position.z);
-
-  sbx.timer = setTimeout(() => {
-    sbx.timer = 0;
-    if (!sbx.playing) return;
-    if (!S.on || CIN.on || (typeof PR !== 'undefined' && PR.on) || (window.__boisCh6 && window.__boisCh6.on) || (typeof CAR !== 'undefined' && CAR.on) || Math.hypot(S.x - b.position.x, S.z - b.position.z) >= 12 || Math.abs(S.y - b.position.y) >= 5) {
-      sbx.playing = false;
-      return;
-    }
-    let lines;
-    if (first) {
-      storyFlag('swanbox', 1);
-      lines = [
-        { t: 'Es una melodía que has oído antes. En un ensayo, quizás.' }, { pause: 1800 },
-        { who: 'Katherin', t: 'Qué miedo.' }, { pause: 1400 },
-        { who: 'Tú', t: '¿La música?' }, { pause: 1200 },
-        { who: 'Katherin', t: 'Es de los cisnes. Suena bonita… y a la vez no.' }, { pause: 2000 },
-        { t: 'Aun así, no pide que la apagues. Se queda escuchando hasta el final.' }, { pause: 2200 }
-      ];
-    } else {
-      const q = SBX_QUIPS[(STORY.flags.swanbox_n || 0) % SBX_QUIPS.length];
-      storyFlag('swanbox_n', (STORY.flags.swanbox_n || 0) + 1);
-      lines = [];
-      for (const l of q) {
-        lines.push(l);
-        lines.push({ pause: Math.min(3000, 900 + l.t.length * 30) });
-      }
-    }
-    playCinematic(lines, () => { sbx.playing = false; }, { lookAt: look, location: 'PARQUE DE LOS CISNES · CAJITA DE MÚSICA' });
-  }, Math.min(dur, 10) * 1000);
+  sbx.rem = Math.min(dur, 10);
+  sbx.lastMs = performance.now();
+  sbx.pending = { first, look };
   return true;
 }
 
 function sbxHintText(katherinNear) {
   return katherinNear ? 'Katherin · E: hablar · F: sentarte · B: cajita de música' : 'Cajita de música · B: darle cuerda';
 }
+
+function __swanBoxPause() {
+  sbx.lastMs = 0;
+  if (slAudio) {
+    slAudio.muted = true;
+    if (!slAudio.paused) slAudio.pause();
+  }
+}
+window.__boisSwanBoxPause = __swanBoxPause;
 
 let sbxNear = false;
 function __swanBoxTick() {
@@ -129,10 +143,17 @@ function __swanBoxTick() {
     if (!b) return;
     const inPR = typeof PR !== 'undefined' && PR.on;
     const inCh6 = !!(window.__boisCh6 && window.__boisCh6.on);
+    const paused = document.hidden || (!S.on && !CIN.on) || !!window.__boisGuideOverlayOpen;
+    if (paused) {
+      __swanBoxPause();
+      return;
+    }
     const farAway = Math.hypot(S.x - b.position.x, S.z - b.position.z) >= 14 || Math.abs(S.y - b.position.y) >= 5;
 
     if (inPR || inCh6 || (!CIN.on && farAway)) {
-      if (sbx.timer) { clearTimeout(sbx.timer); sbx.timer = 0; }
+      sbx.pending = null;
+      sbx.rem = 0;
+      sbx.lastMs = 0;
       sbx.playing = false;
       if (slAudio && !slAudio.paused) {
         slAudio.pause();
@@ -140,11 +161,26 @@ function __swanBoxTick() {
       }
     }
     if (slAudio) {
-      slAudio.muted = (typeof AU !== 'undefined' && !AU.on) || document.hidden || (!S.on && !CIN.on) || !!window.__boisGuideOverlayOpen || inPR || inCh6;
+      const mute = (typeof AU !== 'undefined' && !AU.on) || inPR || inCh6;
+      slAudio.muted = mute;
+      if (!mute && sbx.playing && sbx.pending && slAudio.paused && !slAudio.ended) {
+        const p = slAudio.play();
+        if (p && p.catch) p.catch(() => {});
+      }
+    }
+
+    const nowMs = performance.now();
+    if (sbx.playing && sbx.pending) {
+      const dtS = sbx.lastMs ? Math.min(0.25, Math.max(0, (nowMs - sbx.lastMs) * 0.001)) : 0;
+      sbx.lastMs = nowMs;
+      sbx.rem -= dtS;
+      if (sbx.rem <= 0) sbxFinishPending();
+    } else {
+      sbx.lastMs = 0;
     }
 
     b.visible = !!(k && k.visible) && !inPR && !inCh6;
-    const t = performance.now() / 1000;
+    const t = nowMs / 1000;
     b.userData.glow.material.opacity = (sbx.playing ? 0.22 : 0.1) + 0.05 * Math.sin(t * 2);
     if (sbx.playing) b.userData.key.rotation.x += 0.08;
 
@@ -164,6 +200,10 @@ try {
 } catch (e) {
   console.warn('Caja de música:', e);
 }
+
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) __swanBoxPause();
+});
 
 addEventListener('keydown', (e) => {
   if (e.code !== 'KeyB' || e.repeat || !S.on || CIN.on || (typeof PR !== 'undefined' && PR.on) || (window.__boisCh6 && window.__boisCh6.on) || (typeof CAR !== 'undefined' && CAR.on)) return;

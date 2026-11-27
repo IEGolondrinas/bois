@@ -70,11 +70,11 @@ function playWakeOpening(onComplete){
   #wakeOpening .wake-lid{position:absolute;left:-4%;width:108%;height:62%;background:#020305;will-change:transform}
   #wakeOpening .wake-top{top:0;border-radius:0 0 48% 48% / 0 0 12% 12%;animation:wakeTop 4.5s cubic-bezier(.5,0,.2,1) forwards}
   #wakeOpening .wake-bottom{bottom:0;border-radius:48% 48% 0 0 / 12% 12% 0 0;animation:wakeBottom 4.5s cubic-bezier(.5,0,.2,1) forwards}
-  #wakeOpening .wake-focus{position:absolute;inset:0;background:rgba(8,12,18,.34);backdrop-filter:blur(12px);animation:wakeFocus 4.5s ease forwards}
+  #wakeOpening .wake-focus{position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,rgba(16,22,28,.48),rgba(4,7,10,.86));will-change:opacity;animation:wakeFocus 4.5s ease forwards}
   #wakeOpening .wake-caption{position:absolute;left:0;right:0;bottom:13%;text-align:center;color:rgba(230,232,225,.0);font:italic 15px Georgia,serif;letter-spacing:2px;text-shadow:0 2px 12px #000;animation:wakeCaption 3.6s ease forwards}
   @keyframes wakeTop{0%,14%{transform:translateY(0)}43%{transform:translateY(-105%)}49%{transform:translateY(0)}57%,100%{transform:translateY(-105%)}}
   @keyframes wakeBottom{0%,14%{transform:translateY(0)}43%{transform:translateY(105%)}49%{transform:translateY(0)}57%,100%{transform:translateY(105%)}}
-  @keyframes wakeFocus{0%,38%{opacity:1;backdrop-filter:blur(18px)}55%{opacity:.72;backdrop-filter:blur(9px)}100%{opacity:0;backdrop-filter:blur(0)}}
+  @keyframes wakeFocus{0%,38%{opacity:1}55%{opacity:.62}100%{opacity:0}}
   @keyframes wakeCaption{0%,12%{color:rgba(230,232,225,0)}25%,48%{color:rgba(230,232,225,.72)}70%,100%{color:rgba(230,232,225,0)}}
   @keyframes wakeFade{to{opacity:0;visibility:hidden}}
   @media(prefers-reduced-motion:reduce){#wakeOpening .wake-lid,#wakeOpening .wake-focus,#wakeOpening .wake-caption{animation-duration:1ms}}

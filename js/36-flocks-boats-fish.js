@@ -196,7 +196,7 @@
   if(!fl.on){fl.wait-=dt;if(fl.wait<=0&&n<.4)launch()}else{const cd=Math.cos(fl.d),sd=Math.sin(fl.d);fl.x+=cd*fl.sp*dt;fl.z+=sd*fl.sp*dt;
    for(let i=0;i<NB;i++){const row=(i+1)>>1,sd_=i===0?0:(i%2?1:-1),bk=row*4.6,lt=sd_*row*3.3,fp=tt*7+i*1.7,fa=Math.sin(fp)*.9,
      cx=fl.x-cd*bk-sd*lt,cz=fl.z-sd*bk+cd*lt,cy=fl.y+Math.sin(tt*.7+i)*.6,o=i*18,rx=-sd*1.45,rz=cd*1.45,bx=cd*.75,bz=sd*.75;
-    bp.set([cx,cy,cz, cx+rx,cy+fa,cz+rz, cx-bx,cy,cz-bz, cx,cy,cz, cx-rx,cy+fa,cz-rz, cx-bx,cy,cz-bz],o)}
+    bp[o]=cx;bp[o+1]=cy;bp[o+2]=cz;bp[o+3]=cx+rx;bp[o+4]=cy+fa;bp[o+5]=cz+rz;bp[o+6]=cx-bx;bp[o+7]=cy;bp[o+8]=cz-bz;bp[o+9]=cx;bp[o+10]=cy;bp[o+11]=cz;bp[o+12]=cx-rx;bp[o+13]=cy+fa;bp[o+14]=cz-rz;bp[o+15]=cx-bx;bp[o+16]=cy;bp[o+17]=cz-bz}
    bg.attributes.position.needsUpdate=true;if(Math.hypot(fl.x-S.x,fl.z-S.z)>700||n>.7){fl.on=false;fl.wait=rnd(25,70)}}
   bm.visible=fl.on&&n<.8;bmat.opacity=.85*(1-n);
   // veleros

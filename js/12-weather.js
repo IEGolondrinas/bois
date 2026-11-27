@@ -78,7 +78,7 @@ function strike(){const cp=cam.position,far=Math.random()<.3,ang=Math.random()*6
   m.frustumCulled=false;m.renderOrder=6;scene.add(m);bolts.push({m,t:0});
   if(roof&&AP.dmg)AP.dmg([x,ey,z],[0,1,0],.5,1.2)}
  const k=far?.35:Math.max(.55,1.2-d/1100);st.pulses=[{t:0,i:k},{t:.11,i:k*.55},{t:.24,i:k*.9},{t:.4,i:k*.4}];st.pt=0;if(d<420)st.shake=.35;
- setTimeout(()=>{if(AU.ctx&&AU.on&&S.on&&!PR.on){const v=Math.max(.2,Math.min(1,1.15-d/1900));auHit(90,3.2,v,'lowpass');setTimeout(()=>{if(!PR.on)auHit(200,1.8,v*.6,'lowpass')},500);if(d<500&&!PR.on)auHit(1800,.3,v*.5,'highpass')}},Math.min(5500,d/340*1000))}
+ setTimeout(()=>{if(AU.ctx&&AU.on&&S.on&&!PR.on&&!document.hidden){const v=Math.max(.2,Math.min(1,1.15-d/1900));auHit(90,3.2,v,'lowpass');setTimeout(()=>{if(AU.ctx&&AU.on&&S.on&&!PR.on&&!document.hidden)auHit(200,1.8,v*.6,'lowpass')},500);if(d<500)auHit(1800,.3,v*.5,'highpass')}},Math.min(5500,d/340*1000))}
 // --- estación: otoño (terreno, pinos, árboles y arbustos del mapa)
 let SI=null;
 function seasonInit(){if(SI||!TER)return;const tc=TER.tc,tc0=tc.slice(),n=HR*HR,tg=new Float32Array(n),tk=new Float32Array(n*3);
@@ -158,7 +158,7 @@ const api={
   const el=Math.max(0,(st.rain-.55)/.45);
   if(el>.05){st.nextBolt-=dt;if(st.nextBolt<=0){strike();st.nextBolt=(5+Math.random()*12)/Math.max(.35,el)}}else st.nextBolt=Math.max(st.nextBolt,6);
   // v24: relámpagos secos dentro de la nube (sin rayo a tierra) y trueno lejano durante la supercélula
-  if(st.sc>.6&&st.rain<.45){st.nextFlick-=dt;if(st.nextFlick<=0){st.pulses=[{t:0,i:.5},{t:.13,i:.85},{t:.3,i:.45}];st.pt=0;st.nextFlick=9+Math.random()*16;if(AU.ctx&&AU.on)setTimeout(()=>{if(!PR.on)auHit(70,2.2,.26,'lowpass')},600+Math.random()*1400)}}else st.nextFlick=Math.max(st.nextFlick,8);
+  if(st.sc>.6&&st.rain<.45){st.nextFlick-=dt;if(st.nextFlick<=0){st.pulses=[{t:0,i:.5},{t:.13,i:.85},{t:.3,i:.45}];st.pt=0;st.nextFlick=9+Math.random()*16;if(AU.ctx&&AU.on&&S.on&&!document.hidden)setTimeout(()=>{if(AU.ctx&&AU.on&&S.on&&!PR.on&&!document.hidden)auHit(70,2.2,.26,'lowpass')},600+Math.random()*1400)}}else st.nextFlick=Math.max(st.nextFlick,8);
   let fl=0;if(st.pulses.length){st.pt+=dt;for(const p of st.pulses)if(st.pt>=p.t)fl=Math.max(fl,p.i*Math.exp(-(st.pt-p.t)*13));if(st.pt>1.2)st.pulses=[]}
   st.flash=fl;LF.style.opacity=(fl*.42).toFixed(3);
   for(let i=bolts.length-1;i>=0;i--){const b=bolts[i];b.t+=dt;const f=b.t<.12?1:b.t<.2?.15:b.t<.34?.85:Math.max(0,1-(b.t-.34)/.2);b.m.material.opacity=f;

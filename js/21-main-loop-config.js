@@ -19,14 +19,15 @@ function frame(){
   const vhsActive=!!(S.on&&window.BOIS_VHS_ON);
   if(vhsActive!==__boisLastVhsState){document.body.classList.toggle('vhs-active',vhsActive);__boisLastVhsState=vhsActive}
   const dt=Math.min(cl.getDelta(),.05);perfStep(dt);
-  if(document.hidden){typeof carSoundMute==='function'&&carSoundMute();for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0;return}
+  if(document.hidden){typeof carSoundMute==='function'&&carSoundMute();window.__boisSwanBoxPause?.();for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0;return}
   const cinActive=(typeof CIN!=='undefined'&&!!CIN.on)||!!window.__boisWakeLock;
   if(cinActive&&typeof CAR!=='undefined'&&CAR.on&&typeof carSoundMute==='function')carSoundMute();
-  if(window.__boisGuideOverlayOpen&&!cinActive){typeof carSoundMute==='function'&&carSoundMute();window.__boisUpdateMinimap?.(performance.now());if(!PERF.worldPaused){drawWorld();PERF.worldPaused=true}return}
+  if(window.__boisGuideOverlayOpen&&!cinActive){typeof carSoundMute==='function'&&carSoundMute();window.__boisSwanBoxPause?.();window.__boisUpdateMinimap?.(performance.now());if(!PERF.worldPaused){drawWorld();PERF.worldPaused=true}return}
   PERF.worldPaused=false;
   // Si el jugador está en el menú/pausa y NO hay cinemática ni despertar activo, no gastar recursos del bucle.
   if(!S.on&&!cinActive){
     typeof carSoundMute==='function'&&carSoundMute();
+    window.__boisSwanBoxPause?.();
     window.__boisUpdateMinimap?.(performance.now());
     if(!idleRendered){drawWorld();idleRendered=true}
     return;

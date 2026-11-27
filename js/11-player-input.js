@@ -4,7 +4,7 @@
 const S={x:0,y:20,z:0,vy:0,yaw:0,pitch:0,fly:false,on:false};
 function spawn(i){const sp=META.spawns[i%META.spawns.length]||[0,0];S.x=sp[0];S.z=sp[1];S.y=ground(S.x,S.z,300)+1.5;S.vy=0;S.sw=false}
 const keys={};const jv={x:0,y:0};let jumpQ=false;
-const msgBox=document.createElement('div');msgBox.id='storyPrompt';msgBox.style.cssText='position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translate(-50%,8px);z-index:6;max-width:min(90vw,560px);padding:9px 16px;border:1px solid rgba(235,230,215,.16);background:rgba(12,16,20,.58);color:#f1eee6;border-radius:3px;text-align:center;font:13px/1.45 Georgia,serif;letter-spacing:.3px;text-shadow:0 1px 5px #000;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s;backdrop-filter:blur(5px)';document.body.appendChild(msgBox);let msgT=0,msg='';function showMsg(m){msg=m;msgBox.textContent=m;msgT=2.8;msgBox.style.opacity='1';msgBox.style.transform='translate(-50%,0)'}
+const msgBox=document.createElement('div');msgBox.id='storyPrompt';msgBox.style.cssText='position:fixed;left:50%;bottom:max(24px,env(safe-area-inset-bottom));transform:translate(-50%,8px);z-index:6;max-width:min(90vw,560px);padding:9px 16px;border:1px solid rgba(235,230,215,.18);background:rgba(12,16,20,.82);color:#f1eee6;border-radius:3px;text-align:center;font:13px/1.45 Georgia,serif;letter-spacing:.3px;text-shadow:0 1px 5px #000;opacity:0;pointer-events:none;transition:opacity .35s,transform .35s';document.body.appendChild(msgBox);let msgT=0,msg='';function showMsg(m){msg=m;msgBox.textContent=m;msgT=2.8;msgBox.style.opacity='1';msgBox.style.transform='translate(-50%,0)'}
 function start(){
   auInit();if(AU.ctx&&AU.ctx.resume)AU.ctx.resume();
   $('ov').style.display='none';
@@ -111,7 +111,7 @@ document.addEventListener('mousedown',e=>{const cf=window.__boisCamFinder;if(!cf
 document.addEventListener('contextmenu',e=>{if(window.__boisCamFinder&&window.__boisCamFinder.on&&S.on&&!CIN.on)e.preventDefault()});
 document.addEventListener('wheel',e=>{if(window.__boisCamFinder&&window.__boisCamFinder.on&&S.on&&!CIN.on&&!window.__boisGuideOverlayOpen){window.__boisCamFinderZoom?.(e.deltaY<0?1:-1)}},{passive:true});
 document.addEventListener('pointerlockchange',()=>{if(window.__boisGuideIgnoreNextUnlock&&!document.pointerLockElement){window.__boisGuideIgnoreNextUnlock=false;return}if(!touch&&S.on&&!document.pointerLockElement&&!window.__boisGuideOverlayOpen){window.__boisCamFinderClose?.();for(const k in keys)keys[k]=0;jumpQ=false;S.on=false;$('go').textContent='Continuar';$('go').disabled=false;$('ov').style.display='flex'}});
-$('go').onclick=beginFromMenu;$('c').addEventListener('click',()=>{if(S.on&&!touch&&!document.pointerLockElement)$('c').requestPointerLock()});
+$('go').onclick=beginFromMenu;$('c').addEventListener('click',()=>{if(S.on&&!touch&&!document.pointerLockElement&&!window.__boisGuideOverlayOpen&&!window.__boisEmojiOpen&&!(typeof CIN!=='undefined'&&CIN.on))$('c').requestPointerLock?.()});
 if(touch){$('tb').style.display='flex';$('bj').onclick=()=>jumpQ=true;$('be').onclick=()=>{for(const t of['keydown','keyup'])document.dispatchEvent(new KeyboardEvent(t,{code:'KeyE',key:'e',bubbles:true}))};
  const handbrakeButton=$('bh');
  if(handbrakeButton){

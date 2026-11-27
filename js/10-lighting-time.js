@@ -20,7 +20,7 @@ const dustMat=new THREE.PointsMaterial({color:0xffe7bd,size:touch?.075:.095,tran
 const forestDust=new THREE.Points(dustGeo,dustMat);forestDust.frustumCulled=false;forestMood.add(forestDust);
 let birdWait=9+Math.random()*9;
 function forestBirds(dt){
- if(!AU.ctx||!AU.on||!S.on||uw||!PC||PR.on||(window.__boisCh6&&window.__boisCh6.on))return;
+ if(!AU.ctx||!AU.on||!S.on||uw||!PC||PR.on||document.hidden||(window.__boisCh6&&window.__boisCh6.on))return;
  const rain=(WX.st&&WX.st.rain)||0,storm=(WX.st&&WX.st.sc)||0;
  const activity=Math.max(0,1-PC.night*1.35)*(1-rain*.92)*(1-storm*.85);
  birdWait-=dt*activity;
@@ -67,17 +67,18 @@ const P=[
 // v25: ciclo de día automático. TM.mode 0 = Automático (el día avanza solo), 1-4 = fase fija elegida a mano.
 // HOLD = segundos que se mantiene cada fase (mediodía, atardecer, noche, amanecer); entre fases el cielo se funde durante 45 s.
 let tod=0,PC=null,trF=null,trT=1,trD=3.2;const TM={mode:0,timer:0},HOLD=[150,50,100,50],TNAMES=['Automático','Mediodía','Atardecer','Noche','Amanecer'];const SD=new THREE.Vector3(),MD=new THREE.Vector3(),SKY={ov:0},cp_=p=>JSON.parse(JSON.stringify(p));
-function lerpP(o,a,b,e){for(const k in b){const x=a[k],y=b[k];if(typeof y==='number')o[k]=x+(y-x)*e;else if(Array.isArray(y))o[k]=y.map((v,i)=>x[i]+(v-x[i])*e);else o[k]=y}}
+const _scTmp=[0,0,0];
+function lerpP(o,a,b,e){for(const k in b){const x=a[k],y=b[k];if(typeof y==='number')o[k]=x+(y-x)*e;else if(Array.isArray(y)){const t=o[k];if(Array.isArray(t)&&t.length===y.length){for(let i=0;i<y.length;i++)t[i]=x[i]+(y[i]-x[i])*e}else o[k]=y.map((v,i)=>x[i]+(v-x[i])*e)}else o[k]=y}}
 function skyStep(dt){if(!scene.background)scene.background=new THREE.Color();if(TM.mode===0){TM.timer-=dt;if(TM.timer<=0)setTod((tod+1)%P.length,true)} if(trT<1){trT=Math.min(1,trT+dt/trD);lerpP(PC,trF,P[tod],trT*trT*(3-2*trT))}
- if(!sun.userData.d)sun.userData.d=new THREE.Vector3();sun.userData.d.set(...PC.dir).normalize();if(!uw)scene.background.setRGB(...PC.fog).convertSRGBToLinear();return PC}
+ if(!sun.userData.d)sun.userData.d=new THREE.Vector3();sun.userData.d.set(PC.dir[0],PC.dir[1],PC.dir[2]).normalize();if(!uw)scene.background.setRGB(PC.fog[0],PC.fog[1],PC.fog[2]).convertSRGBToLinear();return PC}
 const SCP={top:[.15,.10,.26],mid:[.31,.40,.33],hor:[.62,.68,.42]};// paleta supercélula: violeta profundo / gris verdoso / resplandor amarillo-verde
-function scMix(a,k,nl,c){return a.map((v,i)=>v+(c[i]*nl-v)*k)}
-function skyFrame(dt,tt){const u=sky.material.uniforms,p=PC;SD.set(...p.sd).normalize();MD.set(...p.md).normalize();
- u.uSun.value.copy(SD);u.uMoon.value.copy(MD);{const k=Math.min(1,(SKY.sc||0)*1.05),nl=1-p.night*.82;u.uTop.value.set(...(k>.001?scMix(p.top,k,nl,SCP.top):p.top));u.uMid.value.set(...(k>.001?scMix(p.mid,k,nl,SCP.mid):p.mid));u.uHor.value.set(...(k>.001?scMix(p.hor,k,nl,SCP.hor):p.hor))}u.uSc.value.set(...p.sc);u.uDusk.value=p.dusk;u.uNight.value=p.night;u.uMoonK.value=p.mk;u.uOv.value=SKY.ov;u.uCs.value=SKY.sc||0;if(WIN.upd&&PERF.win>=3){WIN.upd(p,tt);PERF.win=0}u.uTime.value=tt;
+function scMix(a,k,nl,c,out){const o=out||[0,0,0];o[0]=a[0]+(c[0]*nl-a[0])*k;o[1]=a[1]+(c[1]*nl-a[1])*k;o[2]=a[2]+(c[2]*nl-a[2])*k;return o}
+function skyFrame(dt,tt){const u=sky.material.uniforms,p=PC;SD.set(p.sd[0],p.sd[1],p.sd[2]).normalize();MD.set(p.md[0],p.md[1],p.md[2]).normalize();
+ u.uSun.value.copy(SD);u.uMoon.value.copy(MD);{const k=Math.min(1,(SKY.sc||0)*1.05),nl=1-p.night*.82,t=k>.001?scMix(p.top,k,nl,SCP.top,_scTmp):p.top;u.uTop.value.set(t[0],t[1],t[2]);const m=k>.001?scMix(p.mid,k,nl,SCP.mid,_scTmp):p.mid;u.uMid.value.set(m[0],m[1],m[2]);const h=k>.001?scMix(p.hor,k,nl,SCP.hor,_scTmp):p.hor;u.uHor.value.set(h[0],h[1],h[2])}u.uSc.value.set(p.sc[0],p.sc[1],p.sc[2]);u.uDusk.value=p.dusk;u.uNight.value=p.night;u.uMoonK.value=p.mk;u.uOv.value=SKY.ov;u.uCs.value=SKY.sc||0;if(WIN.upd&&PERF.win>=3){WIN.upd(p,tt);PERF.win=0}u.uTime.value=tt;
  const su=stars.material.uniforms;stars.position.copy(cam.position);su.uT.value=tt;su.uD.value=R.getPixelRatio();su.uA.value=Math.min(1,p.night*1.25)*Math.max(0,1-SKY.ov*1.8-(SKY.sc||0)*.9);
  for(const c of clouds){const k=c.userData;k.az+=dt*k.sp;const ce=Math.cos(k.el),sx=Math.sin(k.az)*ce,sy=Math.sin(k.el),sz=Math.cos(k.az)*ce;c.position.set(cam.position.x+sx*1800,cam.position.y+sy*1800,cam.position.z+sz*1800);
   const sunDot=sx*SD.x+sy*SD.y+sz*SD.z,lf=Math.pow(Math.max(0,sunDot),1.35),dk=p.dusk;const shadow=Math.max(.42,Math.min(1.18,.62+lf*.7-dk*.12+Math.max(-sunDot,0)*.08)),warm=dk*(.12+lf*.22);c.material.color.setRGB(shadow+warm,shadow*.985+warm*.3,shadow*.98+lf*.05).multiply(cloudMat.color);c.material.opacity=Math.min(1,cloudMat.opacity*k.k)}}
-function setTod(i,slow){if(!scene.background)scene.background=new THREE.Color();if(uw&&!slow)setUW(false);tod=i%P.length;trD=slow?45:3.2;TM.timer=trD+HOLD[tod];if(!PC){PC=cp_(P[tod]);trT=1}else{trF=cp_(PC);trT=0}if(!sun.userData.d)sun.userData.d=new THREE.Vector3();sun.userData.d.set(...PC.dir).normalize();showMsg(P[tod].n)}
+function setTod(i,slow){if(!scene.background)scene.background=new THREE.Color();if(uw&&!slow)setUW(false);tod=i%P.length;trD=slow?45:3.2;TM.timer=trD+HOLD[tod];if(!PC){PC=cp_(P[tod]);trT=1}else{trF=cp_(PC);trT=0}if(!sun.userData.d)sun.userData.d=new THREE.Vector3();sun.userData.d.set(PC.dir[0],PC.dir[1],PC.dir[2]).normalize();showMsg(P[tod].n)}
 // H / botón Hora: recorre Automático → Mediodía → Atardecer → Noche → Amanecer. Elegir una fase la deja fija; Automático reanuda el ciclo.
 function todCycle(){TM.mode=(TM.mode+1)%TNAMES.length;if(TM.mode===0){TM.timer=Math.max(15,HOLD[tod]*.6);showMsg('Hora: Automático (el día avanza solo)')}else{setTod(TM.mode-1);showMsg('Hora: '+TNAMES[TM.mode]+' (fija)')}}
 let uw=false;const UWC=lin(.07,.42,.5),uwF=new THREE.Color(),uwB=new THREE.Color();

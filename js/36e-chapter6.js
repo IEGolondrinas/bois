@@ -3855,7 +3855,7 @@ try {
         }
         if (FL().ch6_complete && !M6.on) {
           if (M6.intId) {
-            clearInterval(M6.intId);
+            if (typeof clearInterval === 'function') clearInterval(M6.intId);
             M6.intId = 0;
           }
           return;

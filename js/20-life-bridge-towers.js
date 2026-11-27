@@ -16,6 +16,7 @@ function mkLife(){const g=new THREE.Group();scene.add(g);const R_=Math.random;
  const lg=new THREE.BufferGeometry();lg.setAttribute('position',new THREE.BufferAttribute(new Float32Array(6),3));lg.setAttribute('color',new THREE.BufferAttribute(new Float32Array([0,0,0,1,1,1]),3));
  const ml=new THREE.Line(lg,new THREE.LineBasicMaterial({vertexColors:true,blending:THREE.AdditiveBlending,transparent:true,depthWrite:false,fog:false}));ml.frustumCulled=false;ml.visible=false;g.add(ml);
  let mt=4+R_()*8,m=null;
+ const _msH=new THREE.Vector3(),_msT=new THREE.Vector3();
  const run=(c,dt,tt,A)=>{c.mat.uniforms.uT.value=tt;c.mat.uniforms.uA.value=A;if(A<=.01)return;const cx=cam.position.x,cz=cam.position.z;
   for(let i=0;i<c.N;i++){const s=c.S[i];let dx=s.x-cx,dz=s.z-cz;if(s.first||dx*dx+dz*dz>c.R*c.R){s.first=false;c.place(s,i);dx=s.x-cx;dz=s.z-cz}
    s.vx+=Math.sin(tt*.7+s.ph*3)*dt*c.spd;s.vz+=Math.cos(tt*.6+s.ph*5)*dt*c.spd;s.vx*=1-dt*.8;s.vz*=1-dt*.8;s.x+=s.vx*dt;s.z+=s.vz*dt;
@@ -24,7 +25,7 @@ function mkLife(){const g=new THREE.Group();scene.add(g);const R_=Math.random;
  return{g,upd(dt,tt){const ov=Math.max(0,1-SKY.ov*1.6),n=PC.night,d=PC.dusk,sp=!!window.__boisSpecialDate;
    run(ff,dt,tt,Math.min(1,n*(sp?1.75:1.4)+d*.35)*ov);run(po,dt,tt,(1-n)*(1-d*.5)*Math.max(0,1-SKY.ov*1.8)*.55);
    mt-=dt;if(!m&&mt<=0){mt=sp?(2.5+R_()*5):(7+R_()*14);if(n>.7&&SKY.ov<.3){const a=R_()*6.283,e=.45+R_()*.5,D=new THREE.Vector3(R_()-.5,-.35-R_()*.3,R_()-.5).normalize();m={t:0,A:new THREE.Vector3(Math.sin(a)*Math.cos(e),Math.sin(e),Math.cos(a)*Math.cos(e)),D}}}
-   if(m){m.t+=dt;const h=m.A.clone().multiplyScalar(2000).addScaledVector(m.D,m.t*900).add(cam.position),t=h.clone().addScaledVector(m.D,-220),p=lg.attributes.position.array;p[0]=t.x;p[1]=t.y;p[2]=t.z;p[3]=h.x;p[4]=h.y;p[5]=h.z;lg.attributes.position.needsUpdate=true;ml.material.opacity=Math.max(0,1-m.t/.9);ml.visible=true;if(m.t>.9){m=null;ml.visible=false}}}}}
+   if(m){m.t+=dt;_msH.copy(m.A).multiplyScalar(2000).addScaledVector(m.D,m.t*900).add(cam.position);_msT.copy(_msH).addScaledVector(m.D,-220);const p=lg.attributes.position.array;p[0]=_msT.x;p[1]=_msT.y;p[2]=_msT.z;p[3]=_msH.x;p[4]=_msH.y;p[5]=_msH.z;lg.attributes.position.needsUpdate=true;ml.material.opacity=Math.max(0,1-m.t/.9);ml.visible=true;if(m.t>.9){m=null;ml.visible=false}}}}}
 function lifeFrame(dt,tt){if(LIFE_OFF)return;try{if(!LIFE)LIFE=mkLife();const on=!PR.on&&!uw;LIFE.g.visible=on;if(on)LIFE.upd(dt,tt)}catch(e){LIFE_OFF=true;console.error('Vida',e);if(LIFE)LIFE.g.visible=false}}
 // ---------- v58: puente. Mejora de la losa negra original ("floor (1)": 141 x 10 m a ras del agua): cubierta de asfalto con marcas,
 // bordillos, barandas, farolas, pilares hasta el fondo y dos torres con cables. La losa original se conserva debajo (como viga y como colisión).
