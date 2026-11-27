@@ -516,29 +516,29 @@ try {
         g.userData.__shared = true;
         return g;
       };
-      const foot = new THREE.BoxGeometry(0.09, 0.05, 0.23).translate(0, -0.025, 0.06);
+      const foot = new THREE.BoxGeometry(0.086, 0.048, 0.22).translate(0, -0.024, 0.055);
       foot.userData.__shared = true;
-      const hair = new THREE.SphereGeometry(0.128, 14, 8, 0, Math.PI * 2, 0, Math.PI * 0.58)
-        .scale(0.94, 1.1, 1.04)
-        .translate(0, 0.012, -0.012);
+      const hair = new THREE.SphereGeometry(0.125, 16, 10, 0, Math.PI * 2, 0, Math.PI * 0.62)
+        .scale(0.98, 1.08, 1.06)
+        .translate(0, 0.014, -0.015);
       hair.userData.__shared = true;
       const halo = new THREE.PlaneGeometry(1, 1);
       halo.userData.__shared = true;
 
       return (FG.geo = {
-        thigh: C(0.1, 0.072, 0.46, 10, -0.23),
-        shin: C(0.068, 0.046, 0.44, 10, -0.22),
+        thigh: C(0.092, 0.068, 0.46, 12, -0.23),
+        shin: C(0.064, 0.044, 0.44, 12, -0.22),
         foot,
-        pelvis: Sg(0.17, 1.08, 0.62, 0.82),
-        torso: C(0.2, 0.14, 0.52, 12, 0.26),
-        chest: Sg(0.21, 1.15, 0.5, 0.72, 14, 10),
+        pelvis: Sg(0.162, 1.06, 0.6, 0.8),
+        torso: C(0.185, 0.135, 0.52, 14, 0.26),
+        chest: Sg(0.198, 1.12, 0.48, 0.72, 14, 10),
         collar: C(0.078, 0.115, 0.06, 10, 0.03),
         neck: C(0.042, 0.05, 0.09, 8, 0.045),
-        head: Sg(0.12, 0.92, 1.08, 1, 16, 12),
-        arm: C(0.048, 0.038, 0.3, 8, -0.15),
-        fore: C(0.038, 0.028, 0.28, 8, -0.14),
-        hand: Sg(0.036, 1, 1.2, 0.8, 8, 6),
-        sho: Sg(0.057, 1, 1, 1, 10, 8),
+        head: Sg(0.118, 0.94, 1.06, 0.98, 18, 14),
+        arm: C(0.046, 0.036, 0.3, 8, -0.15),
+        fore: C(0.036, 0.027, 0.28, 8, -0.14),
+        hand: Sg(0.035, 1, 1.2, 0.8, 8, 6),
+        sho: Sg(0.055, 1, 1, 1, 10, 8),
         hair,
         halo,
       });
@@ -550,9 +550,9 @@ try {
         (FG.mat[k] = new THREE.MeshStandardMaterial({
           color: c,
           emissive: c,
-          emissiveIntensity: 0.55,
-          roughness: 0.85,
-          metalness: 0,
+          emissiveIntensity: 0.44,
+          roughness: 0.76,
+          metalness: 0.04,
           transparent: true,
           opacity: op,
         }))
@@ -709,13 +709,15 @@ try {
 
     function desk(p, x, z, m1, m2) {
       const g = new THREE.Group();
-      bx(g, 0.94, 0.02, 0.64, x, 0.74, z, m1);
-      bx(g, 0.9, 0.04, 0.6, x, 0.71, z, m1);
+      bx(g, 0.94, 0.024, 0.64, x, 0.74, z, m1);
+      bx(g, 0.9, 0.04, 0.6, x, 0.708, z, m1);
       for (const sx of [-1, 1]) {
-        for (const sz of [-1, 1]) cyl(g, 0.035, 0.015, 0.71, x + sx * 0.42, 0.355, z + sz * 0.27, m2, 8);
+        for (const sz of [-1, 1]) cyl(g, 0.032, 0.015, 0.71, x + sx * 0.42, 0.355, z + sz * 0.27, m2, 8);
+        bx(g, 0.022, 0.022, 0.54, x + sx * 0.42, 0.22, z, m2);
       }
-      for (const sz of [-1, 1]) bx(g, 0.84, 0.02, 0.02, x, 0.6, z + sz * 0.27, m2);
-      bx(g, 0.02, 0.02, 0.54, x, 0.25, z, m2);
+      for (const sz of [-1, 1]) bx(g, 0.84, 0.024, 0.024, x, 0.6, z + sz * 0.27, m2);
+      bx(g, 0.84, 0.16, 0.02, x, 0.61, z - 0.27, m1);
+      bx(g, 0.02, 0.02, 0.54, x, 0.22, z, m2);
       M6.props.push([x - 0.5, x + 0.5, z - 0.35, z + 0.35]);
 
       const r = Math.abs(Math.sin(x * 12.9898 + z * 78.233) * 43758.5453) % 1;
@@ -724,6 +726,8 @@ try {
       bx(g, 0.08, 0.018, 0.025, x + 0.22, 0.6, z + 0.26, m2);
       bx(g, 0.2, 0.035, 0.15, x - 0.22, 0.775, z + 0.05, cmat(bk[(r * 4) | 0], 0.25));
       bx(g, 0.18, 0.03, 0.13, x - 0.22, 0.81, z + 0.05, cmat(bk[((r * 7) | 0) % 4], 0.25));
+      cyl(g, 0.028, 0.026, 0.085, x - 0.34, 0.795, z - 0.18, m2, 8);
+      cyl(g, 0.005, 0.005, 0.12, x - 0.34, 0.835, z - 0.18, cmat(0xd6b05c, 0.2), 6).rotation.z = 0.24;
       if (r > 0.4) bx(g, 0.2, 0.004, 0.28, x + 0.15, 0.762, z - 0.04, cmat(0xe9e1cc, 0.3));
       p.add(g);
       return g;
@@ -731,21 +735,22 @@ try {
 
     function chair(p, x, z, ry, m, collide = false) {
       const g = new THREE.Group();
-      bx(g, 0.45, 0.03, 0.45, 0, 0.45, 0, m);
-      bx(g, 0.42, 0.02, 0.42, 0, 0.475, 0, m);
+      bx(g, 0.46, 0.03, 0.45, 0, 0.45, 0, m);
+      bx(g, 0.42, 0.024, 0.41, 0, 0.475, 0, m);
+      bx(g, 0.38, 0.025, 0.03, 0, 0.425, 0.19, m);
 
       const br = new THREE.Group();
-      bx(br, 0.04, 0.45, 0.04, -0.18, 0.225, 0, m);
-      bx(br, 0.04, 0.45, 0.04, 0.18, 0.225, 0, m);
-      bx(br, 0.4, 0.15, 0.03, 0, 0.37, 0, m);
-      bx(br, 0.4, 0.08, 0.03, 0, 0.15, 0, m);
+      bx(br, 0.04, 0.46, 0.04, -0.18, 0.23, 0, m);
+      bx(br, 0.04, 0.46, 0.04, 0.18, 0.23, 0, m);
+      bx(br, 0.42, 0.14, 0.032, 0, 0.38, 0, m);
+      bx(br, 0.38, 0.075, 0.028, 0, 0.16, 0, m);
       br.position.set(0, 0.46, -0.21);
       br.rotation.x = -0.12;
       g.add(br);
 
       for (const sx of [-1, 1]) {
         for (const sz of [-1, 1]) {
-          const leg = cyl(g, 0.025, 0.012, 0.45, sx * 0.19, 0.225, sz * 0.19, m, 8);
+          const leg = cyl(g, 0.025, 0.013, 0.45, sx * 0.19, 0.225, sz * 0.19, m, 8);
           leg.rotation.z = sx * -0.06;
           leg.rotation.x = sz * 0.06;
         }
@@ -1103,12 +1108,17 @@ try {
       let sd = 11 + k * 29;
       const rr = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
       for (let i = 0; i < n; i++) {
+        const d = { x: (rr() - 0.5) * (w - 0.3), ph: rr(), sp: 0.025 + rr() * 0.05, s: rr() };
         const m = new THREE.Mesh(R.rg, R.rm);
-        m.position.z = 0.075;
+        const u = d.ph, v = Math.min(1, Math.max(0, u + 0.03 * Math.sin(u * 30 + d.ph * 9)));
+        m.position.set(d.x + Math.sin(u * 9 + d.ph * 5) * 0.012, h / 2 - 0.1 - v * (h - 0.2), 0.075);
+        m.scale.set(0.02 + 0.012 * d.s, 0.045 + 0.035 * d.s, 1);
+        m.visible = u > 0.015 && u < 0.985;
         m.renderOrder = 3;
         m.userData.dyn = true;
         G.add(m);
-        dr.push({ m, x: (rr() - 0.5) * (w - 0.3), ph: rr(), sp: 0.025 + rr() * 0.05, s: rr() });
+        d.m = m;
+        dr.push(d);
       }
       M6.an.push((t) => {
         for (let i = 0; i < layers.length; i++) layers[i][0].offset.y = -((t * layers[i][1] * 0.45 + layers[i][2]) % 1);
@@ -1123,15 +1133,18 @@ try {
       });
 
       const fr = R.fr;
-      box(w + 0.2, 0.1, 0.16, 0, h / 2 + 0.05, 0.08, fr);
-      box(w + 0.2, 0.1, 0.16, 0, -h / 2 - 0.05, 0.08, fr);
-      box(0.1, h + 0.2, 0.16, -w / 2 - 0.05, 0, 0.08, fr);
-      box(0.1, h + 0.2, 0.16, w / 2 + 0.05, 0, 0.08, fr);
-      box(0.06, h, 0.1, 0, 0, 0.07, fr);
-      box(w, 0.06, 0.1, 0, h * 0.18, 0.07, fr);
-      box(0.05, 0.14, 0.05, 0.07, h * 0.18, 0.14, steelM);
-      box(w + 0.5, 0.06, 0.34, 0, -h / 2 - 0.13, 0.17, woodM);
-      box(w + 0.34, 0.12, 0.05, 0, -h / 2 - 0.22, 0.04, woodM);
+      box(w + 0.28, 0.12, 0.2, 0, h / 2 + 0.07, 0.09, fr);
+      box(w + 0.36, 0.055, 0.24, 0, h / 2 + 0.145, 0.11, fr);
+      box(w + 0.24, 0.1, 0.18, 0, -h / 2 - 0.05, 0.09, fr);
+      box(0.11, h + 0.2, 0.18, -w / 2 - 0.055, 0, 0.09, fr);
+      box(0.11, h + 0.2, 0.18, w / 2 + 0.055, 0, 0.09, fr);
+      box(0.065, h, 0.11, 0, 0, 0.075, fr);
+      box(w, 0.065, 0.11, 0, h * 0.18, 0.075, fr);
+      box(0.032, h, 0.07, -w * 0.25, 0, 0.068, fr);
+      box(0.032, h, 0.07, w * 0.25, 0, 0.068, fr);
+      box(0.045, 0.15, 0.045, 0.07, h * 0.18, 0.145, steelM);
+      box(w + 0.56, 0.065, 0.38, 0, -h / 2 - 0.13, 0.18, woodM);
+      box(w + 0.36, 0.12, 0.06, 0, -h / 2 - 0.22, 0.045, woodM);
       mergeStaticGroup(frameG);
 
       const sm = new THREE.Mesh(
@@ -1252,7 +1265,7 @@ try {
         }
       }
 
-      [-43, -35].forEach((x, i) => rainWindow(g, 3.4, 2.4, x, 2.1, 8.8, Math.PI, wood, steel, i));
+      [-43, -34.5].forEach((x, i) => rainWindow(g, 3.4, 2.4, x, 2.1, 8.8, Math.PI, wood, steel, i));
 
       // Dibujos infantiles de clase
       {
@@ -1630,6 +1643,19 @@ try {
           p.rotation.z = 0.16;
         }
         M6.props.push([50.2, 50.8, z - 1.6, z + 1.6]);
+      }
+      // Barandales arquitectónicos de cristal y latón en el mirador del último piso
+      {
+        const brassR = cmat(0xc29e5a, 0.28);
+        const railGl = glassM(0x9fd0e8, 0.24);
+        for (const zSide of [-8.65, 8.65]) {
+          bx(decG, 11.4, 0.045, 0.06, 42.5, TOP + 1.02, zSide, brassR);
+          bx(decG, 11.2, 0.88, 0.03, 42.5, TOP + 0.52, zSide, railGl);
+          for (const px of [36.9, 40.6, 44.4, 48.1]) bx(decG, 0.05, 1.0, 0.05, px, TOP + 0.5, zSide, steel);
+        }
+        bx(decG, 0.06, 0.045, 16.4, 55.45, TOP + 1.02, 0, brassR);
+        bx(decG, 0.03, 0.88, 16.2, 55.45, TOP + 0.52, 0, railGl);
+        for (let pz = -8.1; pz <= 8.2; pz += 2.7) bx(decG, 0.05, 1.0, 0.05, 55.45, TOP + 0.5, pz, steel);
       }
       {
         const rg = new THREE.Mesh(new THREE.RingGeometry(5.5, 5.62, 56), glowM(0xffe9bd, 0.3));
@@ -2635,21 +2661,29 @@ try {
         const aulaStatic = new THREE.Group();
         g.add(aulaStatic);
         const T = txtTex(512, 256, (c, w, h) => {
-          c.fillStyle = '#1d3a2d';
+          c.fillStyle = '#1b382b';
           c.fillRect(0, 0, w, h);
-          c.fillStyle = 'rgba(240,240,225,.75)';
-          c.font = '28px Georgia,serif';
-          c.fillText('2x + 3 = 11', 34, 70);
-          c.fillText('x = ?', 34, 115);
-          c.fillText('x = 4', 34, 160);
-          c.strokeStyle = 'rgba(240,240,225,.5)';
-          c.lineWidth = 3;
+          c.fillStyle = 'rgba(255,255,255,.03)';
+          for (let k = 0; k < 18; k++) c.fillRect((k * 37) % w, (k * 23) % h, 46, 16);
+          c.fillStyle = 'rgba(240,240,225,.84)';
+          c.font = '26px Georgia,serif';
+          c.fillText('2x + 3 = 11', 34, 62);
+          c.fillText('x = 4', 34, 102);
+          c.fillStyle = 'rgba(255,228,175,.82)';
+          c.font = '22px Georgia,serif';
+          c.fillText('2H₂ + O₂ → 2H₂O', 34, 158);
+          c.fillText('ΔH < 0 · estequiometría', 34, 194);
+          c.strokeStyle = 'rgba(220,235,245,.62)';
+          c.lineWidth = 2.5;
           c.beginPath();
-          c.moveTo(300, 60);
-          c.lineTo(470, 60);
-          c.moveTo(300, 100);
-          c.lineTo(430, 100);
+          c.moveTo(335, 175);
+          c.lineTo(465, 175);
+          c.lineTo(465, 82);
+          c.closePath();
           c.stroke();
+          c.fillStyle = 'rgba(220,235,245,.72)';
+          c.font = '18px Georgia,serif';
+          c.fillText('a² + b² = c²', 345, 206);
         });
         bx(aulaStatic, 6, 2.2, 0.08, -42, 2.2, -8.76, new THREE.MeshBasicMaterial({ map: T }));
         bx(aulaStatic, 6.2, 0.12, 0.16, -42, 1.05, -8.7, wood);
@@ -2657,7 +2691,7 @@ try {
         for (const sx of [-1, 1]) bx(aulaStatic, 0.1, 2.4, 0.12, -42 + sx * 3.05, 2.2, -8.74, wood);
         bx(aulaStatic, 0.12, 0.025, 0.025, -43.2, 1.12, -8.66, cmat(0xf5f2e8, 0.5));
         bx(aulaStatic, 0.1, 0.025, 0.025, -43.02, 1.12, -8.66, cmat(0xffdf88, 0.5));
-        bx(aulaStatic, 0.16, 0.05, 0.07, -40.8, 1.135, -8.66, cmat(0x3a2c20, 0.2));
+        bx(aulaStatic, 0.18, 0.055, 0.075, -40.8, 1.135, -8.66, cmat(0x3a2c20, 0.2));
 
         const yaws = [-0.14, 0.08, -0.05, 0.12, -0.08, 0.04];
         let ci = 0;
@@ -2667,6 +2701,9 @@ try {
             chair(aulaStatic, x, z + 0.46, Math.PI + yaws[ci++], wood, false);
           }
         }
+        // Mochila escolar apoyada junto al pupitre delantero
+        bx(aulaStatic, 0.24, 0.34, 0.16, -40.96, 0.17, -2.55, cmat(0x2d4354, 0.22));
+        bx(aulaStatic, 0.22, 0.14, 0.05, -40.96, 0.14, -2.45, cmat(0x223342, 0.2));
         figure(aulaStatic, -44.5, -2.14, 1.25, 0xcfe3f2, Math.PI - 0.1, 0.3, 'sit', true);
         figure(aulaStatic, -40.5, -0.34, 1.28, 0xcfe3f2, Math.PI + 0.08, 0.28, 'sit', true);
         mergeStaticGroup(aulaStatic);
@@ -2692,13 +2729,15 @@ try {
         const shelf = stdM(0x5c452d, 0.2);
         const bkc = [0x7a3b3b, 0x3b5a7a, 0x6a7a3b, 0xb89a58, 0x4a3f6b, 0x8a5a2f, 0x2f5a54];
         bx(ninoStatic, 6, 3.4, 0.06, -34, 1.7, -8.7, shelf);
+        bx(ninoStatic, 6.24, 0.12, 0.58, -34, 3.45, -8.45, shelf);
+        bx(ninoStatic, 6.1, 0.1, 0.54, -34, 0.05, -8.45, shelf);
         for (const sx of [-1, 1]) bx(ninoStatic, 0.08, 3.4, 0.5, -34 + sx * 2.96, 1.7, -8.45, shelf);
-        for (let r = 0; r < 5; r++) bx(ninoStatic, 6, 0.05, 0.5, -34, 0.025 + r * 0.82, -8.45, shelf);
+        for (let r = 0; r < 5; r++) bx(ninoStatic, 6, 0.05, 0.5, -34, 0.08 + r * 0.82, -8.45, shelf);
         let sd = 7;
         const rnd = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
         for (let r = 0; r < 4; r++) {
           let x = -36.8;
-          const y0 = 0.05 + r * 0.82;
+          const y0 = 0.1 + r * 0.82;
           while (x < -31.3) {
             const w = 0.16 + rnd() * 0.16, h = 0.46 + rnd() * 0.24;
             if (rnd() < 0.1) {
@@ -2713,6 +2752,12 @@ try {
             x += w + 0.015;
           }
         }
+        // Pequeña escalera de biblioteca apoyada en el lateral derecho
+        for (const sx of [-0.18, 0.18]) {
+          const st = bx(ninoStatic, 0.04, 2.75, 0.06, -30.7 + sx, 1.34, -8.1, wood);
+          st.rotation.x = -0.18;
+        }
+        for (let i = 0; i < 6; i++) bx(ninoStatic, 0.38, 0.03, 0.07, -30.7, 0.4 + i * 0.4, -7.93 - i * 0.07, wood);
         // Taburete bajo de lectura y libro abierto junto a las estanterías
         cyl(ninoStatic, 0.2, 0.2, 0.04, -35.0, 0.36, -6.65, wood, 14);
         for (let k = 0; k < 4; k++) {
@@ -2729,6 +2774,15 @@ try {
 
         figure(ninoStatic, -32.4, -6.0, 1.7, 0xcfe3f2, -1.1, 0.5, null, true);
         mergeStaticGroup(ninoStatic);
+
+        const kidPool = new THREE.Mesh(
+          new THREE.PlaneGeometry(2.8, 2.8),
+          new THREE.MeshBasicMaterial({ map: dotTex('rgba(255,233,168,0.45)'), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })
+        );
+        kidPool.rotation.x = -Math.PI / 2;
+        kidPool.position.set(-34, 0.032, -6.2);
+        kidPool.userData.dyn = true;
+        g.add(kidPool);
 
         const kid = figure(g, -34, -6.2, 1.15, 0xf7e2a8, 0.15, 0.8, 'curious', true);
         M6.kid = kid;
@@ -2771,29 +2825,19 @@ try {
         chair(cierreG, -38, 7.55, Math.PI, wood);
         figure(cierreG, -38, 7.55, 0.9, kcol[2], Math.PI, 0.75, 'sitBow', true);
 
-        // Silencio: silla vacía frente a ventana empotrada con haz cálido oblicuo
+        // Silencio: silla vacía frente al ventanal de lluvia único en el muro sur (sin ventana duplicada)
         chair(cierreG, -34.5, 7.1, 0.15, wood);
-        bx(cierreG, 1.62, 0.1, 0.18, -34.5, 2.58, 8.71, wood);
-        bx(cierreG, 1.62, 0.1, 0.18, -34.5, 0.84, 8.71, wood);
-        for (const sx of [-1, 1]) bx(cierreG, 0.1, 1.84, 0.18, -34.5 + sx * 0.76, 1.71, 8.71, wood);
-        bx(cierreG, 1.42, 1.64, 0.04, -34.5, 1.71, 8.76, warm);
-        bx(cierreG, 0.045, 1.64, 0.06, -34.5, 1.71, 8.71, steel);
-        bx(cierreG, 1.42, 0.045, 0.06, -34.5, 1.71, 8.71, steel);
-        bx(cierreG, 1.78, 0.06, 0.26, -34.5, 0.81, 8.66, wood);
+        bx(cierreG, 0.26, 0.025, 0.2, -34.5, 0.82, 8.62, cmat(0x2d4354, 0.22));
+        cyl(cierreG, 0.042, 0.034, 0.075, -34.18, 0.845, 8.61, stdM(0xe7dfd1, 0.25), 10);
         mergeStaticGroup(cierreG);
 
         {
-          const slBeam = new THREE.Mesh(
-            new THREE.PlaneGeometry(1.4, 3.0),
-            new THREE.MeshBasicMaterial({ map: winRes().spill, color: 0xffdfa8, transparent: true, opacity: 0.14, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false })
+          const slPool = new THREE.Mesh(
+            new THREE.PlaneGeometry(2.5, 2.5),
+            new THREE.MeshBasicMaterial({ map: dotTex('rgba(255,223,168,0.42)'), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })
           );
-          slBeam.position.set(-34.5, 1.05, 7.72);
-          slBeam.rotation.x = 0.64;
-          slBeam.userData.dyn = true;
-          g.add(slBeam);
-          const slPool = new THREE.Mesh(new THREE.CircleGeometry(1.05, 18), glowM(0xffdfa8, 0.12));
           slPool.rotation.x = -Math.PI / 2;
-          slPool.position.set(-34.5, 0.036, 7.1);
+          slPool.position.set(-34.5, 0.036, 7.15);
           slPool.userData.dyn = true;
           g.add(slPool);
         }
@@ -2813,16 +2857,29 @@ try {
           run: () => scene_cierre(),
         });
 
-        // 4) 01 / 11 / 2025 · La habitación de Valeria (silencio y la llave en la mano)
+        // 4) 01 / 11 / 2025 · La habitación de Valeria (cama con cabecero, mesita, silla al fondo y llave)
         {
           const valStatic = new THREE.Group();
           g.add(valStatic);
-          bx(valStatic, 1.35, 0.42, 0.72, -32.2, 0.21, 6.2, wood);
-          bx(valStatic, 1.25, 0.08, 0.64, -32.2, 0.46, 6.2, cmat(0x8899a8, 0.16));
-          bx(valStatic, 0.36, 0.08, 0.46, -32.65, 0.54, 6.2, cmat(0xe7dfd1, 0.18));
+          bx(valStatic, 2.2, 0.014, 1.5, -32.0, 0.017, 6.45, cmat(0x5b646c, 0.16));
+          bx(valStatic, 1.38, 0.36, 0.74, -32.2, 0.18, 6.2, wood);
+          bx(valStatic, 0.08, 0.86, 0.76, -32.92, 0.43, 6.2, wood);
+          bx(valStatic, 1.26, 0.1, 0.64, -32.2, 0.41, 6.2, cmat(0x8899a8, 0.16));
+          bx(valStatic, 0.56, 0.12, 0.66, -31.82, 0.425, 6.2, cmat(0x475a6b, 0.18));
+          bx(valStatic, 0.36, 0.08, 0.46, -32.64, 0.5, 6.2, cmat(0xe7dfd1, 0.18));
+          // Mesita de noche y lámpara cálida
+          bx(valStatic, 0.44, 0.46, 0.44, -31.18, 0.23, 6.2, wood);
+          cyl(valStatic, 0.06, 0.075, 0.025, -31.18, 0.475, 6.18, cmat(0xc29e5a, 0.25), 10);
+          cyl(valStatic, 0.016, 0.018, 0.18, -31.18, 0.57, 6.18, cmat(0xc29e5a, 0.25), 8);
+          cyl(valStatic, 0.07, 0.13, 0.14, -31.18, 0.68, 6.18, glowM(0xffe1a8, 0.72), 12);
+          // Silla al fondo y teléfono en descanso (como en la escena real)
+          chair(valStatic, -31.2, 7.45, -2.55, wood);
+          bx(valStatic, 0.08, 0.012, 0.14, -31.2, 0.495, 7.45, cmat(0x161b22, 0.25));
+          // Llave de latón sobre el cobertor
           const keyMat = stdM(0xd9b86c, 0.35, { roughness: 0.28, metalness: 0.85 });
-          cyl(valStatic, 0.032, 0.032, 0.012, -32.05, 0.51, 6.08, keyMat, 12);
-          bx(valStatic, 0.075, 0.012, 0.016, -31.99, 0.51, 6.08, keyMat);
+          cyl(valStatic, 0.034, 0.034, 0.012, -32.08, 0.495, 6.08, keyMat, 12);
+          bx(valStatic, 0.08, 0.012, 0.016, -32.02, 0.495, 6.08, keyMat);
+          bx(valStatic, 0.018, 0.012, 0.022, -31.99, 0.495, 6.095, keyMat);
           mergeStaticGroup(valStatic);
           const valHalo = new THREE.Mesh(new THREE.RingGeometry(0.95, 1.08, 28), glowM(0xffe1a8, 0.22));
           valHalo.rotation.x = -Math.PI / 2;
@@ -2832,7 +2889,7 @@ try {
           M6.an.push((t) => {
             valHalo.material.opacity = FL().ch6_cierre && !FL().ch6_valeria ? 0.18 + 0.1 * Math.sin(t * 1.8) : 0;
           });
-          M6.props.push([-33.0, -31.4, 5.7, 6.7]);
+          M6.props.push([-33.05, -30.9, 5.7, 7.75]);
           M6.pts.push({
             id: 'valeria',
             flag: 'ch6_valeria',
@@ -2911,7 +2968,7 @@ try {
         bx(p, 0.08, 0.02, 0.02, -1.5, 0.85, -0.6, stdM(0xffffff, 0.8));
         bx(p, 0.14, 0.04, 0.06, -1.2, 0.86, -0.6, stdM(0x4a3625, 0.2));
 
-        // Taburete lateral con libros apilados
+        // Taburete lateral con libros apilados y péndulo de mesa
         cyl(p, 0.22, 0.22, 0.04, 1.48, 0.48, -0.2, wood, 12);
         for (const sx of [-1, 1]) {
           for (const sz of [-1, 1]) cyl(p, 0.02, 0.014, 0.46, 1.48 + sx * 0.12, 0.23, -0.2 + sz * 0.12, steel, 6);
@@ -2982,18 +3039,38 @@ try {
         pool.position.set(1.4, 0.03, -0.2);
         p.add(pool);
 
-        // Ventana nocturna enmarcada con luces lejanas en la ciudad
+        // Ventana nocturna detallada con cielo urbano nocturno pintado y alféizar
+        const nightSky = txtTex(256, 256, (c, w, h) => {
+          const gr = c.createLinearGradient(0, 0, 0, h);
+          gr.addColorStop(0, '#04070e');
+          gr.addColorStop(0.62, '#0b1424');
+          gr.addColorStop(1, '#142033');
+          c.fillStyle = gr;
+          c.fillRect(0, 0, w, h);
+          let sd = 19;
+          const rnd = () => ((sd = (sd * 9301 + 49297) % 233280) / 233280);
+          c.fillStyle = 'rgba(220,235,255,.55)';
+          for (let i = 0; i < 24; i++) c.fillRect(rnd() * w, rnd() * h * 0.56, 1.5, 1.5);
+          for (let x = 0; x < w; x += 22) {
+            const bh = 38 + rnd() * 72;
+            c.fillStyle = '#070b12';
+            c.fillRect(x, h - bh, 20, bh);
+            for (let wy = h - bh + 8; wy < h - 8; wy += 10) {
+              for (let wx = x + 4; wx < x + 16; wx += 6) {
+                if (rnd() > 0.62) {
+                  c.fillStyle = rnd() > 0.4 ? 'rgba(255,205,130,.72)' : 'rgba(170,220,255,.5)';
+                  c.fillRect(wx, wy, 3, 4);
+                }
+              }
+            }
+          }
+        });
         bx(p, 2.9, 0.1, 0.14, 0, 3.05, -0.73, wood);
-        bx(p, 2.9, 0.1, 0.14, 0, 0.75, -0.73, wood);
+        bx(p, 3.06, 0.08, 0.24, 0, 0.74, -0.7, wood);
         for (const sx of [-1, 1]) bx(p, 0.1, 2.4, 0.14, sx * 1.4, 1.9, -0.73, wood);
-        bx(p, 0.04, 2.24, 0.08, 0, 1.9, -0.72, steel);
-        bx(p, 2.74, 0.04, 0.08, 0, 1.9, -0.72, steel);
-        bx(p, 2.72, 2.22, 0.04, 0, 1.9, -0.76, stdM(0x06090f, 0.15));
-        for (const [lx, ly] of [[-0.9, 1.4], [-0.45, 1.2], [0.3, 1.5], [0.75, 1.1], [1.0, 1.7], [-0.7, 2.2]]) {
-          const ld = new THREE.Mesh(new THREE.SphereGeometry(0.035, 6, 5), glowM(0xffcf88, 0.7));
-          ld.position.set(lx, ly, -0.735);
-          p.add(ld);
-        }
+        bx(p, 0.04, 2.24, 0.08, 0, 1.9, -0.71, steel);
+        bx(p, 2.74, 0.04, 0.08, 0, 1.9, -0.71, steel);
+        bx(p, 2.72, 2.22, 0.03, 0, 1.9, -0.76, new THREE.MeshBasicMaterial({ map: nightSky }));
         M6.an.push((t) => {
           for (let i = 0; i < stm.length; i++) {
             const u = (t * 0.25 + i * 0.33) % 1;
@@ -3046,14 +3123,19 @@ try {
           (c, w, h) => {
             c.fillStyle = '#04121a';
             c.fillRect(0, 0, w, h);
-            c.font = '14px monospace';
-            const ch = '01{}();=<>';
-            for (let y = 14; y < h; y += 18) {
-              let l = '';
-              const n = 2 + ((rnd() * 16) | 0);
-              for (let i = 0; i < n; i++) l += ch[(rnd() * ch.length) | 0];
-              c.fillStyle = rnd() < 0.2 ? '#ffe9a8' : '#7fe8ff';
-              c.fillText(l, 10 + ((rnd() * 40) | 0), y);
+            c.fillStyle = '#09202e';
+            c.fillRect(0, 0, 26, h);
+            const kw = ['const ', 'fn ', 'if ', 'ret ', 'loop ', 'map('];
+            for (let y = 16; y < h; y += 16) {
+              const ind = ((rnd() * 3) | 0) * 14;
+              c.fillStyle = 'rgba(127,232,255,.32)';
+              c.font = '11px monospace';
+              c.fillText(String(((y / 16) | 0) + 10), 4, y);
+              c.fillStyle = '#ffd89a';
+              const tok = kw[(rnd() * kw.length) | 0];
+              c.fillText(tok, 32 + ind, y);
+              c.fillStyle = rnd() < 0.25 ? '#9be8b8' : '#7fe8ff';
+              c.fillRect(32 + ind + 42, y - 7, 28 + rnd() * 90, 5);
             }
           },
           true
@@ -3372,7 +3454,7 @@ try {
           { pause: 2800 },
           { label: 'SILENCIO', t: 'Una silla vacía junto a una ventana encendida. Ya nadie pregunta nada.' },
           { pause: 2900 },
-          { t: 'No fue frialdad. Fue un niño con Asperger aprendiendo a no dar problemas mientras por dentro sentía demasiado.' },
+          { t: 'No fue frialdad. Fue un niño sensible aprendiendo a no dar problemas mientras por dentro sentía demasiado.' },
           { pause: 2900 },
           { who: 'Tú', t: 'Me volví callado… como quien cuida algo frágil para que nadie más lo juzgue.' },
           { pause: 2800 },

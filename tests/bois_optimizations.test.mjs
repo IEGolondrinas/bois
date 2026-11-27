@@ -81,3 +81,20 @@ test('carStep skips carEvaluateSpot when angular delta dYaw is negligible', () =
   assert.match(carSrc, /const dYaw = rn \* h, nextYaw = CAR\.yaw \+ dYaw;\s*if \(Math\.abs\(dYaw\) >= 1e-5\)/);
   assert.match(carSrc, /function carWheelWorld\(i, out\)/);
 });
+
+test('Chapter VI omits Asperger, avoids duplicate window in Silencio, and upgrades scene models', () => {
+  const c6 = read('js/36e-chapter6.js');
+  const c6Min = read('js/36e-chapter6.min.js');
+  assert.equal(/asperger/i.test(c6), false, 'Chapter VI source should not mention Asperger');
+  assert.equal(/asperger/i.test(c6Min), false, 'Chapter VI minified should not mention Asperger');
+  assert.match(c6, /\[-43,\s*-34\.5\]\.forEach\(\(x, i\) => rainWindow\(g, 3\.4, 2\.4, x, 2\.1, 8\.8/);
+  assert.equal(/bx\(cierreG,\s*1\.62,\s*0\.1,\s*0\.18,\s*-34\.5/.test(c6), false, 'Duplicate hardcoded window box in Silencio must be removed');
+});
+
+test('Chapter V frames 14:48/14:53 as a post-school memory (school ended at 1 pm)', () => {
+  const c5 = read('js/36c-chapter5.js');
+  assert.equal(/te temblaban las piernas/.test(c5), false, 'Chapter V should not say legs were trembling at 14:53');
+  assert.match(c5, /7 a\. m\. a 1 p\. m\./);
+  assert.match(c5, /volvías en el recuerdo/);
+});
+
