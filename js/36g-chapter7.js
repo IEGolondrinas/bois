@@ -16,29 +16,27 @@ try{(()=>{
  function script(){
   const L=[{pause:800}];
   L.push(...N('Dejas atrás las torres. Aquí, junto al lago, nadie te pide una respuesta.',2200));
-  L.push(...N('Katherin está en su banca. No tiene prisa por llenar el silencio.',2200));
+  L.push(...N('Katherin está en su banca. No dice nada por un instante.',2200));
   L.push(...Y('¿Por qué siempre apareces cuando estoy a punto de recordar algo?',2200));
   L.push(...Kt('Porque siempre estás a punto de recordar algo.',2300));
-  L.push(...Y('A veces siento que me quedé atrapado mirando cada gesto hacia atrás.',2300));
-  L.push(...Kt('O que llevas mucho tiempo buscando una fórmula en los gestos de los demás, cuando solo querías sentir compañía.',3600));
-  L.push(...Lyr('hecho','Cuando faltaron parejas en el ensayo, ella prefirió no cambiar de puesto por temas logísticos. En la habitación de Valeria apenas te dijo un «hola» suave.',2500,'1 DE NOVIEMBRE DE 2025 · ENSAYO'));
-  L.push(...Lyr('pensaste','Miraste tus zapatos con vergüenza. Pensaste: «Me está rechazando», «Soy invisible», «No debí quedarme callado jugando con la llave».',2600));
-  L.push(...Kt('¿Y si hubiera pasado algo diferente? ¿Crees que habrías dejado de dudar de ti ese mismo día?',3000));
-  L.push(...N('No respondes. El agua devuelve el cielo sin intentar explicarlo.',2400));
-  L.push(...Kt('No puedes saber qué significaba cada silencio para mí. Solo conoces la historia que imaginaste.',3400));
-  L.push(...Lyr('hoy','Es fácil juzgar desde lejos al chico de 16 años y preguntarle por qué no dijo «hola».',2300,'1 DE NOVIEMBRE DE 2026 · 10:03 A. M.'));
-  L.push(...Lyr('hoy','Pero ese chico era reservado, cargaba un terremoto por dentro que nadie veía desde fuera, intentaba no incomodar… y aun así fue al ensayo, hizo la mezcla, prestó su computador, bailó, respondió y se quedó.',3200));
-  L.push(...N('No era ridículo. Estaba aprendiendo a vivir con las herramientas que tenía ese día.',3400));
-  if(FL().ch6_vacio)L.push(...N('Piensas en el nicho vacío de la torre. Un espacio sin llenar que, aun así, ya no te asusta.',3200));
+  L.push(...Y('Pasé meses intentando leer tus silencios como si escondieran una respuesta exacta.',2400));
+  L.push(...Kt('¿Y qué encontraste?',2100));
+  L.push(...Lyr('hecho','Katherin dijo que prefería no cambiar de pareja en el ensayo por temas logísticos. En la habitación de Valeria apenas dijo un «hola» suave.',2700,'01 / 11 / 2025 · ENSAYO'));
+  L.push(...Lyr('pensaste','«Me está rechazando.» Miraste tus zapatos girando la llave entre los dedos.',2500));
+  L.push(...Lyr('hoy','No sé qué pensaba ella ese día. Solo sé lo que sentía yo.',2600,'LO QUE PUEDES SABER HOY'));
+  L.push(...Kt('A veces yo simplemente estaba cansada, o distraída.',2600));
+  L.push(...N('No buscas más explicaciones. El agua devuelve el cielo tal como está.',2400));
+  L.push(...Y('Es fácil juzgar desde lejos al chico de 16 años y preguntarle por qué no dijo más.',2500));
+  L.push(...Y('Pero fue al ensayo, hizo la mezcla, prestó su computador y siguió adelante.',2800));
+  if(FL().ch6_vacio)L.push(...N('Piensas en el nicho vacío de la torre. Un espacio sin llenar que, aun así, ya no te asusta.',3000));
   L.push(...Y('Tal vez nunca sepa qué significó todo aquello para ella…',2300));
-  L.push(...N('Pero sí sé cuánto significó para mí. Y eso es suficiente.',2800));
-  L.push(...N('Katherin sonríe apenas, mirando el lago.',2000));
-  L.push(...Kt('No deberías pasar toda tu vida esperando una señal para empezar a vivir.',3800));
+  L.push(...Y('Pero sí sé cuánto significó para mí. Y eso es suficiente.',2700));
+  L.push(...Kt('¿Y qué vas a hacer ahora?',2200));
+  L.push(...Y('Dejar de esperar una señal en el pasado para empezar a vivir.',2800));
   L.push(...Y('¿Y tú?',1700));
-  L.push(...Kt('Yo también tengo que irme algún día.',3000));
-  L.push(...N('No hay despedida dramática. Solo dos personas existiendo frente al agua.',3000));
-  L.push(...N('La libreta ya no espera respuestas perfectas ni explicaciones para cada silencio.',3400));
-  L.push(...N('Ahora queda algo más sencillo: sentarte un momento junto al lago y quedarte ahí, sin analizar nada.',3800));
+  L.push(...Kt('Yo también tengo que irme algún día.',2900));
+  L.push(...N('No hay despedida dramática. Solo dos personas frente al agua.',2900));
+  L.push(...N('Siéntate un momento junto al lago, sin tener que analizar nada.',3400));
   return L}
  // ---------- la escena ----------
  function scene(){

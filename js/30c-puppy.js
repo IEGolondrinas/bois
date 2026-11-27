@@ -4,14 +4,16 @@
 const PU_WATCH = 7.5, PU_DIST = [4, 38];
 const PU_SVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300"><defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f7fb0"/><stop offset=".55" stop-color="#f3b48a"/><stop offset="1" stop-color="#ffd9a8"/></linearGradient><linearGradient id="l" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9a97f"/><stop offset="1" stop-color="#5d6f94"/></linearGradient></defs><rect width="400" height="300" fill="url(#s)"/><circle cx="300" cy="150" r="26" fill="#fff0c9" opacity=".85"/><rect y="150" width="400" height="70" fill="url(#l)"/><path d="M0 220Q120 205 240 222T400 214V300H0Z" fill="#46583d"/><path d="M0 240Q150 228 400 244V300H0Z" fill="#364a31"/><g fill="#2a2430"><circle cx="128" cy="200" r="15"/><path d="M110 258Q108 212 128 212Q150 214 152 258Z"/><path d="M112 224Q150 236 168 252L162 258Q140 246 112 238Z"/><path d="M112 190Q112 170 130 170Q148 170 146 192Q132 182 112 190Z"/></g><g fill="#c89b66"><ellipse cx="236" cy="248" rx="26" ry="14"/><circle cx="212" cy="236" r="12"/><ellipse cx="204" cy="226" rx="5" ry="10" fill="#8f6a3f" transform="rotate(-20 204 226)"/><path d="M214 242L228 246L218 258Z" fill="#c83737"/><rect x="218" y="256" width="6" height="14"/><rect x="246" y="256" width="6" height="14"/><path d="M258 240Q276 224 272 214L266 216Q268 226 254 238Z"/></g><circle cx="207" cy="234" r="1.8" fill="#222"/></svg>';
 const PU_PHOTO = {
+  kind: 'hecho',
+  kindLabel: 'PRESENCIA · RECUERDO DIRECTO',
   title: 'El cachorro y la pañoleta roja',
-  desc: 'Archivo guardado. Por unos segundos no buscaste ningún significado escondido; solo miraste.',
+  desc: 'Archivo guardado. No pasó nada extraordinario: solo miraste sin buscar un significado escondido.',
   damage: 'Intacta. «Esta es una escena que debo archivar para siempre.»',
   layers: {
     stamp: 'PRESENCIA · 29 / 10 / 2025',
-    fact: 'El cachorro de pañoleta roja corre y salta frente a ti junto al lago.',
-    thought2025: 'No sabía por qué quería recordarlo tan fuerte; intuía que ese instante no volvería igual.',
-    insight2026: 'Por unos segundos estuviste presente, simplemente observando y sintiéndote bien.'
+    fact: 'El cachorro de pañoleta roja corre frente a ti junto al lago.',
+    thought2025: 'Solo intuiste que querías guardar ese momento.',
+    insight2026: 'Por unos segundos no pensaste en nada. Solo miraste.'
   },
   img: 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(PU_SVG)
 };
@@ -206,16 +208,17 @@ function puTick() {
     storyFlag('photo_puppy', 1);
     puFlash();
     const lookAt = new THREE.Vector3(d.position.x, d.position.y + 0.35, d.position.z);
-    window.__boisRevealPhoto = { title: PU_PHOTO.title, img: PU_PHOTO.img };
+    window.__boisRevealPhoto = { title: PU_PHOTO.title, img: PU_PHOTO.img, kind: PU_PHOTO.kind, kindLabel: PU_PHOTO.kindLabel };
     playCinematic([
-      { layer: 'presencia', stamp: '29 / 10 / 2025', t: 'No sabes por qué la fotografiaste.' },
-      { pause: 1600 },
-      { t: 'El perrito de pañoleta roja corre frente a ti. Supongo que intuías que este instante no iba a repetirse igual.' },
-      { pause: 1900 },
-      { layer: 'hoy', t: 'Por unos segundos no pensaste en qué significaba nada. Solo miraste, presente y tranquilo.' },
-      { pause: 1900 },
+      { pause: 1400 },
+      { layer: 'presencia', stamp: '29 / 10 / 2025', t: 'No pasó nada extraordinario.' },
+      { pause: 2400 },
+      { t: 'El cachorro de pañoleta roja corre un momento frente a ti.' },
+      { pause: 2600 },
+      { layer: 'presencia', t: 'Solo miraste.' },
+      { pause: 2200 },
       { label: 'ARCHIVO GUARDADO', t: '«Esta es una escena que debo archivar para siempre.»' },
-      { pause: 1800 }
+      { pause: 2000 }
     ], () => {
       puRenderAlbum();
       showMsg('Archivo guardado en tu álbum · V para volver a verlo');

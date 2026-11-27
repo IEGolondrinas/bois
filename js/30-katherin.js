@@ -1095,98 +1095,95 @@ const KATHERIN_TALKS = {
   1: [
     [
       { who: 'Katherin', t: '¿Estabas buscando algo en el parque?' },
-      { who: 'Tú', t: 'No estoy seguro… solo sentía que tenía que entender qué pasó aquí.' },
-      { who: 'Katherin', t: 'Yo solo vine a sentarme un rato. A veces uno piensa demasiado cuando nadie dice nada.' },
-      { type: 'layer', layer: 'hoy', t: 'Su cara era neutral. En 2025 llenabas cada silencio con hipótesis.' }
+      { who: 'Tú', t: 'No estoy seguro… sentía que tenía que entender qué pasó aquí.' },
+      { who: 'Katherin', t: 'Yo solo vine a sentarme un rato.' },
+      { type: 'layer', layer: 'hoy', t: 'Su cara era neutral. En 2025 llenabas cada pausa intentando adivinar qué pensaba ella.' }
     ],
     [
       { who: 'Katherin', t: 'Los cisnes llevan rato dando vueltas en el mismo punto.' },
       { who: 'Tú', t: 'Dos. Siempre los cuento.' },
-      { who: 'Katherin', t: 'Eso se parece bastante a ti: fijarte en los detalles que los demás pasan por alto.' }
+      { who: 'Katherin', t: 'Hace buen viento aquí junto al agua.' }
     ],
     [
-      { who: 'Katherin', t: 'No hace falta que inventes un tema de conversación.' },
+      { who: 'Katherin', t: 'No hace falta llenar el silencio.' },
       { who: 'Tú', t: 'Es que cuando hay silencio siento que estoy incomodando.' },
-      { who: 'Katherin', t: 'No incomodas. Yo también suelo quedarme callada cuando me gusta estar tranquila.' }
+      { who: 'Katherin', t: 'Yo también suelo quedarme callada cuando quiero estar tranquila.' }
     ]
   ],
   2: [
     [
+      { who: 'Tú', t: 'Pasé mucho tiempo intentando encontrar una fórmula para entender todo esto.' },
+      { who: 'Katherin', t: '¿Y funcionó?' },
+      { t: '(Silencio.)' },
+      { who: 'Tú', t: 'No. No todo lo que pasa entre dos personas tiene una fórmula.' }
+    ],
+    [
+      { who: 'Katherin', t: '¿Estuviste en El Colegio?' },
+      { who: 'Tú', t: 'Me acordé del bus de las seis y media. Y de esperar un mensaje mirando el reloj hasta las 4:12.' },
+      { who: 'Katherin', t: 'Qué largo se hace esperar cuando uno no sabe a qué hora pasa algo.' }
+    ],
+    [
+      { who: 'Katherin', t: 'A veces te quedas mirando el suelo cuando hablas.' },
+      { who: 'Tú', t: 'No es indiferencia. Me daba pena sostener la mirada y que pensaras algo raro.' },
+      { who: 'Katherin', t: 'No pasa nada. Cada quien habla a su ritmo.' }
+    ],
+    [
       { who: 'Katherin', t: 'Toro… así te decían en el salón, ¿no?' },
-      { who: 'Tú', t: 'Sí. Aunque a veces sentía que solo me veían cuando resolvía algo.' },
-      { who: 'Katherin', t: 'Yo también vi el día que prestaste tu computador e hiciste la mezcla. Todos te lo agradecieron de verdad.' }
-    ],
-    [
-      { who: 'Katherin', t: 'Estuviste en El Colegio.' },
-      { who: 'Tú', t: 'Me acordé del bus de las seis y media. Y de esperar un mensaje mirando el reloj.' },
-      { who: 'Katherin', t: 'Qué largo se hace esperar cuando uno no sabe qué va a pasar.' }
-    ],
-    [
-      { who: 'Katherin', t: '¿Sigues intentando calcular si hiciste todo perfecto?' },
-      { who: 'Tú', t: 'Un poco. Me cuesta creer que valgo si no saco un buen resultado.' },
-      { who: 'Katherin', t: 'No todo problema tiene una fórmula, Toro. Tampoco tú.' }
-    ],
-    [
-      { who: 'Katherin', t: 'A veces miras el suelo cuando hablas.' },
-      { who: 'Tú', t: 'No es indiferencia. Es que me da pena sostener la mirada demasiado tiempo.' },
-      { who: 'Katherin', t: 'Lo sé. Se nota que estabas haciendo tu mejor esfuerzo.' }
+      { who: 'Tú', t: 'Sí. Aunque a veces pensaba que solo valía cuando prestaba el computador o hacía la mezcla.' },
+      { who: 'Katherin', t: 'Ese día todos escucharon el audio que hicieron. El favor sí sirvió.' }
     ]
   ],
   3: [
     [
       { who: 'Katherin', t: '¿Te acuerdas de la actividad de Cátedra de Paz?' },
-      { who: 'Tú', t: 'Nos dividimos nueve y nueve. Yo pensé que todos iban a poner solo que era bueno en matemáticas.' },
-      { who: 'Katherin', t: 'Y escribimos lo que de verdad veíamos en ti. Eso también era real.' }
+      { who: 'Tú', t: 'Nos dividimos nueve y nueve. Yo me definí por matemáticas y análisis; cuando leí tus cinco palabras me temblaron las piernas.' },
+      { who: 'Katherin', t: 'Escribí lo primero que pensé que era cierto en ese momento.' },
+      { type: 'layer', layer: 'hoy', t: 'Entre lo que ella escribió en una hoja y la historia enorme que armaste encima hubo meses de distancia.' }
     ],
     [
-      { who: 'Katherin', t: 'Guardaste la hoja del cuaderno.' },
-      { who: 'Tú', t: 'Me temblaron las piernas cuando la leí. Cinco palabras me hicieron ruido todo el año.' },
-      { who: 'Katherin', t: 'Solo escribí lo que eras: reservado, amable y enfocado. Sin ningún misterio.' }
+      { who: 'Tú', t: 'Antes confundía cualquier gesto pequeño tuyo con un examen que tenía que aprobar.' },
+      { who: 'Katherin', t: 'A veces uno solo dice «hola» o escribe algo rápido, sin ninguna clave detrás.' }
     ],
     [
-      { who: 'Katherin', t: 'A veces confundías un gesto pequeño con un examen.' },
-      { who: 'Tú', t: 'Cada vez lo veo más claro. Yo imaginaba una película entera donde tú solo estabas ahí.' },
-      { who: 'Katherin', t: 'Y aun así, estar ahí también valía.' }
+      { who: 'Tú', t: 'Yo imaginaba una explicación oculta en cada pausa.' },
+      { who: 'Katherin', t: 'No siempre hay algo escondido detrás de quedarse callado.' }
     ]
   ],
   4: [
     [
-      { who: 'Katherin', t: 'Te ves distinto desde que subiste a las torres.' },
-      { who: 'Tú', t: 'Estaba mirando cuánto tiempo pasé midiendo mi vida como si fuera una ecuación.' },
-      { who: 'Katherin', t: '¿Y encontraste alguna respuesta?' },
-      { who: 'Tú', t: 'Que no tenía que hacerlo perfectamente. Tenía dieciséis años y estaba aprendiendo.' }
+      { who: 'Tú', t: 'Estuve en las torres mirando todas las etiquetas con las que intenté definirme: el inteligente, el útil, el reservado, el que quiere pertenecer.' },
+      { who: 'Katherin', t: 'Suena agotador cargar con todo eso a la vez.' },
+      { who: 'Tú', t: 'Tenía dieciséis años. No tenía que elegir un molde perfecto para valer.' }
     ],
     [
-      { who: 'Katherin', t: 'Recuerdo aquel ensayo en la casa grande… las dos ventanas.' },
-      { who: 'Tú', t: 'Tú mirabas por una y yo me fui a la contraria para no estorbar.' },
-      { who: 'Katherin', t: 'Dos personas reservadas mirando el mismo paisaje desde lados opuestos. No estuvo mal.' }
+      { who: 'Katherin', t: 'En el ensayo de la casa grande también había silencio.' },
+      { who: 'Tú', t: 'Tú mirabas por una ventana y yo me fui a la contraria para no incomodar. Ahora ya no juzgo a ese chico.' },
+      { who: 'Katherin', t: 'Dos personas mirando el paisaje desde lados distintos. Tampoco estuvo mal.' }
     ],
     [
-      { who: 'Katherin', t: 'Gracias por sentarte aquí sin querer resolver nada.' },
-      { who: 'Tú', t: 'Hoy solo quería acompañar el silencio.' },
+      { who: 'Katherin', t: 'Hoy te ves menos apurado por preguntar.' },
+      { who: 'Tú', t: 'Solo quería sentarme aquí sin convertir esto en un problema por resolver.' },
       { t: 'El lago sigue moviéndose frente a ustedes, sin ninguna prisa.' }
     ]
   ],
   5: [
     [
-      { who: 'Katherin', t: 'Ya no miras cada gesto mío como si escondiera una clave.' },
-      { who: 'Tú', t: 'Creo que entendí la diferencia entre lo que pasa y lo que mi cabeza construye encima.' },
-      { who: 'Katherin', t: 'Eso da mucha paz.' }
+      { who: 'Tú', t: 'Creo que ya no miro tus gestos esperando encontrar una respuesta escondida.' },
+      { who: 'Katherin', t: 'Me alegra escuchar eso.' },
+      { type: 'layer', layer: 'hoy', t: 'Ya no necesitas que el otro sea un libro abierto para estar tranquilo.' }
     ],
     [
-      { who: 'Katherin', t: 'Tal vez nunca sepamos exactamente qué pensaba el otro en cada ensayo.' },
-      { who: 'Tú', t: 'No necesito saber qué significó para ti para saber cuánto significó para mí.' },
-      { who: 'Katherin', t: 'Con eso basta.' }
+      { who: 'Tú', t: 'Tal vez nunca sepa qué significó todo aquello para ti. Pero sí sé cuánto significó para mí.' },
+      { who: 'Katherin', t: 'Cada quien se queda con su parte del mismo día. Con eso basta.' }
     ],
     [
-      { who: 'Katherin', t: 'Hoy el agua está quieta.' },
+      { who: 'Katherin', t: 'Hoy el agua está bastante quieta.' },
       { who: 'Tú', t: 'Y por unos segundos no estoy pensando en qué significa. Solo estoy aquí.' },
-      { who: 'Katherin', t: 'Quizá de eso se trataba aprender a estar presente.' }
+      { t: 'El viento cruza el parque despacio. Ninguno agrega nada más.' }
     ],
     [
-      { who: 'Katherin', t: 'Cuando sigas tu camino, no te quedes esperando señales en esta banca.' },
-      { who: 'Tú', t: 'Volveré cuando quiera mirar el lago, sin guiones en la cabeza.' },
-      { t: 'Sonríe con naturalidad. A lo lejos, los cisnes siguen flotando sobre el agua.' }
+      { who: 'Tú', t: 'Ya no quiero quedarme esperando una señal para empezar a vivir.' },
+      { who: 'Katherin', t: 'Cuando quieras volver a mirar el lago, la banca sigue aquí.' }
     ]
   ]
 };
@@ -1241,15 +1238,15 @@ function interactKatherin() {
       { pause: 2200 },
       { who: 'Katherin', t: 'Me llamo Katherin.' },
       { pause: 1400 },
-      { who: 'Tú', t: 'Hola… siento que ya había estado en un silencio parecido contigo, pero mi cabeza intenta adivinarlo todo.' },
+      { who: 'Tú', t: 'Hola… siento que mi cabeza intenta adivinar qué piensas en cada silencio.' },
       { pause: 2300 },
-      { who: 'Katherin', t: 'No tienes que adivinar nada. Yo también soy algo callada.' },
+      { who: 'Katherin', t: 'Yo también soy algo callada, nada más.' },
       { pause: 2000 },
       { t: 'Por un momento ninguno intenta llenar la pausa. Un pétalo de cerezo cae al agua y sigue su curso.', on: () => katherinCh3Pad([196, 293.7, 392, 493.9], 5.5, 0.030) },
       { pause: 2200 },
-      { type: 'layer', layer: 'hoy', t: 'No había enigmas en su mirada. Solo dos personas reservadas coincidiendo junto al agua.' },
+      { type: 'layer', layer: 'hoy', t: 'Ella no sabe qué pasaba por tu cabeza en 2025. Tú tampoco sabes qué pasaba por la suya. Y aun así pueden sentarse frente al mismo lago.' },
       { pause: 2400 },
-      { who: 'Katherin', t: 'Si sigues hacia tierra firme, El Colegio vuelve a estar abierto. Puedes sentarte antes, si quieres. (F)' },
+      { who: 'Katherin', t: 'Si caminas hacia tierra firme, el edificio de salones está abierto. Puedes sentarte antes, si quieres. (F)' },
       { pause: 2400 },
       { t: 'Te quedas allí, a una distancia cómoda. El lago sigue moviéndose frente a ustedes.' },
       { pause: 2400 }

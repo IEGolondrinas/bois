@@ -143,6 +143,8 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
 #camAlbum .cam-photo p{font:12px/1.55 system-ui,sans-serif;color:#c5c0b4;margin:0 2px 6px}
 #camAlbum .cam-photo small{display:block;font:italic 11px/1.45 Georgia,serif;color:#938d80;margin:0 2px 2px}
 #camAlbum .cam-layers{margin-top:9px;padding-top:8px;border-top:1px solid rgba(220,205,175,.14);display:flex;flex-direction:column;gap:5px}
+#camAlbum .cam-layers.is-mixed .cam-layer.l-hecho,#camAlbum .cam-layers.is-mixed .cam-layer.l-2025{border-color:rgba(228,182,111,.42);background:rgba(228,182,111,.045)}
+#camAlbum .cam-layers.is-quiet .cam-layer{border-left-width:1px;opacity:.92}
 #camAlbum .cam-layer{font:11.5px/1.48 Georgia,serif;color:#cfc9bc;padding:4px 8px;border-left:2px solid rgba(220,205,175,.35);background:rgba(255,255,255,.02)}
 #camAlbum .cam-layer b{display:block;font:600 9px/1.2 system-ui,sans-serif;letter-spacing:1.8px;text-transform:uppercase;margin-bottom:2px;color:#d7cbb0}
 #camAlbum .cam-layer.l-hecho{border-color:rgba(243,238,228,.55)}
@@ -151,6 +153,9 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
 #camAlbum .cam-layer.l-2025 b{color:#f0ca86}
 #camAlbum .cam-layer.l-2026{border-color:rgba(158,194,173,.65)}
 #camAlbum .cam-layer.l-2026 b{color:#b3dac3}
+#camAlbum .cam-kind{display:inline-block;margin-top:9px;padding:3px 7px;font:600 9px/1.2 system-ui,sans-serif;letter-spacing:1.5px;text-transform:uppercase;border:1px solid rgba(220,205,175,.28);color:#dcd3be}
+#camAlbum .cam-kind.k-hecho{border-color:rgba(158,194,173,.55);color:#bfe4ce;background:rgba(32,68,52,.22)}
+#camAlbum .cam-kind.k-simbolo{border-color:rgba(228,182,111,.5);color:#ebd09e;background:rgba(78,54,22,.22)}
 #camAlbum .cam-stamp{display:inline-block;margin-bottom:6px;font:600 9.5px/1.2 system-ui,sans-serif;letter-spacing:1.8px;color:#b8ad94;text-transform:uppercase}
 #camAlbum .cam-photo::after{content:'';position:absolute;top:14px;left:14px;right:14px;aspect-ratio:4/3;pointer-events:none;mix-blend-mode:multiply;opacity:.8}
 #camAlbum .cam-photo:nth-child(1)::after{background:radial-gradient(ellipse at 100% 0%,rgba(70,40,10,.75),transparent 46%),linear-gradient(115deg,transparent 60%,rgba(120,90,50,.28) 61%,transparent 62%)}
@@ -406,13 +411,27 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
   document.getElementById('clClose').addEventListener('click', closeLightbox);
   lightEl.addEventListener('click', e => { if (e.target === lightEl) closeLightbox(); });
 
-  function renderLayersHTML(L) {
+  function renderKindBadge(p) {
+    if (!p || (!p.kind && !p.kindLabel)) return '';
+    const isSym = p.kind === 'simbolo';
+    const cls = isSym ? 'k-simbolo' : 'k-hecho';
+    const txt = p.kindLabel || (isSym ? 'FOTOGRAFÍA → SÍMBOLO · MEMORIA SIMBÓLICA' : 'FOTOGRAFÍA → HECHO · RECUERDO DIRECTO');
+    return '<span class="cam-kind ' + cls + '">' + camEsc(txt) + '</span>';
+  }
+
+  function renderLayersHTML(L, p) {
     if (!L) return '';
-    return '<div class="cam-layers">' +
+    const stage = typeof window.__boisMemoryStage === 'function' ? window.__boisMemoryStage() : 'sep';
+    const isSym = p && p.kind === 'simbolo';
+    const factTitle = isSym ? 'Símbolo' : 'Hecho';
+    const thoughtTitle = stage === 'mixed' ? 'Hecho + interpretación (sin separar aún · 2025)' : 'Lo que pensaste · 2025';
+    const insightTitle = stage === 'mixed' ? 'Primera lectura de hoy' : stage === 'quiet' ? 'Lo que sabes hoy · sin prisa' : 'Lo que sabes hoy';
+    const stageCls = stage === 'mixed' ? ' is-mixed' : stage === 'quiet' ? ' is-quiet' : '';
+    return '<div class="cam-layers' + stageCls + '">' +
       (L.stamp ? '<span class="cam-stamp">' + camEsc(L.stamp) + '</span>' : '') +
-      (L.fact ? '<div class="cam-layer l-hecho"><b>Hecho</b>' + camEsc(L.fact) + '</div>' : '') +
-      (L.thought2025 ? '<div class="cam-layer l-2025"><b>Lo que pensaste · 2025</b>' + camEsc(L.thought2025) + '</div>' : '') +
-      (L.insight2026 ? '<div class="cam-layer l-2026"><b>Lo que sabes hoy · 2026</b>' + camEsc(L.insight2026) + '</div>' : '') +
+      (L.fact ? '<div class="cam-layer l-hecho"><b>' + factTitle + '</b>' + camEsc(L.fact) + '</div>' : '') +
+      (L.thought2025 ? '<div class="cam-layer l-2025"><b>' + thoughtTitle + '</b>' + camEsc(L.thought2025) + '</div>' : '') +
+      (L.insight2026 ? '<div class="cam-layer l-2026"><b>' + insightTitle + '</b>' + camEsc(L.insight2026) + '</div>' : '') +
       '</div>';
   }
 
@@ -426,6 +445,7 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
     const islandList = typeof PHOTOS !== 'undefined' && typeof STORY !== 'undefined'
       ? PHOTOS.filter(p => !!STORY.flags['photo_' + p.id])
       : [];
+    const stage = typeof window.__boisMemoryStage === 'function' ? window.__boisMemoryStage() : 'sep';
     if (countEl) countEl.textContent = String(userPhotos.length);
     if (storyCountEl) storyCountEl.textContent = String(camList.length);
     if (islandCountEl) islandCountEl.textContent = String(islandList.length);
@@ -437,26 +457,30 @@ body.cam-finder-active #bgHud,body.cam-finder-active #bgCompass,body.cam-finder-
 
     if (activeTab === 'story') {
       if (subEl) subEl.textContent = camList.length > 4
-        ? 'Cuatro recuerdos iniciales y una escena guardada en presencia.'
-        : 'Cuatro cápsulas iniciales de tu cámara, cada una con sus tres capas de memoria.';
+        ? 'Tres recuerdos simbólicos, una escena real de Cátedra de Paz y un instante guardado en presencia.'
+        : 'Tres imágenes simbólicas de tu memoria y un hecho real fechado el 29 / 10 / 2025.';
       if (typeof STORY !== 'undefined' && !STORY.flags.gotCam) {
         grid.innerHTML = '<div class="cam-empty">Todavía no has recogido la cámara antigua en la playa del despertar.</div>';
         return;
       }
       grid.innerHTML = camList.map((p, i) =>
-        '<article class="cam-photo' + (i >= 3 ? ' is-clean' : '') + '"><img loading="lazy" src="' + camEsc(p.img) + '" alt="Cápsula: ' + camEsc(p.title) + '"><h3>' + (i + 1) + '. ' + camEsc(p.title) + '</h3><p>' + camEsc(p.desc) + '</p><small>' + camEsc(p.damage) + '</small>' + renderLayersHTML(p.layers) + '</article>'
+        '<article class="cam-photo' + (i >= 3 ? ' is-clean' : '') + '"><img loading="lazy" src="' + camEsc(p.img) + '" alt="Cápsula: ' + camEsc(p.title) + '">' + renderKindBadge(p) + '<h3>' + (i + 1) + '. ' + camEsc(p.title) + '</h3><p>' + camEsc(p.desc) + '</p><small>' + camEsc(p.damage) + '</small>' + renderLayersHTML(p.layers, p) + '</article>'
       ).join('');
       return;
     }
 
     if (activeTab === 'island') {
-      if (subEl) subEl.textContent = 'Cápsulas recogidas en la isla (' + islandList.length + '/6): hecho, interpretación de 2025 y calma de 2026.';
+      if (subEl) subEl.textContent = stage === 'mixed'
+        ? 'Recuerdos directos de la isla (' + islandList.length + '/6): al principio hechos e interpretaciones siguen mezclados.'
+        : stage === 'quiet'
+          ? 'Recuerdos directos de la isla (' + islandList.length + '/6): hechos separados, sin necesidad de analizarlo todo.'
+          : 'Recuerdos directos de la isla (' + islandList.length + '/6): hecho real, lo que pensaste en 2025 y lo que puedes saber hoy.';
       if (!islandList.length) {
         grid.innerHTML = '<div class="cam-empty">Todavía no has recogido ninguna cápsula fotográfica en la isla.<br>Consulta el mapa (<b>M</b>) o el diario (<b>J</b>) para seguir las zonas de pista.</div>';
         return;
       }
       grid.innerHTML = islandList.map((p, i) =>
-        '<article class="cam-photo is-clean"><img loading="lazy" src="' + camEsc(p.img) + '" alt="Cápsula de la isla: ' + camEsc(p.title) + '"><h3>' + (i + 1) + '. ' + camEsc(p.title) + '</h3><p>' + camEsc(p.zone || '') + '</p>' + renderLayersHTML(p.layers) + '</article>'
+        '<article class="cam-photo is-clean"><img loading="lazy" src="' + camEsc(p.img) + '" alt="Cápsula de la isla: ' + camEsc(p.title) + '">' + renderKindBadge(p) + '<h3>' + (i + 1) + '. ' + camEsc(p.title) + '</h3><p>' + camEsc(p.zone || '') + '</p>' + renderLayersHTML(p.layers, p) + '</article>'
       ).join('');
       return;
     }

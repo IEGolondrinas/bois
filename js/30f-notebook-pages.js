@@ -69,12 +69,14 @@ function ntbVoiceStage(){
   try{
     const F=(typeof STORY!=='undefined'&&STORY.flags)||{};
     const n=typeof bgCollected==='function'?bgCollected():0;
-    if(F.ch7_presencia)return {label:'Solo estaba ahí',note:'Por unos segundos dejé de buscar respuestas en cada gesto. Estar presente también cuenta como recordar.'};
-    if(F.ch7_complete)return {label:'No necesito saberlo todo',note:'Ya no hace falta resolver cada silencio para empezar a vivir.'};
-    if(F.ch5_complete||F.ch6_complete)return {label:'Esto fue lo que yo pensé que ocurrió',note:'En 2025 confundía mis interpretaciones con hechos. Hoy puedo mirar ambas cosas por separado.'};
-    if(n>=4||F.metKatherin||F.ch4_complete)return {label:'Esto sí ocurrió',note:'Empiezo a recordar detalles concretos sin inventarles un misterio encima.'};
-    if(n>=1)return {label:'Creo que esto ocurrió',note:'Algunas escenas vuelven por fragmentos: un reloj, un espejo medio abierto, un audio del grupo.'};
-    return {label:'No recuerdo',note:'Solo sé que guardé esta libreta porque algo en aquella época merecía ser mirado con más calma.'};
+    if(F.ch7_presencia)return {label:'Dejo de buscar una respuesta',note:'Por unos segundos dejé de analizar cada gesto. Estar presente frente al lago también cuenta como recordar.'};
+    if(F.ch7_complete)return {label:'Distingo hechos de interpretaciones',note:'Ya puedo separar lo que ocurrió, lo que pensé en 2025 y lo que simplemente no puedo saber.'};
+    if(F.ch6_complete)return {label:'Observo las versiones de mí mismo',note:'El inteligente, el útil, el reservado, el que quiere pertenecer: ninguna etiqueta aislada me resume.'};
+    if(F.ch5_complete)return {label:'Entro en lo que sentía',note:'Lo que guardaba por dentro tenía eco, no señales ocultas.'};
+    if(F.ch4_complete)return {label:'Recuerdo quién era',note:'Un día real: 06:30 en el bus, la pizarra, los suecos y la espera de las 15:43 a las 16:12. Estabas aprendiendo a vivir.'};
+    if(F.metKatherin||n>=6)return {label:'Intento entender a los demás',note:'Todavía busco sentido en los silencios ajenos, aunque ya sé que nadie puede leer la mente de otro.'};
+    if(n>=1)return {label:'Quiero recordar',note:'Vuelven escenas sueltas de la isla, pero hechos e interpretaciones todavía se sienten mezclados.'};
+    return {label:'No recuerdo',note:'Solo sé que guardé esta libreta porque algo de aquella época merecía ser mirado con calma.'};
   }catch(e){return {label:'No recuerdo',note:''}}
 }
 function ntbPagesHTML(){

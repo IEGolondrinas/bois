@@ -530,18 +530,17 @@ try {
       const look = typeof THREE !== 'undefined' && THREE.Vector3 ? new THREE.Vector3(-125, ly, 110) : null;
       if (typeof auHit === 'function') auHit(220, 0.025, 0.5);
       const lines = [
-        { pause: 1300 },
-        { layer: 'presencia', stamp: 'AQUÍ Y AHORA', t: 'No estás buscando pistas en el horizonte. No estás esperando que nadie aparezca ni intentando descifrar una señal.' },
-        { pause: 2400 },
-        { layer: 'presencia', t: 'El viento mueve apenas los árboles de la orilla. Un cisne cruza despacio el agua. El reflejo de las torres tiembla y vuelve a calmarse.' },
-        { pause: 2400 },
-        { layer: 'presencia', t: 'Por unos segundos no pensaste en qué significaba.' },
-        { pause: 2000 },
-        { layer: 'presencia', t: 'Solo estabas ahí.' },
-        { pause: 2200 },
-        { layer: 'presencia', t: 'Quizá eso también cuenta como recordar.' },
-        { pause: 1600 },
-        { layer: 'hoy', stamp: 'PARA TU YO DEL FUTURO', t: 'No tenías que resolver toda tu vida para permitirte vivirla. Gracias por llegar hasta aquí, Julián.' }
+        { pause: 1800 },
+        { layer: 'presencia', stamp: 'EL LAGO', t: 'El viento mueve apenas los árboles de la orilla.' },
+        { pause: 3200 },
+        { layer: 'presencia', t: 'Un cisne cruza despacio el agua.' },
+        { pause: 3400 },
+        { layer: 'presencia', t: 'No estás buscando ninguna señal.' },
+        { pause: 2800 },
+        { layer: 'presencia', t: 'Solo estás aquí.' },
+        { pause: 3000 },
+        { layer: 'hoy', stamp: 'SIN PRISA', t: 'No tenías que resolver toda tu vida para permitirte vivirla. Gracias por llegar hasta aquí, Julián.' },
+        { pause: 2200 }
       ];
       playCinematic(lines, () => {
         presencePlaying = false;

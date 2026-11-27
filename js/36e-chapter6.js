@@ -3440,18 +3440,18 @@ try {
       cine(
         [
           { pause: 800 },
-          { t: 'Una pizarra llena de ecuaciones. Una versión de ti, de espaldas, escribe sin detenerse.' },
+          { label: 'IDENTIDAD · «EL INTELIGENTE»', t: 'Una pizarra llena de ecuaciones. Una versión de ti, de espaldas, escribe sin detenerse.' },
           { pause: 2400 },
-          { t: 'Órbitas, ondas, constantes. Todo lo invisible escrito con tiza clara.' },
-          { pause: 2200 },
+          { t: 'Órbitas, ondas, constantes. La idea de que solo mereces lugar si entiendes todo.' },
+          { pause: 2300 },
           { t: 'Intentas leer la última línea, y los símbolos se reordenan.' },
           { pause: 2400 },
-          { who: 'Tú', t: 'Podría ser este. O dejar de serlo mañana.' },
-          { pause: 2400 },
+          { who: 'Tú', t: 'No soy solo esa etiqueta. Puedo ser curioso sin convertirme en una máquina.' },
+          { pause: 2500 },
         ],
         () => {
           storyFlag('ch6_fisica', 1);
-          doneMsg(left('Un futuro visto'));
+          doneMsg(left('Identidad observada'));
         },
         { x: -1, y: 1.75, z: -8.5 }
       );
@@ -3462,18 +3462,18 @@ try {
       cine(
         [
           { pause: 800 },
-          { t: 'Pantallas encendidas. Líneas de código que corren hacia arriba, como una lluvia al revés.' },
+          { label: 'IDENTIDAD · «EL ÚTIL»', t: 'Pantallas encendidas. Líneas de código que corren hacia arriba, como una lluvia al revés.' },
           { pause: 2400 },
-          { t: 'La figura sentada no se gira. Teclea con la calma de quien sabe adónde va.' },
-          { pause: 2400 },
+          { t: 'La figura sentada resuelve lo que otros necesitan: la mezcla, el computador prestado, el archivo a tiempo.' },
+          { pause: 2500 },
           { t: 'Cuando intentas leer una línea completa, el texto cambia.' },
           { pause: 2200 },
-          { who: 'Tú', t: 'Se ve tranquilo. Pero no sé si lo está.' },
-          { pause: 2400 },
+          { who: 'Tú', t: 'Ayudar era real. Pensar que solo valgo cuando soy útil… eso estaba en mi cabeza.' },
+          { pause: 2500 },
         ],
         () => {
           storyFlag('ch6_compu', 1);
-          doneMsg(left('Un futuro visto'));
+          doneMsg(left('Identidad observada'));
         },
         { x: 7, y: 1.55, z: -8.3 }
       );
@@ -3484,18 +3484,18 @@ try {
       cine(
         [
           { pause: 800 },
-          { t: 'Una habitación con una sola silla y una lámpara encendida. Nadie más.' },
+          { label: 'IDENTIDAD · «EL RESERVADO»', t: 'Una habitación con una sola silla y una lámpara encendida. Nadie más.' },
           { pause: 2400 },
-          { t: 'La ventana está oscura. La figura mira hacia ella como si esperara un mensaje que nunca llega.' },
+          { t: 'La ventana está oscura. Callar para no incomodar, para no equivocarte delante de nadie.' },
           { pause: 2400 },
-          { who: 'Tú', t: '¿Es esto lo que temo… o lo que elijo cuando me canso de intentar encajar?' },
+          { who: 'Tú', t: '¿Es esto lo que temo… o la coraza que construí cuando me cansé de intentar encajar?' },
           { pause: 2800 },
           { t: 'Al mirar demasiado, la habitación parece más grande.' },
           { pause: 2200 },
         ],
         () => {
           storyFlag('ch6_solo', 1);
-          doneMsg(left('Un futuro visto'));
+          doneMsg(left('Identidad observada'));
         },
         { x: -1, y: 1.5, z: 8.2 }
       );
@@ -3506,18 +3506,18 @@ try {
       cine(
         [
           { pause: 800 },
-          { t: 'Una mesa larga. Siluetas alrededor, hablando a la vez, sin que tengas que decir una sola palabra.' },
+          { label: 'IDENTIDAD · «EL QUE QUIERE PERTENECER»', t: 'Una mesa larga. Siluetas alrededor, hablando a la vez, sin que tengas que decir una sola palabra.' },
           { pause: 2600 },
           { t: 'Hay una silla libre. Como aquel día en que el grupo agradeció la mezcla y nadie te exigió hablar más de la cuenta.' },
           { pause: 2600 },
           { t: 'Cuando intentas ver sus caras, la escena se mueve, como si aún no las hubieras conocido.' },
           { pause: 2500 },
-          { who: 'Tú', t: 'Tal vez pertenecer no sea hablar todo el tiempo. Tal vez sea poder quedarte.' },
+          { who: 'Tú', t: 'No tengo que elegir una sola versión de mí mismo para poder sentarme aquí.' },
           { pause: 2500 },
         ],
         () => {
           storyFlag('ch6_gente', 1);
-          doneMsg(left('Un futuro visto'));
+          doneMsg(left('Identidad observada'));
         },
         { x: 7, y: 1.35, z: 7.9 }
       );
@@ -3614,14 +3614,14 @@ try {
           { pause: 1000 },
           { t: 'Más allá del cristal, el mar se extiende hasta una ciudad lejana: apenas un temblor de luces en el horizonte.' },
           { pause: 3000 },
-          { t: 'Te quedas mirándola. Comprendes cuánto tiempo pasaste intentando demostrar tu valor con un promedio, un 382 o una respuesta exacta.' },
+          { t: 'Te quedas mirándola. Comprendes cuánto tiempo pasaste intentando demostrar tu valor con un promedio, un 382 o una versión rígida de ti.' },
           { pause: 3400 },
-          { t: 'Intentando calcular si incomodas. Qué debiste haber dicho. Qué pensará de ti la versión que todavía no existe.' },
+          { t: 'El inteligente, el útil, el reservado, el que busca pertenecer: ninguna de esas formas por separado te contiene entero.' },
           { pause: 3400 },
-          { t: 'La isla no te entrega una fórmula cuantitativa. Solo te muestra que todavía caben posibilidades.' },
+          { t: 'No eres un problema matemático ni una sola etiqueta cerrada. Aquí todavía caben posibilidades.' },
           { pause: 3200 },
           ...(FL().ch6_vacio ? [{ t: 'Junto a tu reflejo en el cristal queda un espacio sin llenar. No sientes que falte algo. Sientes que todavía cabe.' }, { pause: 3200 }] : []),
-          { who: 'Tú', t: 'Quizá no hay nada que resolver. Solo seguir mirando.' },
+          { who: 'Tú', t: 'No tengo que elegir una sola versión. Solo seguir caminando con el chico que fui.' },
           { pause: 2900 },
           { t: 'Por primera vez, no intentas calcular cuál es la correcta.' },
           { pause: 2900 },

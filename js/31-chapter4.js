@@ -1164,6 +1164,82 @@ try {
       };
     };
 
+    // ---------- Espera interactiva (15:43 -> 16:12) con libertad de movimiento ----------
+    const ch4Wait = { active: false, arrived: false, t: 0, el: null, lastClock: '', lastPulse: -1, finishing: false };
+    const closeCh4WaitUI = () => {
+      if (ch4Wait.el) {
+        ch4Wait.el.remove();
+        ch4Wait.el = null;
+      }
+    };
+    const ensureCh4WaitUI = () => {
+      if (ch4Wait.el) return ch4Wait.el;
+      const box = document.createElement('div');
+      box.id = 'ch4WaitHud';
+      box.style.cssText = 'position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:8;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:6px;max-width:min(380px,90vw)';
+      box.innerHTML =
+        '<div style="display:flex;align-items:center;gap:10px;padding:7px 14px;background:rgba(10,16,19,.78);border:1px solid rgba(232,220,190,.3);backdrop-filter:blur(6px);color:#eee6d2;font:600 13px/1.2 ui-monospace,Consolas,monospace;letter-spacing:2.4px">' +
+        '<span id="ch4WaitHudClk">15:43</span>' +
+        '<span style="font:11px/1.3 Georgia,serif;letter-spacing:.2px;color:#cfc7b4">Espejo medio abierto · vallenato suave</span>' +
+        '</div>' +
+        '<div id="ch4WaitHudSub" style="padding:5px 11px;background:rgba(10,16,19,.66);border:1px solid rgba(232,220,190,.16);color:#c2baa7;font:11.5px/1.4 system-ui,sans-serif;text-align:center">Camina, mira por la ventana o quédate quieto esperando el mensaje · (E en el ventanal si quieres adelantar)</div>';
+      document.body.appendChild(box);
+      ch4Wait.el = box;
+      return box;
+    };
+    const finishWindowWait = () => {
+      if (ch4Wait.finishing || STORY.flags.ch4_complete) return;
+      ch4Wait.finishing = true;
+      ch4Wait.active = false;
+      closeCh4WaitUI();
+      const nFrag = ch4FragmentCount(STORY.flags);
+      const all = nFrag >= CH4_FRAGMENTS.length;
+      const night = (typeof PC !== 'undefined' && PC && PC.night) > 0.5;
+      startWaitVignette();
+      if (ch4Vignette) ch4Vignette.setTime('16:12 · YA PUEDES SUBIR', true);
+      const lines = [
+        { pause: 700 },
+        { layer: 'hecho', stamp: '29 / 10 / 2025 · 16:12', t: 'A las 4:12 p. m. llega el mensaje de Sara: «Ya puedes subir · Ya llegaron».' },
+        { pause: 2100 },
+        {
+          t: night
+            ? 'Te quitas los suecos, sales hacia el ensayo y el recuerdo vuelve al ventanal de la noche.'
+            : 'Cierras el espejo medio abierto y sales hacia el ensayo. La luz de la tarde entra entre el polvo.',
+          on: () => closeCh4Vignette()
+        },
+        { pause: 1600 }
+      ];
+      if (all) {
+        lines.push(
+          { layer: 'hoy', t: 'Reconstruiste el día completo: el bus de las 06:30, la pizarra, las cinco palabras de Cátedra de Paz, la mezcla, la espera de las 15:43 a las 16:12 y el ensayo.' },
+          { pause: 2300 },
+          { layer: 'hoy', t: 'Ese chico de 16 años iba aunque estuviera nervioso, ayudaba en silencio y cumplía. No era ridículo: estaba aprendiendo a vivir.' },
+          { pause: 2200 }
+        );
+      } else if (nFrag > 0) {
+        lines.push(
+          { layer: 'hoy', t: 'Entre el bus de las 06:30 y el mensaje de las 16:12 hubo nervios y silencio, pero aun así llegaste al ensayo.' },
+          { pause: 2000 }
+        );
+      } else {
+        lines.push(
+          { layer: 'hoy', t: 'No tenías que resolver la tarde entera de antemano: solo ir paso a paso.' },
+          { pause: 1900 }
+        );
+      }
+      chapterCine(
+        lines,
+        () => {
+          closeCh4Vignette();
+          ch4Wait.finishing = false;
+          storyFlag('ch4_complete', 1);
+          showMsg('Capítulo IV completado · Algo espera bajo la superficie del lago' + (all ? ' (4/4 recuerdos)' : ''));
+        },
+        { x: cx + 8, y: by + 2.4, z: cz - 24 },
+        'CAPÍTULO IV · 16:12 · YA PUEDES SUBIR'
+      );
+    };
+
     const canInteractCh4 = () =>
       !!STORY.flags.metKatherin &&
       S.on &&
@@ -1182,21 +1258,21 @@ try {
       startBusVignette();
       chapterCine(
         [
-          { layer: 'hecho', stamp: '29 / 10 / 2025 · 06:27', t: 'Estás sentado junto a la ventana del bus. Todavía hace frío de madrugada.' },
-          { pause: 1500 },
-          { layer: 'hecho', stamp: '06:30', t: 'El bus arranca puntual. La ciudad pasa afuera sin música épica: solo el motor y una mañana normal de tu vida.', on: () => { if (ch4Vignette && ch4Vignette.depart) ch4Vignette.depart(); } },
+          { layer: 'hecho', stamp: '29 / 10 / 2025 · 06:27', t: 'Empieza el día en orden: estás sentado junto a la ventana del bus. Todavía hace frío de madrugada.' },
+          { pause: 1600 },
+          { layer: 'hecho', stamp: '06:30 · BUS → COLEGIO', t: 'El bus arranca puntual hacia el colegio. Sin música épica: solo el motor y una mañana normal.', on: () => { if (ch4Vignette && ch4Vignette.depart) ch4Vignette.depart(); } },
           { pause: 1900 },
-          { t: 'Cuando la imagen del bus se desvanece, ya estás dentro del salón.', on: () => closeCh4Vignette() },
+          { t: 'La ventana del bus se funde con el interior del salón.', on: () => closeCh4Vignette() },
           { pause: 1400 },
-          { t: 'Pupitres, pizarra, un casillero con espejo, los computadores. No es un edificio anónimo: es tu colegio.' },
+          { t: 'Pupitres, pizarra, los computadores y un casillero con espejo. Un día real va volviendo pieza por pieza.' },
           { pause: 1700 }
         ],
         () => {
           closeCh4Vignette();
-          showMsg('Capítulo IV · El Colegio · busca el cuaderno abierto y los 4 recuerdos del salón');
+          showMsg('Capítulo IV · El Colegio · revisa el cuaderno abierto y los recuerdos del salón');
         },
         { x: cx, y: by + 2.3, z: cz - 6 },
-        'CAPÍTULO IV · EL BUS DE LAS 6:30'
+        'CAPÍTULO IV · 06:30 · CAMINO AL COLEGIO'
       );
     };
 
@@ -1265,53 +1341,29 @@ try {
           showMsg('Afuera espera la tarde… revisa primero el cuaderno y la pizarra.');
           return true;
         }
-        const nFrag = ch4FragmentCount(STORY.flags);
-        const all = nFrag >= CH4_FRAGMENTS.length;
-        const night = (typeof PC !== 'undefined' && PC && PC.night) > 0.5;
-        startWaitVignette();
-        const lines = [
-          { pause: 650 },
-          { layer: 'hecho', stamp: '29 / 10 / 2025 · 15:43', t: 'Con los suecos puestos, mirando un espejo medio abierto mientras afuera suena un vallenato suave.', on: () => { if (ch4Vignette) ch4Vignette.setTime('15:43', false); } },
-          { pause: 1500 },
-          { layer: 'pensaste', stamp: '15:48 · 15:51', t: '«No estoy haciendo nada. Solo estoy esperando.» El reloj avanza despacio.', on: () => { if (ch4Vignette) ch4Vignette.setTime('15:51', false); } },
-          { pause: 1600 },
-          { layer: 'hecho', stamp: '16:12 · MENSAJE RECIBIDO', t: 'A las 4:12 p. m. llega por fin el mensaje de Sara: «Ya puedes subir · Ya llegaron».', on: () => { if (ch4Vignette) ch4Vignette.setTime('16:12 · YA PUEDES SUBIR', true); } },
-          { pause: 2100 },
-          {
-            t: night
-              ? 'El espejo se cierra y vuelves al ventanal del salón. Afuera, el bosque descansa a oscuras.'
-              : 'El espejo se cierra y vuelves al ventanal del salón. La luz de la tarde entra despacio entre el polvo.',
-            on: () => closeCh4Vignette()
-          },
-          { pause: 1700 }
-        ];
-        if (all) {
-          lines.push(
-            { layer: 'hoy', t: 'Recordaste las cinco palabras de Cátedra de Paz, el 382, la mezcla para el grupo y la espera de las 4:12.' },
-            { pause: 2200 },
-            { layer: 'hoy', t: 'Ese chico de 16 años iba a los ensayos, prestaba su computador y ayudaba en silencio. No era ridículo: estaba aprendiendo a vivir.' },
-            { pause: 2200 }
-          );
-        } else if (nFrag > 0) {
-          lines.push(
-            { layer: 'hoy', t: 'Aún quedan recuerdos pequeños en los rincones del salón, pero empiezas a mirar a aquel chico con menos dureza.' },
-            { pause: 2000 }
-          );
-        } else {
-          lines.push(
-            { layer: 'hoy', t: 'Por primera vez miras el paisaje sin exigirte tener todas las respuestas.' },
-            { pause: 1900 }
-          );
+        if (ch4Wait.active) {
+          finishWindowWait();
+          return true;
         }
         chapterCine(
-          lines,
+          [
+            { pause: 550 },
+            { layer: 'hecho', stamp: '29 / 10 / 2025 · 15:43', t: 'Después del colegio te pones los suecos. Queda esperar a Sara frente a un espejo medio abierto mientras afuera suena un vallenato suave.' },
+            { pause: 2100 },
+            { t: 'Puedes caminar por el salón, mirar el espejo, usar tu cámara o no hacer nada hasta que llegue su mensaje.' },
+            { pause: 1600 }
+          ],
           () => {
-            closeCh4Vignette();
-            storyFlag('ch4_complete', 1);
-            showMsg('Capítulo IV completado · Algo espera bajo la superficie del lago' + (all ? ' (4/4 recuerdos)' : ''));
+            ch4Wait.active = true;
+            ch4Wait.arrived = false;
+            ch4Wait.t = 0;
+            ch4Wait.lastClock = '15:43';
+            ch4Wait.lastPulse = -1;
+            ensureCh4WaitUI();
+            showMsg('15:43 · Esperando el mensaje de Sara…');
           },
           { x: cx + 8, y: by + 2.4, z: cz - 24 },
-          'CAPÍTULO IV · EL ESPEJO Y LAS 4:12 P. M.'
+          'CAPÍTULO IV · ESPERA (15:43)'
         );
         return true;
       }
@@ -1389,7 +1441,7 @@ try {
         msg = 'Pizarra · E: acercarte';
       } else if (STORY.flags.ch4_chalk && !STORY.flags.ch4_complete && dWin < 5.2) {
         next = 'window';
-        msg = 'Ventanal · E: mirar y esperar';
+        msg = ch4Wait.active ? 'Ventanal · E: recibir el mensaje de las 16:12' : 'Ventanal · E: esperar a Sara (15:43)';
       }
       if (!next && chapter4.entered) {
         const fr = ch4FragmentNear(STORY.flags, S.x - cx, S.z - cz, 1.2);
@@ -1440,6 +1492,45 @@ try {
         const activeState = g.visible && !document.hidden && !PR.on && !(window.__boisCh6 && window.__boisCh6.on);
         const inside = activeState && S.on && Math.abs(S.x - cx) < 13.8 && Math.abs(S.z - cz) < 11.8 && Math.abs(S.y - by) < 6.5;
         setCh4Hum(inside && AU.on && !window.__boisGuideOverlayOpen ? 0.0045 : 0);
+
+        // Reloj interactivo de espera (15:43 -> 16:12)
+        if (ch4Wait.active && !STORY.flags.ch4_complete) {
+          const box = ensureCh4WaitUI();
+          box.style.display = activeState && S.on && !CIN.on && !window.__boisGuideOverlayOpen ? 'flex' : 'none';
+          if (activeState && S.on && !CIN.on && !window.__boisGuideOverlayOpen) {
+            ch4Wait.t += Math.min(dt || 0.016, 0.1);
+            const steps = [
+              [0, '15:43'],
+              [2.6, '15:48'],
+              [5.4, '15:51'],
+              [8.4, '16:04'],
+              [11.5, '16:12']
+            ];
+            let clk = '15:43';
+            for (const [at, lbl] of steps) {
+              if (ch4Wait.t >= at) clk = lbl;
+            }
+            if (clk !== ch4Wait.lastClock) {
+              ch4Wait.lastClock = clk;
+              const cel = document.getElementById('ch4WaitHudClk');
+              if (cel) cel.textContent = clk;
+              if (clk === '15:48' || clk === '15:51' || clk === '16:04') {
+                if (typeof showMsg === 'function') showMsg(clk + ' · Afuera suena un vallenato suave…');
+                try { if (typeof auHit === 'function' && AU.on) auHit(clk === '15:51' ? 392 : 330, 0.014, 0.18); } catch (_) {}
+              } else if (clk === '16:12' && !ch4Wait.arrived) {
+                ch4Wait.arrived = true;
+                const sub = document.getElementById('ch4WaitHudSub');
+                if (sub) sub.textContent = 'SARA (16:12): «Ya puedes subir · Ya llegaron»';
+                try { if (typeof auChime === 'function') auChime(); } catch (_) {}
+                setTimeout(() => {
+                  if (ch4Wait.active && S.on && !CIN.on && !STORY.flags.ch4_complete) finishWindowWait();
+                }, 1700);
+              }
+            }
+          }
+        } else if (ch4Wait.el) {
+          closeCh4WaitUI();
+        }
 
         if (!activeState || (!S.on && !CIN.on)) {
           dust.visible = false;
@@ -1513,31 +1604,37 @@ try {
       if (STORY.flags.metKatherin && bgCollected() >= PHOTOS.length && !STORY.flags.ch4_complete) {
         if (!STORY.flags.ch4_entered) {
           return {
-            title: 'Capítulo IV · El Colegio (06:30 a. m.)',
+            title: 'Capítulo IV · 06:30 Bus → El Colegio',
             clue: 'Sigue la brújula hacia El Colegio en el bosque.'
           };
         }
         if (!STORY.flags.ch4_notebook) {
           return {
-            title: 'Capítulo IV · El Colegio',
+            title: 'Capítulo IV · El Colegio → Cuaderno',
             clue: 'Explora el salón. Un cuaderno de álgebra descansa abierto sobre la mesa (E).'
           };
         }
         if (!STORY.flags.ch4_chalk) {
           return {
-            title: 'Capítulo IV · El Colegio',
+            title: 'Capítulo IV · Salones → Pizarra',
             clue: 'Acércate a la pizarra del frente; hay una ecuación sin terminar (E).'
           };
         }
+        if (ch4Wait.active) {
+          return {
+            title: 'Capítulo IV · Espera de Sara (15:43 → 16:12)',
+            clue: 'Camina, mira el salón o quédate quieto esperando el mensaje «Ya puedes subir».'
+          };
+        }
         return {
-          title: 'Capítulo IV · El Colegio',
-          clue: 'Mira hacia el bosque por el ventanal del fondo (E). También quedan 4 recuerdos en el salón.'
+          title: 'Capítulo IV · Salida → Espera (15:43–16:12)',
+          clue: 'Acércate al ventanal del fondo (E) para vivir la espera hasta las 16:12. También quedan 4 recuerdos en el salón.'
         };
       }
       if (STORY.flags.ch4_complete) {
         return {
-          title: 'Capítulo IV completado',
-          clue: 'Empezaste a mirar a tu yo de 16 años sin juzgarlo. Algo espera bajo la superficie del lago.'
+          title: 'Capítulo IV completado · De 06:30 a las 16:12',
+          clue: 'Reconstruiste el día sin juzgarte. Algo espera bajo la superficie del lago.'
         };
       }
       return oldMission();
@@ -1567,6 +1664,8 @@ try {
 
     // Limpieza opcional de recursos del Capítulo IV
     window.__boisDisposeChapter4 = () => {
+      ch4Wait.active = false;
+      closeCh4WaitUI();
       setCh4Hum(0);
       const geos = new Set(), mats = new Set(), texs = new Set();
       g.traverse((o) => {

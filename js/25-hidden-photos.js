@@ -82,8 +82,8 @@ function interactPhoto(){
       if(typeof auHit==='function'){auHit(3400,.06,.08,'highpass');setTimeout(()=>auHit(1700,.05,.04,'bandpass'),75)}
       ch2Pad(n>=tot?[196,293.7,392]:[220+n*12,293.7+n*10,392],4.8,.034);
       // v73: la imagen real acompaña los fragmentos narrativos de esta fotografía.
-      window.__boisRevealPhoto={title:p.title,img:p.img};
-      const locLabel='CÁPSULA '+n+'/'+tot+(p.zone?' · '+String(p.zone).toUpperCase():'');
+      window.__boisRevealPhoto={title:p.title,img:p.img,kind:p.kind,kindLabel:p.kindLabel};
+      const locLabel='RECUERDO DIRECTO · '+n+'/'+tot+(p.zone?' · '+String(p.zone).toUpperCase():'');
       const lines=typeof window.__boisMemoryLines==='function'?window.__boisMemoryLines(p):p.mem.map(t=>({t}));
       const photoLook=new THREE.Vector3(g.position.x,Math.max(g.position.y+1.1,S.y+1.55),g.position.z);
       playCinematic(lines,()=>{
@@ -95,9 +95,9 @@ function interactPhoto(){
           const kat=window.__katherin;
           const endLook=kat?new THREE.Vector3(kat.position.x,kat.position.y+1.5,kat.position.z):new THREE.Vector3(-120,ground(-120,74,300)+1.8,74);
           playCinematic([
-            {t:'Las seis cápsulas vuelven a su sitio en la cámara.'},
-            {t:'No resolviste un misterio: empezaste a distinguir lo que pasó de lo que imaginaste.'},
-            {t:'Junto al lago, en el Parque de los Cisnes, Katherin espera sentada en la banca.'}
+            {t:'Las seis fotografías vuelven a su sitio en la cámara.'},
+            {t:'Todavía no sabes qué significaba todo, pero ya empezaste a separar lo que ocurrió de lo que pensaste.'},
+            {t:'Junto al lago, en el Parque de los Cisnes, alguien espera sentada en la banca.'}
           ],()=>{showMsg('Capítulo III · El Parque de los Cisnes · acércate al lago')},{lookAt:endLook,location:'CAPÍTULO II · COMPLETADO'});
         }else{
           showMsg('Cápsula '+n+'/'+tot+' guardada'+(n===3?' · Nueva página en tu libreta (J)':''));

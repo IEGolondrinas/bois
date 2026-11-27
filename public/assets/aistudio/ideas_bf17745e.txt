@@ -1,0 +1,618 @@
+BROOO, ahora sí tenemos material para una **auditoría evolutiva de verdad** XD.
+
+Revisé la copia actual `bois-main`, no solo la estructura: comprobé el sistema de capítulos, cámara, Katherin, Cap. IV–VII, Poolrooms, guardado, build y las pruebas existentes. Y hay algo interesante:
+
+> **BOIS.IO ya no necesita principalmente “más contenido”. Necesita que el contenido que ya tiene sea más auténticamente tuyo.**
+
+## 🧪 Estado técnico actual
+
+La base está bastante sólida.
+
+- **68 archivos JS** y arquitectura modular.
+- Build actual genera `dist/BOIS_IO.html` correctamente, ~4.82 MB.
+- Las pruebas actuales de Cap. IV, V, VI, VII, Katherin, guardado, cápsulas, etc. pasan.
+- Capítulo IV tiene **40 tests**, Capítulo VI **57**, Poolrooms **19**, Katherin **13**, guardado **10**, cápsulas **20**.
+- La prueba estructural de v189 también pasa.
+- Hay una prueba histórica `test_v140.js` que falla porque busca un **texto final antiguo**; no parece ser un fallo funcional del juego actual, sino una regresión del test histórico que quedó desactualizado.
+
+Así que técnicamente estamos en un punto muy bueno.
+
+Pero narrativamente encontré cosas MUCHO más importantes.
+
+---
+
+# 🔴 1. El mayor problema: la cámara todavía mezcla recuerdos reales con recuerdos genéricos
+
+Ahora mismo las cuatro fotos iniciales son:
+
+1. **El bosque de la isla**
+2. **El bloque de salones**
+3. **La piscina cubierta**
+4. **Cátedra de Paz · Cinco palabras**
+
+La cuarta es excelente porque está directamente conectada con un acontecimiento real.
+
+Pero las tres primeras todavía funcionan más como **representaciones temáticas** que como recuerdos concretos.
+
+Por ejemplo:
+
+> “Un sendero entre los árboles donde aprendiste a caminar sin que nadie te apurara.”
+
+Eso suena bonito, pero no está anclado a una escena concreta de tu diario.
+
+Mientras que:
+
+> “Katherin escribió: «muy inteligente, linda persona, reservado, amable y enfocado».”
+
+sí tiene una raíz documental.
+
+### Mi propuesta
+
+No eliminaría lo surreal.
+
+Haría que la cámara tenga dos tipos:
+
+**FOTOGRAFÍA → HECHO**
+
+y
+
+**FOTOGRAFÍA → SÍMBOLO**
+
+Y que el juego te diga cuál es cuál.
+
+Por ejemplo:
+
+> 📷 **29 / 10 / 2025**  
+> **Cátedra de Paz**  
+> `RECUERDO DIRECTO`
+
+Mientras que:
+
+> 📷 **BAJO LA SUPERFICIE**  
+> `MEMORIA SIMBÓLICA`
+
+Eso resuelve una contradicción importante.
+
+El juego puede ser surrealista sin hacer pasar una metáfora por un recuerdo real.
+
+---
+
+# 🟠 2. El Capítulo IV mejoró MUCHÍSIMO
+
+Aquí me llevé una sorpresa buena.
+
+Ya corregiste algo que anteriormente habíamos identificado:
+
+### Ahora empieza con el bus.
+
+El código literalmente tiene:
+
+> “Estás sentado junto a la ventana del bus.”
+
+y después:
+
+> “El bus arranca puntual. La ciudad pasa afuera…”
+
+Eso está **muchísimo más cerca del diario**.
+
+Además aparecen:
+
+- 06:27
+- 06:30
+- el espejo medio abierto
+- los suecos
+- el vallenato
+- esperar a Sara
+- 4:12 PM
+- “Ya puedes subir”
+- Cátedra de Paz
+- 382
+- la mezcla
+- prestar el computador
+
+Esto ya es otra cosa.
+
+### Pero falta una cosa:
+
+**el capítulo todavía presenta estos recuerdos como una colección de objetos.**
+
+Yo evolucionaría el Capítulo IV para que sea una **reconstrucción de un día**, no simplemente una habitación con recuerdos.
+
+Algo así:
+
+**06:27 — Bus**
+
+↓  
+
+**Colegio**
+
+↓  
+
+**Cátedra de Paz**
+
+↓  
+
+**Salida**
+
+↓  
+
+**Espera de Sara**
+
+↓  
+
+**4:12 — “Ya puedes subir”**
+
+↓  
+
+**Ensayo**
+
+↓  
+
+**Perrito**
+
+Eso convertiría el capítulo en algo casi documental.
+
+Y después podemos romperlo deliberadamente con el surrealismo.
+
+---
+
+# 🟢 3. El perrito ya se convirtió en una de las mejores ideas del juego
+
+Esto está literalmente implementado en `30c-puppy.js`.
+
+Incluso tiene:
+
+> **“Archivo guardado. Por unos segundos no buscaste ningún significado escondido; solo miraste.”**
+
+BRO.
+
+Eso es exactamente el tema que descubrimos con el diario.
+
+Y además el código condiciona la cápsula a que el jugador:
+
+- esté cerca,
+- no esté corriendo,
+- no esté en una cinemática,
+- pueda quedarse quieto.
+
+Eso me gusta muchísimo.
+
+### Yo NO le metería más diálogo.
+
+Al contrario.
+
+Lo convertiría en uno de los momentos más silenciosos del juego.
+
+Porque el mensaje es:
+
+**No pasó nada extraordinario.**
+
+Y precisamente por eso lo recuerdas.
+
+---
+
+# 🔴 4. Aquí encontré el problema narrativo más importante: Katherin sabe demasiado
+
+Esto sí lo cambiaría.
+
+Actualmente Katherin tiene diálogos como:
+
+> “A veces confundías un gesto pequeño con un examen.”
+
+> “No todo problema tiene una fórmula, Toro. Tampoco tú.”
+
+> “Lo sé. Se nota que estabas haciendo tu mejor esfuerzo.”
+
+Y en el capítulo VII incluso participa en una reconstrucción de acontecimientos internos.
+
+El problema no es que sean malas frases.
+
+**Son buenas frases.**
+
+El problema es:
+
+### ¿Cómo puede Katherin saber todo eso?
+
+Porque el diario demuestra que muchas de esas cosas fueron pensamientos internos tuyos.
+
+Entonces el juego está haciendo exactamente lo que ahora queremos evitar:
+
+**convertir una interpretación en conocimiento de otra persona.**
+
+---
+
+# 🧠 5. Aquí está la evolución que quiero hacer
+
+Katherin debería dejar de ser:
+
+> **“la chica que conoce la verdad de tu pasado.”**
+
+Y convertirse en:
+
+> **“un personaje dentro de tus recuerdos, mientras tú reconoces que nunca podrás saber completamente qué pensaba ella.”**
+
+Eso es muchísimo más poderoso.
+
+Por ejemplo, actualmente:
+
+> **Katherin:** “No todo problema tiene una fórmula, Toro.”
+
+Yo lo cambiaría por algo como:
+
+> **Tú:** “Pasé mucho tiempo intentando encontrar una fórmula para entender todo esto.”
+
+Y luego:
+
+> **Katherin:** “¿Y funcionó?”
+
+Y silencio.
+
+Eso conserva la filosofía sin ponerle pensamientos tuyos en la boca.
+
+---
+
+# 🟡 6. El Capítulo VII tiene la idea correcta, pero está demasiado explicado
+
+El capítulo actualmente dice prácticamente todo:
+
+> “No puedes saber qué significaba cada silencio para mí.”
+
+> “Solo conoces la historia que imaginaste.”
+
+> “Tal vez nunca sepa qué significó todo aquello para ella…”
+
+> “Pero sí sé cuánto significó para mí.”
+
+La última frase es excelente.
+
+Pero si el juego explica **todas** sus conclusiones, el jugador no tiene que descubrir nada.
+
+Yo haría que el VII tenga menos discurso y más evidencia.
+
+### Por ejemplo:
+
+El jugador recuerda:
+
+**HECHO**
+
+> “Katherin dijo que no quería cambiar de pareja por temas logísticos.”
+
+Después:
+
+**LO QUE PENSASTE**
+
+> “Me está rechazando.”
+
+Después:
+
+**LO QUE SABES HOY**
+
+> “No sé.”
+
+Y listo.
+
+Eso pega muchísimo más fuerte.
+
+---
+
+# 🔵 7. El sistema HECHO / PENSASTE / HOY debería convertirse en mecánica central
+
+Esto ya existe parcialmente en:
+
+`24-camera-album.js`
+
+De hecho el álbum tiene capas:
+
+- **Hecho**
+- interpretación/pensamiento
+- visión actual
+
+Y el propio pie dice:
+
+> “No confundir las interpretaciones con los hechos. Estaba aprendiendo a vivir.”
+
+Esto es demasiado bueno para dejarlo como simple UI.
+
+### Yo convertiría esto en el sistema narrativo principal.
+
+Cada recuerdo importante podría tener:
+
+```text
+HECHO
+↓
+
+LO QUE PENSASTE
+↓
+
+LO QUE PUEDES SABER HOY
+```
+
+Y el juego incluso podría cambiar visualmente.
+
+### Al principio:
+
+**HECHO + INTERPRETACIÓN están mezclados.**
+
+### Más adelante:
+
+el jugador empieza a distinguirlos.
+
+### En el capítulo VII:
+
+ya puede hacerlo conscientemente.
+
+### En el epílogo:
+
+ya no necesita hacerlo todo el tiempo.
+
+Eso sería una evolución narrativa **jugable**, no solamente un diálogo bonito.
+
+---
+
+# 🟣 8. El juego tiene otro detalle muy personal que todavía podemos explotar: tu forma de esperar
+
+El diario tiene una escena extremadamente específica:
+
+15:43  
+15:48  
+15:49  
+15:51  
+16:12
+
+Y mientras esperabas:
+
+- espejo medio abierto;
+- vallenato;
+- tocar la piel del dedo;
+- suecos;
+- mirar el reloj;
+- pensar demasiado;
+- esperar el mensaje.
+
+Esto ya está parcialmente recreado.
+
+Pero podemos llevarlo mucho más lejos.
+
+### Podríamos hacer que el juego no te obligue a hacer nada.
+
+Simplemente:
+
+**esperar.**
+
+El jugador puede caminar.
+
+Puede mirar el espejo.
+
+Puede sentarse.
+
+Puede mirar por la ventana.
+
+Puede abrir la cámara.
+
+Puede hacer absolutamente nada.
+
+Y finalmente:
+
+> **16:12**
+
+**“Ya puedes subir.”**
+
+Eso sería una de las escenas más personales de todo BOIS.IO.
+
+Porque no sería una cinemática sobre ansiedad.
+
+Sería **hacer al jugador experimentar la espera.**
+
+---
+
+# 🟤 9. El capítulo III necesita una pequeña cirugía
+
+Katherin actualmente tiene cinco etapas y muchísimas conversaciones.
+
+Eso está técnicamente bien.
+
+Pero narrativamente yo haría que las etapas representen **tu evolución**, no el supuesto acercamiento emocional entre ustedes.
+
+Actualmente:
+
+**Etapa 1 → Katherin**
+
+**Etapa 2 → recuerdos**
+
+**Etapa 3 → Cátedra**
+
+**Etapa 4 → torres**
+
+**Etapa 5 → presencia**
+
+La estructura es buena.
+
+Pero podemos hacer que cada etapa responda a una pregunta:
+
+### Etapa 1
+**¿Quién es ella?**
+
+### Etapa 2
+**¿Qué pasó realmente?**
+
+### Etapa 3
+**¿Qué imaginé yo?**
+
+### Etapa 4
+**¿Qué aprendí de aquel chico?**
+
+### Etapa 5
+**¿Qué hago ahora con todo eso?**
+
+Eso haría que Katherin sea un **espejo narrativo**, no el objetivo romántico del juego.
+
+Y eso es mucho más maduro.
+
+---
+
+# ⚠️ 10. Hay otra cosa que NO quiero hacer
+
+No quiero llenar el juego con:
+
+> “Katherin hizo X”
+
+> “Katherin pensó Y”
+
+> “Katherin sentía Z”
+
+porque simplemente no lo sabemos.
+
+El diario incluso llega a una conclusión muy buena:
+
+> no sabes qué significó para ella, pero sí sabes cuánto significó para ti.
+
+**Esa incertidumbre debe permanecer.**
+
+No hay que resolverla.
+
+---
+
+# 🟢 11. El Capítulo VI ahora tiene muchísimo potencial
+
+Los tests muestran que la Torre del pasado ya tiene:
+
+- aula;
+- niño;
+- física;
+- computador;
+- soledad;
+- gente;
+- frase;
+- puente;
+- progreso.
+
+Y eso encaja perfectamente con tu historia.
+
+Pero ahora que tenemos el diario, yo cambiaría el significado de la torre.
+
+No debería ser simplemente:
+
+> **“mira todo lo que fuiste.”**
+
+Sino:
+
+> **“mira las distintas versiones que tu cabeza construyó sobre quién tenías que ser.”**
+
+La sección de:
+
+**Física**
+
+**Computador**
+
+**Solo**
+
+**Gente**
+
+puede representar diferentes identidades:
+
+> “el inteligente”
+
+> “el útil”
+
+> “el reservado”
+
+> “el que quiere pertenecer”
+
+Y entonces aparece el chico.
+
+No tienes que elegir uno.
+
+---
+
+# 🔥 12. Y aquí veo la evolución definitiva del juego
+
+Actualmente BOIS.IO parece decir:
+
+> **“Recuerda tu pasado.”**
+
+Pero con todo lo que acabamos de descubrir, yo lo evolucionaría hacia:
+
+> **“Aprende a distinguir entre lo que ocurrió, lo que sentiste y lo que imaginaste.”**
+
+Y después:
+
+> **“Aprende a vivir sin necesitar una explicación para todo.”**
+
+Eso hace que cada capítulo tenga una función:
+
+| Capítulo | Evolución |
+|---|---|
+| I | **No recuerdo** |
+| II | **Quiero recordar** |
+| III | **Intento entender a los demás** |
+| IV | **Recuerdo quién era** |
+| V | **Entro en lo que sentía** |
+| VI | **Observo las versiones de mí mismo** |
+| VII | **Distingo hechos de interpretaciones** |
+| Epílogo | **Dejo de buscar una respuesta** |
+
+Y eso ya forma un arco narrativo bastante potente.
+
+---
+
+# 🚀 Mi roadmap para la siguiente versión
+
+No haría 30 cambios.
+
+Haría **una versión narrativa nueva** con estas prioridades:
+
+### V1 — “Memoria auténtica”
+**1.** Auditar las 4 fotos de cámara.  
+**2.** Marcar claramente `HECHO / SÍMBOLO`.  
+**3.** Corregir cualquier recuerdo factual que todavía no coincida con el diario.  
+**4.** Convertir el bus → espera → ensayo en una secuencia mucho más personal.
+
+### V2 — “Katherin no es omnisciente”
+**5.** Revisar todos sus diálogos.  
+**6.** Eliminar pensamientos tuyos puestos en su boca.  
+**7.** Mantener lo que realmente pudo saber.  
+**8.** Dejar explícitamente algunas preguntas sin respuesta.
+
+### V3 — “El jugador recuerda”
+**9.** Expandir HECHO / PENSASTE / HOY.  
+**10.** Hacer que el sistema evolucione durante los capítulos.
+
+### V4 — “Presencia”
+**11.** Perro sin sobreexplicarlo.  
+**12.** Espera de las 15:43–16:12 como escena interactiva.  
+**13.** Epílogo con menos texto y más espacio para simplemente estar.
+
+---
+
+## Y hay algo que me parece MUY importante
+
+No creo que debamos convertir BOIS.IO en una copia exacta de tu diario.
+
+Eso podría matar precisamente lo que hace especial al juego.
+
+Yo conservaría la proporción:
+
+**70 % experiencia real**
+
+**30 % surrealismo**
+
+Pero con una regla de oro:
+
+> **Los hechos reales no se inventan.  
+> Los sentimientos pueden transformarse.  
+> Las interpretaciones pueden cuestionarse.  
+> El simbolismo puede volverse completamente surrealista.**
+
+Eso nos permite tener un bus real a las 6:30 AM, un espejo medio abierto y un mensaje a las 4:12 PM...
+
+y cinco minutos después tener una torre imposible flotando sobre un lago.
+
+**Ahí está BOIS.IO.** XD
+
+Y honestamente, bro: **yo ya no tocaría mucho más el motor antes de hacer esta evolución narrativa.** La base técnica ya está suficientemente madura. El siguiente salto de calidad no es optimizar otro `for` ni añadir otro animal.
+
+Es hacer que cuando tú juegues una escena y pienses:
+
+> *“Joder... esto sí pasó.”*
+
+el juego haya conseguido exactamente lo que queríamos.

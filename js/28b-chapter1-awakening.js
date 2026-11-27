@@ -317,10 +317,10 @@ function ch1PickCamera(it){
   ch1SfxShutter();
   playCinematic([
     {t:'Una cámara antigua. La correa está gastada, pero se adapta a tu mano sin esfuerzo.',on:()=>ch1Collect(g)},
-    {t:'Dentro conserva cuatro cápsulas de memoria de octubre y noviembre de 2025:'},
-    {t:'Un bosque. Unos salones. Una piscina vacía. Y una hoja doblada de Cátedra de Paz con cinco palabras escritas para ti.',on:()=>ch1Pad([196,293.7,392,493.9],6.5,.042,true)},
-    {t:'Todavía quedan seis instantes repartidos por la isla. No son pistas de un enigma: son cosas que valía la pena mirar otra vez.',on:()=>ch1CamTo({pitch:-.02,fov:72},2.4)}
-  ],()=>{ch1CamEnd();showMsg('Guardaste la cámara. Pulsa V para abrir tus cápsulas de memoria.');openCameraGallery()},{location:'LA PLAYA'});
+    {t:'Dentro conserva cuatro archivos: tres imágenes simbólicas de lo que cargabas contigo…'},
+    {t:'Un bosque, unos salones, una piscina vacía… y un hecho real del 29 de octubre de 2025: una hoja de Cátedra de Paz con cinco palabras escritas para ti.',on:()=>ch1Pad([196,293.7,392,493.9],6.5,.042,true)},
+    {t:'En la isla quedan seis recuerdos directos de aquel tiempo. Al principio cuesta separar lo que pasó de lo que imaginaste.',on:()=>ch1CamTo({pitch:-.02,fov:72},2.4)}
+  ],()=>{ch1CamEnd();showMsg('Guardaste la cámara. Pulsa V para abrir tus recuerdos.');openCameraGallery()},{location:'LA PLAYA'});
 }
 function ch1NoteEl(){
   let n=document.getElementById('ch1Note');
