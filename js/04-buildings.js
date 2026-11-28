@@ -44,7 +44,20 @@ for(const G of META.groups){
  if(!['Default-Diffuse','Tree','igunlogo','medicine_logo','pizzaLogo','Billboard_1','metal'].includes(G.name)){
   detailMat(mat,G.name==='Red'||G.name==='Orange'?1:0,G.name==='wood'?1:0);
  }
- GM[G.name]=mat;const m=new THREE.Mesh(g,mat);m.frustumCulled=false;if(G.name!=='Default-Diffuse'){m.castShadow=true;m.receiveShadow=true}scene.add(m);
+ if(sub.length){
+  let mnX=1e9,mnY=1e9,mnZ=1e9,mxX=-1e9,mxY=-1e9,mxZ=-1e9;
+  for(let k=0;k<sub.length;k++){
+   const vi=sub[k]*3,vx=pos[vi],vy=pos[vi+1],vz=pos[vi+2];
+   if(vx<mnX)mnX=vx;if(vx>mxX)mxX=vx;
+   if(vy<mnY)mnY=vy;if(vy>mxY)mxY=vy;
+   if(vz<mnZ)mnZ=vz;if(vz>mxZ)mxZ=vz;
+  }
+  if(mnX<=mxX){
+   const bx=(mnX+mxX)*.5,by=(mnY+mxY)*.5,bz=(mnZ+mxZ)*.5;
+   g.boundingSphere=new THREE.Sphere(new THREE.Vector3(bx,by,bz),Math.hypot(mxX-bx,mxY-by,mxZ-bz)+1);
+  }
+ }
+ GM[G.name]=mat;const m=new THREE.Mesh(g,mat);m.frustumCulled=!!g.boundingSphere;if(G.name!=='Default-Diffuse'){m.castShadow=true;m.receiveShadow=true}scene.add(m);
  if(G.name!=='Default-Diffuse'&&G.name!=='Tree')solid.push(sub);
 }
 
@@ -59,7 +72,7 @@ for(const G of META.groups){
  // Controlador nocturno ligero sincronizado con WIN.u.value (sin shaders custom extra)
  let lastW=-1;
  const watcher=new THREE.Mesh(new THREE.BoxGeometry(.02,.02,.02),new THREE.MeshBasicMaterial({color:0x000000}));
- watcher.position.set(0,-120,0);watcher.frustumCulled=false;
+ watcher.position.set(0,-120,0);watcher.frustumCulled=false;watcher.userData.noMerge=true;
  watcher.onBeforeRender=()=>{
   const w=WIN&&WIN.u?WIN.u.value:0;
   if(Math.abs(w-lastW)>.005){lastW=w;for(let i=0;i<glowRegs.length;i++)glowRegs[i].mat.emissiveIntensity=glowRegs[i].base+glowRegs[i].night*w}
@@ -468,7 +481,8 @@ for(const G of META.groups){
   if(!mats.length)return;
   const im=new THREE.InstancedMesh(geo,mat,mats.length);
   for(let i=0;i<mats.length;i++)im.setMatrixAt(i,mats[i]);
-  im.instanceMatrix.needsUpdate=true;im.frustumCulled=false;
+  im.instanceMatrix.needsUpdate=true;
+  if(window.__boisComputeInstBounds)window.__boisComputeInstBounds(im);else im.frustumCulled=false;
   im.castShadow=cast;im.receiveShadow=true;cityGrp.add(im);
  };
  // Profundidad calibrada respecto a los 0.26m exactos de muro en mesh-data:
@@ -500,4 +514,5 @@ for(const G of META.groups){
  // 4c) Pizzería NE Sur sin logo (283.55, 9.4, -390.55)
  addSignBoard(5.4,1.55,283.55+6.15,9.4,-390.55,1,0,mPizzaSign,mDarkSteel);
  addBox(cityGrp,.16,.10,4.4,283.55+5.8,8.4,-390.55,mBulb,0,0,0,false);
+ window.__boisMergeStaticGroup?.(cityGrp);
 })();

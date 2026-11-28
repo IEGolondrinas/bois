@@ -12,7 +12,7 @@ try {
   const fillPoint = new THREE.Vector3();
 
   __boisWorldPolishFrame = (dt, tt)=>{
-    if (!PC || !cam || !WX || !WX.st || uw || PR.on) {
+    if (!PC || !cam || !WX || !WX.st || uw || PR.on || (window.__boisCh6 && window.__boisCh6.on)) {
       skyFill.intensity = 0;
       return;
     }
@@ -83,8 +83,11 @@ try {
     });
     mesh.instanceMatrix.needsUpdate=true;
     if(mesh.instanceColor) mesh.instanceColor.needsUpdate=true;
-    if(typeof mesh.computeBoundingSphere==='function') mesh.computeBoundingSphere();
-    mesh.frustumCulled = true;
+    if(typeof window.__boisComputeInstBounds==='function') window.__boisComputeInstBounds(mesh);
+    else {
+      if(typeof mesh.computeBoundingSphere==='function') mesh.computeBoundingSphere();
+      mesh.frustumCulled = true;
+    }
     scene.add(mesh);
     return mesh;
   };

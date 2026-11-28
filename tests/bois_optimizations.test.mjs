@@ -33,6 +33,8 @@ test('CSS hides .mBadge[hidden] and omits live-WebGL backdrop-filter on HUDs', (
     'js/11-player-input.js',
     'js/31-chapter4.js',
     'js/37b-debug.js',
+    'js/08-fauna-journal.js',
+    'js/36i-future-self.js',
   ]) {
     assert.equal(/backdrop-filter/.test(read(file)), false, `${file} should not use backdrop-filter`);
   }
@@ -186,15 +188,19 @@ test('Valeria bedroom has dedicated animated 3D models, reused puppy rig, and mu
   const THREE = new Proxy({}, {
     get: (_t, k) => {
       if (k === 'Vector3') return function (x, y, z) { return vec().set(x || 0, y || 0, z || 0); };
+      if (k === 'Vector4') return function (x, y, z, w) { return { x: x || 0, y: y || 0, z: z || 0, w: w || 0, set(a, b, c, d) { this.x = a; this.y = b; this.z = c; this.w = d; return this; } }; };
+      if (k === 'Sphere') return function (c, r) { return { center: c || vec(), radius: r || 0 }; };
       if (k === 'Euler') return function () { return { set() {} }; };
       if (k === 'Quaternion') return function () { return { setFromEuler() {} }; };
-      if (k === 'Matrix4') return function () { return { compose() {}, copy() { return this; }, invert() { return this; }, multiplyMatrices() { return this; } }; };
+      if (k === 'Matrix3') return function () { return { getNormalMatrix() { return this; } }; };
+      if (k === 'Matrix4') return function () { return { compose() {}, copy() { return this; }, invert() { return this; }, multiplyMatrices() { return this; }, determinant() { return 1; }, clone() { return this; } }; };
+      if (k === 'BufferAttribute' || k === 'Float32BufferAttribute') return function (arr, itemSize) { return { array: arr, itemSize, count: arr ? (arr.length / (itemSize || 1)) : 0, needsUpdate: false }; };
       if (k === 'Color') return function () { const c = new Proxy({}, { get: (_t2, m) => (m === Symbol.toPrimitive ? () => 0 : () => c) }); return c; };
       if (k === 'InstancedMesh') return function () { const o = new Obj(); o.setMatrixAt = () => {}; o.setColorAt = () => {}; return o; };
       if (/Light$/.test(String(k))) return function () { return new Obj(); };
-      if (/Geometry$/.test(String(k))) return function () { this.userData = {}; this.translate = () => this; this.scale = () => this; this.rotateX = () => this; this.rotateY = () => this; this.setAttribute = () => {}; this.computeVertexNormals = () => {}; this.attributes = { position: { count: 0, getY: () => 0, getX: () => 0, getZ: () => 0, setXYZ() {} } }; };
+      if (/Geometry$/.test(String(k))) return function () { this.userData = {}; this.translate = () => this; this.scale = () => this; this.rotateX = () => this; this.rotateY = () => this; this.setAttribute = () => {}; this.computeVertexNormals = () => {}; this.computeBoundingSphere = () => { this.boundingSphere = { center: vec(), radius: 1 }; }; this.attributes = { position: { count: 0, getY: () => 0, getX: () => 0, getZ: () => 0, setXYZ() {} }, uv: { array: new Float32Array(48), needsUpdate: false } }; };
       if (/Material$/.test(String(k))) return function (o) { o = o || {}; const m = Object.assign({ opacity: o.opacity == null ? 1 : o.opacity, transparent: !!o.transparent }, o); const c = new Proxy({}, { get: () => () => c }); m.color = c; return m; };
-      if (k === 'CanvasTexture') return function () { const t = { offset: { x: 0, y: 0 }, repeat: { set() {} }, clone() { return Object.assign({}, t); } }; return t; };
+      if (k === 'CanvasTexture') return function () { const t = { offset: { x: 0, y: 0 }, repeat: { set() {} }, clone() { throw new Error('Unexpected CanvasTexture.clone() in Chapter VI'); } }; return t; };
       if (k === 'Mesh' || k === 'Group' || k === 'Sprite' || k === 'Points') return function (_g, m) { const o = new Obj(); if (m) o.material = Object.assign({ opacity: 1, transparent: false }, m); return o; };
       return 1;
     },
@@ -268,6 +274,73 @@ test('Valeria bedroom has dedicated animated 3D models, reused puppy rig, and mu
   lastCine.cb();
   assert.equal(flags.ch6_valeria, 1, 'ch6_valeria flag must be saved on completion');
   assert.equal(M6.valState.active, false, 'valState.active must reset cleanly after cinematic');
+});
+
+test('__boisComputeInstBounds computes accurate world boundingSphere and skips zero-scale instances', () => {
+  const src = read('js/01-core-renderer.js');
+  const start = src.indexOf('window.__boisComputeInstBounds=function');
+  const end = src.indexOf('// Agrupa y fusiona mallas', start);
+  assert.ok(start >= 0 && end > start, '__boisComputeInstBounds block not found');
+  const fnSrc = src.slice(start, end);
+
+  const Vec3 = function (x = 0, y = 0, z = 0) { this.x = x; this.y = y; this.z = z; };
+  const Sphere = function (center, radius) { this.center = center; this.radius = radius; };
+  const ctx = { window: {}, THREE: { Vector3: Vec3, Sphere } };
+  vm.runInNewContext(fnSrc, ctx);
+
+  const arr = new Float32Array(3 * 16);
+  // Instance 0 at (100, 10, 50) scale 2
+  arr.set([2, 0, 0, 0,  0, 2, 0, 0,  0, 0, 2, 0,  100, 10, 50, 1], 0);
+  // Instance 1 at (140, 20, 90) scale 1
+  arr.set([1, 0, 0, 0,  0, 1, 0, 0,  0, 0, 1, 0,  140, 20, 90, 1], 16);
+  // Instance 2 hidden (zero scale) at (-999, -999, -999)
+  arr.set([0, 0, 0, 0,  0, 0, 0, 0,  0, 0, 0, 0,  -999, -999, -999, 1], 32);
+
+  const im = {
+    count: 3,
+    frustumCulled: false,
+    geometry: { boundingSphere: { center: new Vec3(0, 1, 0), radius: 1.5 } },
+    instanceMatrix: { array: arr },
+  };
+  ctx.window.__boisComputeInstBounds(im);
+  assert.equal(im.frustumCulled, true);
+  assert.ok(im.boundingSphere.center.x > 110 && im.boundingSphere.center.x < 130, 'center.x should reflect world instances, ignoring hidden zero-scale');
+  assert.ok(im.boundingSphere.center.y > 10 && im.boundingSphere.center.y < 25, 'center.y should use arr[o+13]');
+  assert.ok(im.boundingSphere.center.z > 60 && im.boundingSphere.center.z < 80, 'center.z should reflect world instances');
+  assert.ok(im.boundingSphere.radius > 28 && im.boundingSphere.radius < 45, 'radius must enclose scaled bounding spheres');
+});
+
+test('Chapter VI keeps g.visible false after build() and uses shared FAC_MAT + applyUvXf shader transform', () => {
+  const c6 = read('js/36e-chapter6.js');
+  assert.match(c6, /g\.visible\s*=\s*false;\s*\n\s*scene\.add\(g\)/);
+  assert.match(c6, /FAC_MAT/);
+  assert.match(c6, /applyUvXf/);
+  assert.equal(/R\.rain\.clone\(\)|FAC\.clone\(\)|base\.clone\(\)|ct\.clone\(\)/.test(c6), false, 'Chapter VI must not clone textures via .clone()');
+});
+
+test('saveMonument(null) invokes rebuildMonumentMesh and hides the park easel immediately', () => {
+  const fsSrc = read('js/36i-future-self.js');
+  assert.match(fsSrc, /if\s*\(\!data\)\s*\{\s*localStorage\.removeItem\(MON_KEY\);\s*window\.__boisMarkBackupDirty\?\.\(\);\s*rebuildMonumentMesh\(\);\s*return true;/);
+});
+
+test('Shinkai glare throttles sun occlusion, main loop stabilizes DPR and isolates subzones, weather/train guard Ch6', () => {
+  const shSrc = read('js/36f-shinkai.js');
+  assert.match(shSrc, /lastOccT/);
+  assert.match(shSrc, /nowT\s*-\s*lastOccT\s*>=\s*70/);
+
+  const loopSrc = read('js/21-main-loop-config.js');
+  assert.match(loopSrc, /if\s*\(rawDt\s*<=\s*\.14\)/);
+  assert.match(loopSrc, /__fpsLowTime\s*>=\s*6/);
+  assert.match(loopSrc, /__fpsHighTime\s*>=\s*18/);
+  assert.match(loopSrc, /window\.__boisDprCooldown\s*=\s*20/);
+  assert.match(loopSrc, /const inSubZone\s*=\s*PR\.on\s*\|\|\s*ch6On/);
+  assert.match(loopSrc, /if\s*\(!uw\s*&&\s*!inSubZone\s*&&\s*PERF\.shadow\s*>=\s*shTick\)/);
+
+  const wxSrc = read('js/12-weather.js');
+  assert.match(wxSrc, /const ch6On\s*=\s*!!\(window\.__boisCh6\s*&&\s*window\.__boisCh6\.on\),\s*subOff\s*=\s*uw\s*\|\|\s*PR\.on\s*\|\|\s*ch6On/);
+
+  const trnSrc = read('js/36h-night-train.js');
+  assert.match(trnSrc, /window\.__boisCh6\s*&&\s*window\.__boisCh6\.on/);
 });
 
 

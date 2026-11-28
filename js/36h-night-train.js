@@ -135,7 +135,7 @@ try{(()=>{
   buildTrain();ST.mode='run';ST.dir=Math.random()<.5?1:-1;ST.s=0;ST.told=false;ST.w1=ST.w2=false;ST.chug=0;ST.puff=0;train.T.visible=true}
 
  function tick(p,tt){
-  if(typeof PR!=='undefined'&&PR.on){if(G)G.visible=false;if(train)train.T.visible=false;return}
+  if((typeof PR!=='undefined'&&PR.on)||(window.__boisCh6&&window.__boisCh6.on)){if(G)G.visible=false;if(train)train.T.visible=false;return}
   const dt=Math.min(.1,Math.max(0,tt-last));last=tt;if(!dt)return;
   if(!forced&&!isDec()){if(G&&G.visible){G.visible=false;stop()}return}
   const nf=Math.max(p.night||0,(p.dusk||0)*.55),dark=forced||nf>TRN.dark;

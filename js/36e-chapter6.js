@@ -252,6 +252,35 @@ try {
       return t;
     };
 
+    const applyUvXf = (mat, rx, ry, ox, oy) => {
+      const u = { value: typeof THREE.Vector4 === 'function' ? new THREE.Vector4(rx, ry, ox || 0, oy || 0) : { x: rx, y: ry, z: ox || 0, w: oy || 0 } };
+      mat.customProgramCacheKey = () => 'ch6_uvxf';
+      mat.onBeforeCompile = (s) => {
+        s.uniforms.uUvXf = u;
+        s.vertexShader = 'uniform vec4 uUvXf;\n' + s.vertexShader.replace('#include <uv_vertex>', '#include <uv_vertex>\n#ifdef USE_UV\n vUv = vUv * uUvXf.xy + uUvXf.zw;\n#endif');
+      };
+      return u;
+    };
+
+    const scaleBoxFaceUV = (geo, ax, ay, bx, by) => {
+      const uv = geo && geo.attributes && geo.attributes.uv;
+      if (!uv || !uv.array) return geo;
+      const arr = uv.array;
+      for (let i = 0; i < 8 && i * 2 + 1 < arr.length; i++) { arr[i * 2] *= ax; arr[i * 2 + 1] *= ay; }
+      for (let i = 16; i < 24 && i * 2 + 1 < arr.length; i++) { arr[i * 2] *= bx; arr[i * 2 + 1] *= by; }
+      uv.needsUpdate = true;
+      return geo;
+    };
+
+    const scalePlaneUV = (geo, sx, sy) => {
+      const uv = geo && geo.attributes && geo.attributes.uv;
+      if (!uv || !uv.array) return geo;
+      const arr = uv.array;
+      for (let i = 0; i + 1 < arr.length; i += 2) { arr[i] *= sx; arr[i + 1] *= sy; }
+      uv.needsUpdate = true;
+      return geo;
+    };
+
     // Fusiona los descendientes estáticos dentro de un grupo por material y orden de dibujo
     function mergeStaticGroup(rootGroup) {
       if (!rootGroup) return;
@@ -471,12 +500,32 @@ try {
     });
 
     const safeInstBounds = (im) => {
-      if (typeof im.computeBoundingSphere === 'function') {
-        im.computeBoundingSphere();
-        im.frustumCulled = true;
-      } else {
-        im.frustumCulled = false;
+      if (typeof window.__boisComputeInstBounds === 'function') {
+        window.__boisComputeInstBounds(im);
+        return;
       }
+      const arr = im && im.instanceMatrix && im.instanceMatrix.array;
+      const geo = im && im.geometry;
+      if (!arr || !geo || !THREE.Sphere) {
+        im.frustumCulled = false;
+        return;
+      }
+      if (!geo.boundingSphere && geo.computeBoundingSphere) geo.computeBoundingSphere();
+      const bs = geo.boundingSphere;
+      const n = im.count != null ? im.count : (arr.length / 16) | 0;
+      if (!bs || n <= 0) { im.frustumCulled = false; return; }
+      let mnX = 1e9, mnY = 1e9, mnZ = 1e9, mxX = -1e9, mxY = -1e9, mxZ = -1e9;
+      for (let i = 0; i < n; i++) {
+        const o = i * 16;
+        const ms = Math.max(Math.hypot(arr[o], arr[o + 1], arr[o + 2]), Math.hypot(arr[o + 4], arr[o + 5], arr[o + 6]), Math.hypot(arr[o + 8], arr[o + 9], arr[o + 10]));
+        const cx = arr[o + 12], cy = arr[o + 13], cz = arr[o + 14], ir = bs.radius * ms;
+        if (cx - ir < mnX) mnX = cx - ir; if (cx + ir > mxX) mxX = cx + ir;
+        if (cy - ir < mnY) mnY = cy - ir; if (cy + ir > mxY) mxY = cy + ir;
+        if (cz - ir < mnZ) mnZ = cz - ir; if (cz + ir > mxZ) mxZ = cz + ir;
+      }
+      const ccx = (mnX + mxX) * 0.5, ccy = (mnY + mxY) * 0.5, ccz = (mnZ + mxZ) * 0.5;
+      im.boundingSphere = new THREE.Sphere(new THREE.Vector3(ccx, ccy, ccz), Math.hypot(mxX - ccx, mxY - ccy, mxZ - ccz) + 0.5);
+      im.frustumCulled = true;
     };
 
     const inst = (p, geo, mat, n, fn) => {
@@ -1083,26 +1132,18 @@ try {
 
       const layers = [];
       for (const [z0, o, sp, sc] of [[0.02, 0.5, 1.1, 1], [0.03, 0.32, 0.7, 1.7]]) {
-        const t = R.rain.clone();
-        t.needsUpdate = true;
-        t.repeat.set(w / (1.2 * sc), h / (2.4 * sc));
-        const m = new THREE.Mesh(
-          new THREE.PlaneGeometry(w, h),
-          new THREE.MeshBasicMaterial({ map: t, transparent: true, opacity: o, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })
-        );
+        const rm = new THREE.MeshBasicMaterial({ map: R.rain, transparent: true, opacity: o, blending: THREE.AdditiveBlending, depthWrite: false, fog: false });
+        const uX = applyUvXf(rm, w / (1.2 * sc), h / (2.4 * sc), 0, 0);
+        const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), rm);
         m.position.z = z0;
         m.userData.dyn = true;
         G.add(m);
-        layers.push([t, sp, k * 0.37]);
+        layers.push([uX, sp, k * 0.37]);
       }
 
-      const dt = R.drops[k % 2].clone();
-      dt.needsUpdate = true;
-      dt.repeat.set(w / 2.4, h / 2.4);
-      const gl = new THREE.Mesh(
-        new THREE.PlaneGeometry(w - 0.06, h - 0.06),
-        new THREE.MeshStandardMaterial({ map: dt, transparent: true, color: 0xe4effa, emissive: 0x9fb4c8, emissiveIntensity: 0.15, roughness: 0.08, metalness: 0, depthWrite: false })
-      );
+      const gm = new THREE.MeshStandardMaterial({ map: R.drops[k % 2], transparent: true, color: 0xe4effa, emissive: 0x9fb4c8, emissiveIntensity: 0.15, roughness: 0.08, metalness: 0, depthWrite: false });
+      applyUvXf(gm, w / 2.4, h / 2.4, 0, 0);
+      const gl = new THREE.Mesh(new THREE.PlaneGeometry(w - 0.06, h - 0.06), gm);
       gl.position.z = 0.07;
       gl.renderOrder = 2;
       gl.userData.dyn = true;
@@ -1125,7 +1166,7 @@ try {
         dr.push(d);
       }
       M6.an.push((t) => {
-        for (let i = 0; i < layers.length; i++) layers[i][0].offset.y = -((t * layers[i][1] * 0.45 + layers[i][2]) % 1);
+        for (let i = 0; i < layers.length; i++) layers[i][0].value.w = -((t * layers[i][1] * 0.45 + layers[i][2]) % 1);
         for (let i = 0; i < dr.length; i++) {
           const d = dr[i];
           const u = (t * d.sp + d.ph) % 1;
@@ -1816,13 +1857,11 @@ try {
       }
     };
 
-    let FAC = null, FOAM = null;
-    const facMat = (rx, ry) => {
+    let FAC = null, FAC_MAT = null, FOAM = null;
+    const facMat = () => {
       if (!FAC) FAC = txtTex(512, 512, facadeDraw, true, true);
-      const t = FAC.clone();
-      t.needsUpdate = true;
-      t.repeat.set(rx, ry);
-      return new THREE.MeshStandardMaterial({ map: t, emissiveMap: t, emissive: 0xffffff, emissiveIntensity: 0.34, roughness: 0.3, metalness: 0.12 });
+      if (!FAC_MAT) FAC_MAT = new THREE.MeshStandardMaterial({ map: FAC, emissiveMap: FAC, emissive: 0xffffff, emissiveIntensity: 0.34, roughness: 0.3, metalness: 0.12 });
+      return FAC_MAT;
     };
     const repOf = (L, H) => [Math.max(1, Math.round(L / 9.3)), Math.max(1, Math.round(H / 12.4))];
 
@@ -1860,8 +1899,9 @@ try {
       for (const sz of [-1, 1]) bx(gStatic, SW, 0.05, 0.12, cx, yBot - 0.31, cz + sz * (SD / 2 + 0.2), cool);
       for (const sx of [-1, 1]) bx(gStatic, 0.12, 0.05, SD, cx + sx * (SW / 2 + 0.2), yBot - 0.31, cz, cool);
 
-      const H = top - yp, a = repOf(D, H), b = repOf(W, H), mx = facMat(a[0], a[1]), mz = facMat(b[0], b[1]);
-      const sh = new THREE.Mesh(new THREE.BoxGeometry(W, H, D), [mx, mx, concD, concD, mz, mz]);
+      const H = top - yp, a = repOf(D, H), b = repOf(W, H), fm = facMat();
+      const shGeo = scaleBoxFaceUV(new THREE.BoxGeometry(W, H, D), a[0], a[1], b[0], b[1]);
+      const sh = new THREE.Mesh(shGeo, [fm, fm, concD, concD, fm, fm]);
       sh.position.set(cx, yp + H / 2, cz);
       g.add(sh);
 
@@ -1872,8 +1912,9 @@ try {
       inst(gStatic, new THREE.BoxGeometry(W + 0.5, 0.5, D + 0.5), cm, n, (i) => [cx, yp + (H * (i + 1)) / (n + 1), cz]);
 
       const PW = W + 3.6, PD = D + 3.6, ph = yp - yb;
-      const pa = repOf(PD, ph), pb = repOf(PW, ph), pmx = facMat(pa[0], pa[1]), pmz = facMat(pb[0], pb[1]);
-      const pd = new THREE.Mesh(new THREE.BoxGeometry(PW, ph, PD), [pmx, pmx, concD, concD, pmz, pmz]);
+      const pa = repOf(PD, ph), pb = repOf(PW, ph);
+      const pdGeo = scaleBoxFaceUV(new THREE.BoxGeometry(PW, ph, PD), pa[0], pa[1], pb[0], pb[1]);
+      const pd = new THREE.Mesh(pdGeo, [fm, fm, concD, concD, fm, fm]);
       pd.position.set(cx, yb + ph / 2, cz);
       g.add(pd);
 
@@ -1957,7 +1998,7 @@ try {
       roofTop(g, gStatic, K, 3, 0, 18, 18, 7.4);
 
       const clad = (w, x, y, z, ry) => {
-        const r = repOf(w, 7.2), m = facMat(r[0], 0.5), p = new THREE.Mesh(new THREE.PlaneGeometry(w, 7.2), m);
+        const r = repOf(w, 7.2), m = facMat(), p = new THREE.Mesh(scalePlaneUV(new THREE.PlaneGeometry(w, 7.2), r[0], 0.5), m);
         p.position.set(x, y, z);
         p.rotation.y = ry;
         g.add(p);
@@ -2073,17 +2114,16 @@ try {
         ? [[8, 0.5, 4.5, 0.01], [48, 0.34, 3.5, -0.007], [118, 0.24, 3.0, 0.005], [188, 0.96, 2.6, 0.004], [203, 0.98, 2, -0.003]]
         : [[8, 0.5, 5, 0.01], [32, 0.42, 4, -0.008], [78, 0.28, 3.4, 0.006], [128, 0.22, 3, -0.005], [188, 0.96, 2.6, 0.004], [203, 0.98, 2, -0.003]];
       for (const L of LAY) {
-        const op = L[1] > 0.9, lo = L[0] < 195, t = op ? (lo ? floorLo : floorUp) : base.clone(), rp = op ? (lo ? 6 : 5) : L[2];
-        t.needsUpdate = true;
-        t.repeat.set(rp, rp);
+        const op = L[1] > 0.9, lo = L[0] < 195, t = op ? (lo ? floorLo : floorUp) : base, rp = op ? (lo ? 6 : 5) : L[2];
         const m = new THREE.MeshBasicMaterial({ map: t, color: 0xdfe9f0, transparent: true, opacity: 0, depthWrite: false, fog: false, side: THREE.DoubleSide });
+        const u = applyUvXf(m, rp, rp, 0, 0);
         const pl = new THREE.Mesh(new THREE.PlaneGeometry(4200, 4200), m);
         pl.rotation.x = -Math.PI / 2;
         pl.position.set(300, SEAL + L[0], 100);
         pl.renderOrder = -1;
         pl.frustumCulled = false;
         g.add(pl);
-        mats.push({ m, t, o: L[1], v: L[3] });
+        mats.push({ m, u, o: L[1], v: L[3] });
       }
 
       const gz = txtTex(8, 256, (c, w, h) => {
@@ -2147,16 +2187,14 @@ try {
       );
       const tops = [];
       for (const [z, o, v, y, rp] of tc ? [[330, 0.5, 0.0035, -6, 4], [390, 0.4, -0.0025, -14, 5]] : [[270, 0.42, 0.0042, 2, 3.5], [390, 0.4, 0.002, -14, 5]]) {
-        const t = ct.clone();
-        t.needsUpdate = true;
-        t.repeat.set(rp, 1);
-        const m = new THREE.MeshBasicMaterial({ map: t, color: 0xdfe9f0, transparent: true, opacity: o, depthWrite: false, fog: false, side: THREE.DoubleSide });
+        const m = new THREE.MeshBasicMaterial({ map: ct, color: 0xdfe9f0, transparent: true, opacity: o, depthWrite: false, fog: false, side: THREE.DoubleSide });
+        const u = applyUvXf(m, rp, 1, 0, 0);
         const pl = new THREE.Mesh(new THREE.PlaneGeometry(2400, 76), m);
         pl.position.set(-300, y, z);
         pl.renderOrder = -90;
         pl.frustumCulled = false;
         g.add(pl);
-        tops.push({ m, t, o, v });
+        tops.push({ m, u, o, v });
       }
 
       const pTex = (sd0) =>
@@ -2213,8 +2251,8 @@ try {
           const q = mats[i];
           q.m.color.copy(tint);
           q.m.opacity = q.o > 0.9 ? q.o : Math.min(0.85, q.o * f);
-          q.t.offset.x = t * q.v;
-          q.t.offset.y = t * q.v * 0.6;
+          q.u.value.z = (t * q.v) % 1;
+          q.u.value.w = (t * q.v * 0.6) % 1;
         }
         for (let i = 0; i < gauze.length; i++) {
           const q = gauze[i];
@@ -2228,7 +2266,7 @@ try {
           const q = tops[i];
           q.m.color.copy(tint);
           q.m.opacity = Math.min(0.85, q.o * (0.75 + 0.4 * f));
-          q.t.offset.x = (t * q.v) % 1;
+          q.u.value.z = (t * q.v) % 1;
         }
         if (scene.fog) {
           const hz = Math.min(0.7, 0.22 + 0.35 * (st.fog || 0) + 0.15 * (st.rain || 0)) * (1 - nt);
@@ -2289,6 +2327,7 @@ try {
       for (const g of __CYL_GEO.values()) if (g.dispose) g.dispose();
       __CYL_GEO.clear();
       uninstallHooks();
+      isolateIsland(false);
       try {
         if (scene.fog && M6.fogDensity0 != null) scene.fog.density = M6.fogDensity0;
       } catch (e) {}
@@ -2321,10 +2360,69 @@ try {
       FG.m2 = {};
       WINR = null;
       FAC = null;
+      FAC_MAT = null;
       FOAM = null;
       TG = null;
       BCM = null;
       BMM = null;
+    }
+
+    function isolateIsland(hide) {
+      if (!scene || !Array.isArray(scene.children)) return;
+      if (hide) {
+        if (M6._hiddenIsland && M6._hiddenIsland.length) return;
+        const hidden = [];
+        for (let i = 0; i < scene.children.length; i++) {
+          const o = scene.children[i];
+          if (!o || !o.visible || o === M6.g || o === M6.marker || o.isLight) continue;
+          if (typeof sky !== 'undefined' && o === sky) continue;
+          if (typeof stars !== 'undefined' && o === stars) continue;
+          o.visible = false;
+          hidden.push(o);
+        }
+        M6._hiddenIsland = hidden;
+      } else if (M6._hiddenIsland && M6._hiddenIsland.length) {
+        for (let i = 0; i < M6._hiddenIsland.length; i++) {
+          if (M6._hiddenIsland[i]) M6._hiddenIsland[i].visible = true;
+        }
+        M6._hiddenIsland = [];
+      }
+    }
+
+    function warmupChapter() {
+      if (!M6.g || typeof R === 'undefined' || !R || typeof R.setRenderTarget !== 'function' || typeof cam === 'undefined' || !cam || typeof THREE.WebGLRenderTarget !== 'function') return;
+      let rt = null;
+      const savePos = cam.position ? cam.position.clone() : null;
+      const saveRot = cam.rotation ? { x: cam.rotation.x, y: cam.rotation.y, z: cam.rotation.z } : null;
+      const saveVis = M6.g.visible;
+      try {
+        isolateIsland(true);
+        M6.g.visible = true;
+        M6.g.updateMatrixWorld && M6.g.updateMatrixWorld(true);
+        cam.position.set(O6.x - 42, O6.y + 2, O6.z);
+        cam.lookAt && cam.lookAt(O6.x + 120, O6.y + 6, O6.z);
+        cam.updateMatrixWorld && cam.updateMatrixWorld();
+        if (typeof R.compile === 'function') R.compile(scene, cam);
+        rt = new THREE.WebGLRenderTarget(24, 24, { depthBuffer: true, stencilBuffer: false });
+        R.setRenderTarget(rt);
+        R.render(scene, cam);
+        if (!window.__boisIsSoftwareGl) {
+          cam.position.set(O6.x + 2, O6.y + 2, O6.z);
+          cam.lookAt && cam.lookAt(O6.x + 80, O6.y + 8, O6.z);
+          cam.updateMatrixWorld && cam.updateMatrixWorld();
+          R.render(scene, cam);
+        }
+      } catch (e) {
+        typeof __bw === 'function' && __bw('36e-chapter6#warmup', e);
+      } finally {
+        try { R.setRenderTarget(null); } catch (_) {}
+        try { if (rt && rt.dispose) rt.dispose(); } catch (_) {}
+        M6.g.visible = saveVis;
+        isolateIsland(false);
+        if (savePos && cam.position && cam.position.copy) cam.position.copy(savePos);
+        if (saveRot && cam.rotation && cam.rotation.set) cam.rotation.set(saveRot.x, saveRot.y, saveRot.z);
+        cam.updateMatrixWorld && cam.updateMatrixWorld();
+      }
     }
 
     function preloadChapter() {
@@ -2333,7 +2431,7 @@ try {
       M6.preloadPerf.state = 'queued';
       M6.preloadPerf.started = performance.now();
       try {
-        if (R && R.info && R.info.memory) {
+        if (typeof R !== 'undefined' && R && R.info && R.info.memory) {
           M6.preloadPerf.geo0 = R.info.memory.geometries;
           M6.preloadPerf.tex0 = R.info.memory.textures;
         }
@@ -2343,6 +2441,7 @@ try {
         const t0 = performance.now();
         try {
           build();
+          warmupChapter();
           M6.preloadPerf.ms = +(performance.now() - t0).toFixed(2);
           M6.preloadPerf.ended = performance.now();
           M6.preloadPerf.state = 'ready';
@@ -2356,7 +2455,7 @@ try {
             }
           }
           try {
-            if (R && R.info && R.info.memory) {
+            if (typeof R !== 'undefined' && R && R.info && R.info.memory) {
               M6.preloadPerf.geo1 = R.info.memory.geometries;
               M6.preloadPerf.tex1 = R.info.memory.textures;
             }
@@ -2413,6 +2512,7 @@ try {
 
       const g = new THREE.Group();
       g.position.set(O6.x, O6.y, O6.z);
+      g.visible = false;
       scene.add(g);
       M6.g = g;
 
@@ -3431,18 +3531,17 @@ try {
         sh.userData.dyn = true;
         g.add(sh);
 
-        const stars = [];
+        const starMats = [glowM(0xffeacc, 0.7), glowM(0xffffff, 0.7), glowM(0xffffff, 0.7), glowM(0xffffff, 0.7)];
         const starGeo = new THREE.SphereGeometry(0.032, 6, 5);
         for (let i = 0; i < 20; i++) {
-          const m = new THREE.Mesh(starGeo, glowM(i % 4 === 0 ? 0xffeacc : 0xffffff, 0.7));
+          const m = new THREE.Mesh(starGeo, starMats[i % 4]);
           m.position.set(xw + 0.08 + (i % 4) * 0.035, 0.4 + ((i * 37) % 29) / 29 * 3.05, zc - 1.65 + ((i * 53) % 31) / 31 * 3.3);
           m.scale.setScalar(0.75 + (i % 3) * 0.28);
           m.userData.dyn = true;
           g.add(m);
-          stars.push(m);
         }
         M6.an.push((t) => {
-          for (let i = 0; i < stars.length; i++) stars[i].material.opacity = 0.14 + 0.52 * Math.max(0, Math.sin(t * 0.65 + i * 2.1));
+          for (let i = 0; i < starMats.length; i++) starMats[i].opacity = 0.14 + 0.52 * Math.max(0, Math.sin(t * 0.65 + i * 2.1));
           padV.material.opacity = 0.1 + 0.03 * Math.sin(t * 0.8);
           padRing.material.opacity = 0.2 + 0.06 * Math.sin(t * 0.8 + 1);
         });
@@ -4058,6 +4157,7 @@ try {
           try {
             installHooks();
             if (!M6.built) build();
+            isolateIsland(true);
             M6.g.visible = true;
             syncGates(true);
             const sp = startPos();
@@ -4146,6 +4246,7 @@ try {
           typeof __bw === 'function' && __bw('36e-chapter6#7', e);
         }
         if (M6.g) M6.g.visible = false;
+        isolateIsland(false);
         S.x = GAP.x;
         S.z = GAP.z;
         S.y = __g0(S.x, S.z, 50) + 0.1;

@@ -432,11 +432,20 @@ const PR=(()=>{
   const t0=performance.now();
   try{
    const save={x:cam.position.x,y:cam.position.y,z:cam.position.z,rx:cam.rotation.x,ry:cam.rotation.y,rz:cam.rotation.z,far:cam.far,near:cam.near};
+   const prevVis=[];
+   for(let i=0;i<P.chunks.length;i++){const ms=P.chunks[i].meshes;for(let j=0;j<ms.length;j++){prevVis.push(ms[j].visible);ms[j].visible=true}}
    cam.position.set(0,PY+2.6,0);cam.near=.05;cam.far=500;cam.lookAt(0,PY+2.5,1);cam.updateProjectionMatrix();
    try{if(R.compile)R.compile(P.scene,cam)}catch(e){}
    R.shadowMap.needsUpdate=true;
    let rt=null;
-   try{rt=new THREE.WebGLRenderTarget(24,24,{depthBuffer:true,stencilBuffer:false});R.setRenderTarget(rt);R.render(P.scene,cam)}finally{if(R.setRenderTarget)R.setRenderTarget(null);if(rt&&rt.dispose)rt.dispose()}
+   try{
+    rt=new THREE.WebGLRenderTarget(24,24,{depthBuffer:true,stencilBuffer:false});
+    R.setRenderTarget(rt);
+    const dirs=window.__boisIsSoftwareGl?[[0,0,1]]:[[0,0,1],[1,0,0],[0,0,-1],[-1,0,0]];
+    for(const d of dirs){cam.lookAt(d[0],PY+2.5,d[2]);cam.updateMatrixWorld();R.render(P.scene,cam)}
+   }finally{if(R.setRenderTarget)R.setRenderTarget(null);if(rt&&rt.dispose)rt.dispose()}
+   let idx=0;
+   for(let i=0;i<P.chunks.length;i++){const ms=P.chunks[i].meshes;for(let j=0;j<ms.length;j++){ms[j].visible=prevVis[idx++]}}
    cam.position.set(save.x,save.y,save.z);cam.rotation.set(save.rx,save.ry,save.rz);cam.near=save.near;cam.far=save.far;cam.updateProjectionMatrix();
    loadMark('gpu_warmup',performance.now()-t0,{target:'24x24'});
   }catch(e){

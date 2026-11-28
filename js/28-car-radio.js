@@ -425,6 +425,7 @@ function buildCar() {
   // Limpiaparabrisas articulados (se mueven con la lluvia)
   for (const wx of [-0.26, 0.18]) {
     const wp = new THREE.Group();
+    wp.userData.noMerge = true;
     wp.position.set(wx, 1.075, -0.55);
     wp.rotation.set(0.76, 0, 0);
     const arm = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.015, 0.018), trim);
@@ -568,6 +569,7 @@ function buildCar() {
   add(new THREE.BoxGeometry(0.17, 0.22, 0.94), leatherDark, 0, 0.58, 0.02);
   add(new THREE.BoxGeometry(0.15, 0.03, 0.32), leather, 0, 0.70, 0.26);
   const shifterPivot = new THREE.Group();
+  shifterPivot.userData.noMerge = true;
   shifterPivot.position.set(0, 0.68, -0.10);
   const stick = new THREE.Mesh(new THREE.CylinderGeometry(0.01, 0.012, 0.17, 8), chrome);
   stick.position.set(0, 0.08, 0);
@@ -578,6 +580,7 @@ function buildCar() {
   CAR.shifterPivot = shifterPivot;
 
   const hbPivot = new THREE.Group();
+  hbPivot.userData.noMerge = true;
   hbPivot.position.set(-0.06, 0.68, 0.04);
   const hbBar = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.024, 0.18), trim);
   hbBar.position.set(0, 0.01, -0.07);
@@ -623,6 +626,7 @@ function buildCar() {
 
   const makeNeedle = (cx) => {
     const piv = new THREE.Group();
+    piv.userData.noMerge = true;
     piv.position.set(cx, -0.004, 0.006);
     const bar = new THREE.Mesh(new THREE.BoxGeometry(0.0045, 0.037, 0.003), needleMat);
     bar.position.y = 0.014;
@@ -638,6 +642,7 @@ function buildCar() {
   // Columna y volante deportivo de 3 radios bajos (mitad superior abierta hacia el velocímetro)
   add(new THREE.CylinderGeometry(0.024, 0.028, 0.17, 10), trim, -0.30, 0.905, -0.315, Math.PI / 2 - 0.40);
   const steerPivot = new THREE.Group();
+  steerPivot.userData.noMerge = true;
   steerPivot.position.set(-0.30, 0.935, -0.245);
   steerPivot.rotation.set(-0.40, 0, 0);
   const rim = new THREE.Mesh(new THREE.TorusGeometry(0.116, 0.013, 12, 26), leatherDark);
@@ -709,6 +714,7 @@ function buildCar() {
     cap.rotation.z = Math.PI / 2;
     cap.position.x = sx * 0.102;
     spin.add(cap);
+    window.__boisMergeStaticGroup?.(spin);
     return spin;
   }
 
@@ -733,6 +739,7 @@ function buildCar() {
   addWheel(1, -1.16, true);
   addWheel(-1, 1.17, false);
   addWheel(1, 1.17, false);
+  window.__boisMergeStaticGroup?.(body);
 
   // Sombra de contacto bajo el auto
   const bc = document.createElement('canvas');

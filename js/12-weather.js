@@ -170,24 +170,25 @@ const api={
   hemi.intensity=p.hi*(1-.3*ov-.22*st.sc)+fl*2.6;hemi.color.setRGB(p.hs[0]*(1+.05*au),p.hs[1]*(1-.02*au),p.hs[2]*(1-.14*au));hemi.groundColor.setRGB(p.hg[0]*(1+.2*au),p.hg[1]*(1+.05*au),p.hg[2]);hemi.color.lerp(c3.setRGB(.52,.60,.78),st.sc*.55);hemi.groundColor.lerp(c3.setRGB(.2,.22,.2),st.sc*.5);
   R.toneMappingExposure=p.ex*(1-.07*ov)*(1-.03*au)*(1-.12*st.sc);
   c1.setRGB(...p.fog).convertSRGBToLinear();const lm=lum(c1);c2.setRGB(lm*.78,lm*.83,lm*.92);c1.lerp(c2,Math.min(1,ov*1.15));c1.r*=1+.07*au;c1.b*=1-.12*au;c1.lerp(c3.setRGB(.10,.15,.09).multiplyScalar(1-p.night*.8),Math.min(1,st.sc*.8));c1.lerp(c3.setRGB(1,1,1),fl*.5);
-  if(!uw&&!PR.on)scene.fog.color.copy(c1);
-  if(!uw&&!PR.on)scene.fog.density=QS[qi].fog*(1+st.rain*1.6+st.fog*10+st.sc*1.1);
-  const fo=Math.min(.92,st.fog*.9+st.rain*.22+st.sc*.18);dome.visible=!uw&&fo>.01;
+  const ch6On=!!(window.__boisCh6&&window.__boisCh6.on),subOff=uw||PR.on||ch6On;
+  if(!subOff)scene.fog.color.copy(c1);
+  if(!subOff)scene.fog.density=QS[qi].fog*(1+st.rain*1.6+st.fog*10+st.sc*1.1);
+  const fo=Math.min(.92,st.fog*.9+st.rain*.22+st.sc*.18);dome.visible=!subOff&&fo>.01;
   if(dome.visible){const du=dome.material.uniforms;du.uOpacity.value=fo;du.uColor.value.copy(c1);du.uSunDir.value.set(p.sd[0],p.sd[1],p.sd[2]).normalize();du.uSunCol.value.setRGB(p.sc[0],p.sc[1],p.sc[2]).convertSRGBToLinear();du.uSunVis.value=Math.max(0,Math.min(1,st.fog*(1-p.night)*Math.max(0,1-st.rain*1.1-st.sc*1.2)));}
   dome.position.copy(cam.position);
   const sk=(1-.46*ov)*(1-.16*st.sc),fb=1+fl*3.2;sky.material.color.setRGB(sk*(.965+fl*.035)*fb,sk*(.985+fl*.02)*fb,sk*(1.015+fl*.045)*fb);
   SKY.ov=ov;SKY.sc=st.sc;sunSpr.material.opacity=Math.max(0,1-ov*1.4-st.sc*1.3);
   c2.setRGB(...p.cc).convertSRGBToLinear();const cl=lum(c2)*.36;c2.lerp(c3.setRGB(cl,cl*1.03,cl*1.1),ov);c2.lerp(c3.setRGB(.13,.14,.18),st.sc*.72);c2.lerp(c3.setRGB(1,1,1),fl*.6);cloudMat.color.copy(c2);cloudMat.opacity=Math.min(1,(.92-.24*p.night)+ov*.25);
-  stormMat.color.copy(c2).multiplyScalar(.75);stormMat.color.lerp(c3.setRGB(.10,.09,.15),st.sc*.55);stormMat.opacity=Math.max(0,Math.min(.97,Math.max((ov-.12)*1.3,st.sc*(.68+.22*Math.min(1,st.stormAge/38)))))*(uw?0:1);
-  for(const c of storm){const u=c.userData;u.az+=dt*(.004+st.sc*.009+st.stormGust*.003);const ce=Math.cos(u.el);c.position.set(cam.position.x+Math.sin(u.az)*ce*1750,cam.position.y+Math.sin(u.el)*1750,cam.position.z+Math.cos(u.az)*ce*1750);c.visible=stormMat.opacity>.01}
-  if(!uw)stars.visible=p.night>.02&&ov<.55;
+  stormMat.color.copy(c2).multiplyScalar(.75);stormMat.color.lerp(c3.setRGB(.10,.09,.15),st.sc*.55);stormMat.opacity=Math.max(0,Math.min(.97,Math.max((ov-.12)*1.3,st.sc*(.68+.22*Math.min(1,st.stormAge/38)))))*(subOff?0:1);
+  for(const c of storm){const u=c.userData;u.az+=dt*(.004+st.sc*.009+st.stormGust*.003);const ce=Math.cos(u.el);c.position.set(cam.position.x+Math.sin(u.az)*ce*1750,cam.position.y+Math.sin(u.el)*1750,cam.position.z+Math.cos(u.az)*ce*1750);c.visible=!subOff&&stormMat.opacity>.01}
+  if(!subOff)stars.visible=p.night>.02&&ov<.55;else stars.visible=false;
   // partículas
   if(!camInit||camP.distanceToSquared(cam.position)>2500){camP.copy(cam.position);camV.set(0,0,0);camInit=true}
   else{rel.copy(cam.position).sub(camP).multiplyScalar(1/Math.max(dt,.001));if(rel.length()>140)rel.set(0,0,0);camV.lerp(rel,.25);camP.copy(cam.position)}
-  const rk=uw?0:st.rain;rainL.visible=rk>.02;if(rainL.visible){rm.color.copy(c1).multiplyScalar(1.7).lerp(c3.setRGB(.7,.78,.88),.35);rm.opacity=.3+.2*rk;stepRain(dt,rk)}
+  const rk=subOff?0:st.rain;rainL.visible=rk>.02;if(rainL.visible){rm.color.copy(c1).multiplyScalar(1.7).lerp(c3.setRGB(.7,.78,.88),.35);rm.opacity=.3+.2*rk;stepRain(dt,rk)}
   splash.visible=rk>.08;if(splash.visible)stepSplash(dt,rk);
-  const lk=uw?0:au*(1-st.rain*.7);leaves.visible=lk>.05;if(leaves.visible){leaves.material.opacity=Math.min(1,lk*1.4);stepLeaves(dt,lk)}
+  const lk=subOff?0:au*(1-st.rain*.7);leaves.visible=lk>.05;if(leaves.visible){leaves.material.opacity=Math.min(1,lk*1.4);stepLeaves(dt,lk)}
   // sonido de lluvia
   if(AU.ctx&&AU.nb){if(!st.ra){const C=AU.ctx,s=C.createBufferSource(),hp=C.createBiquadFilter(),lpf=C.createBiquadFilter(),g=C.createGain();s.buffer=AU.nb;s.loop=true;hp.type='highpass';hp.frequency.value=900;lpf.type='lowpass';lpf.frequency.value=6500;g.gain.value=0;s.connect(hp);hp.connect(lpf);lpf.connect(g);g.connect(C.destination);s.start();st.ra=g}
-   st.ra.gain.setTargetAtTime(AU.on&&S.on&&!uw&&!PR.on?Math.min(.22,st.rain*.2)*(1-(typeof __boisAudioZoneMute==='function'?__boisAudioZoneMute():0)):0,AU.ctx.currentTime,.3)}}};
+   st.ra.gain.setTargetAtTime(AU.on&&S.on&&!subOff?Math.min(.22,st.rain*.2)*(1-(typeof __boisAudioZoneMute==='function'?__boisAudioZoneMute():0)):0,AU.ctx.currentTime,.3)}}};
 return api})();

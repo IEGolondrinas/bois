@@ -49,8 +49,8 @@
     const v=it.tint||1;color.setRGB(v,v,v);im.setColorAt(i,color);
    });
    im.instanceMatrix.needsUpdate=true;if(im.instanceColor)im.instanceColor.needsUpdate=true;
-   if(typeof im.computeBoundingSphere==='function')im.computeBoundingSphere();
-   im.frustumCulled=true;
+   if(typeof window.__boisComputeInstBounds==='function')window.__boisComputeInstBounds(im);
+   else{if(typeof im.computeBoundingSphere==='function')im.computeBoundingSphere();im.frustumCulled=true;}
    scene.add(im);return im;
   };
   const grass=[],reeds=[],flowers=[],rocks=[];
@@ -86,8 +86,8 @@
   pads.count=padPos.length;pads.castShadow=false;pads.receiveShadow=false;
   padPos.forEach((q,i)=>{pd.position.set(q.x,WL+.17,q.z);pd.rotation.set(-Math.PI/2,Math.random()*Math.PI*2,0);const sc=.72+Math.random()*.65;pd.scale.set(sc,sc,sc);pd.updateMatrix();pads.setMatrixAt(i,pd.matrix)});
   pads.instanceMatrix.needsUpdate=true;
-  if(typeof pads.computeBoundingSphere==='function')pads.computeBoundingSphere();
-  pads.frustumCulled=true;
+  if(typeof window.__boisComputeInstBounds==='function')window.__boisComputeInstBounds(pads);
+  else{if(typeof pads.computeBoundingSphere==='function')pads.computeBoundingSphere();pads.frustumCulled=true;}
   scene.add(pads);
   window.__boisShoreMats={plant:plantMat,pad:padMat};
   window.__boisShoreDecor={grass:grass.length,reeds:reeds.length,flowers:flowers.length,rocks:rocks.length};

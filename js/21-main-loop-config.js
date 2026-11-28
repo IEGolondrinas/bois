@@ -18,7 +18,7 @@ function frame(){
   if((__boisCh4Tick+=1)>=12){__boisCh4Tick=0;try{window.__boisChapter4Tick&&window.__boisChapter4Tick()}catch(e){if(!window.__ch4Warned){window.__ch4Warned=1;console.warn('chapter4 tick:',e)}}}
   const vhsActive=!!(S.on&&window.BOIS_VHS_ON);
   if(vhsActive!==__boisLastVhsState){document.body.classList.toggle('vhs-active',vhsActive);__boisLastVhsState=vhsActive}
-  const dt=Math.min(cl.getDelta(),.05);perfStep(dt);
+  const rawDt=cl.getDelta(),dt=Math.min(rawDt,.05);perfStep(dt);
   if(document.hidden){typeof carSoundMute==='function'&&carSoundMute();window.__boisSwanBoxPause?.();for(const k in keys)keys[k]=0;jumpQ=false;jv.x=jv.y=0;return}
   const cinActive=(typeof CIN!=='undefined'&&!!CIN.on)||!!window.__boisWakeLock;
   if(cinActive&&typeof CAR!=='undefined'&&CAR.on&&typeof carSoundMute==='function')carSoundMute();
@@ -34,14 +34,16 @@ function frame(){
   }
   idleRendered=false;
 
-  fa+=dt;fc++;if(fa>2){
+  if(rawDt<=.14){fa+=rawDt;fc++}
+  if(!window.__boisIsSoftwareGl&&fa>2){
     fps=fc/fa;const span=fa;fa=0;fc=0;
-    {
-      if(fps<50){__fpsLowTime+=span;__fpsHighTime=0}
-      else if(fps>59){__fpsHighTime+=span;__fpsLowTime=0}
-      else{__fpsLowTime=Math.max(0,__fpsLowTime-span*.5);__fpsHighTime=Math.max(0,__fpsHighTime-span*.5)}
-      if(__fpsLowTime>=3&&dpr>.7){dpr=Math.max(.7,Math.round((dpr-.10)*100)/100);__fpsLowTime=0;resize()}
-      else if(__fpsHighTime>=12&&dpr<dprMax){dpr=Math.min(dprMax,Math.round((dpr+.10)*100)/100);__fpsHighTime=0;resize()}
+    window.__boisDprCooldown=Math.max(0,(window.__boisDprCooldown||0)-span);
+    if(fps<46){__fpsLowTime+=span;__fpsHighTime=0}
+    else if(fps>=58){__fpsHighTime+=span;__fpsLowTime=0}
+    else{__fpsLowTime=Math.max(0,__fpsLowTime-span*.5);__fpsHighTime=Math.max(0,__fpsHighTime-span*.5)}
+    if(window.__boisDprCooldown<=0){
+      if(__fpsLowTime>=6&&dpr>.7){dpr=Math.max(.7,Math.round((dpr-.10)*100)/100);__fpsLowTime=0;window.__boisDprCooldown=20;resize()}
+      else if(__fpsHighTime>=18&&dpr<dprMax){dpr=Math.min(dprMax,Math.round((dpr+.10)*100)/100);__fpsHighTime=0;window.__boisDprCooldown=20;resize()}
     }
   }
 
@@ -85,6 +87,19 @@ function frame(){
   if(PR.on)PR.step(dt);
   const ch6On=!!(window.__boisCh6&&window.__boisCh6.on);
   const inSubZone=PR.on||ch6On;
+  if(inSubZone!==window.__boisLastInSubZone){
+    window.__boisLastInSubZone=inSubZone;
+    const shAllowed=!inSubZone&&!!QS[qi].sh&&!window.__boisIsSoftwareGl;
+    if(typeof sun!=='undefined'&&sun&&sun.castShadow!==shAllowed){sun.castShadow=shAllowed}
+    if(inSubZone){
+      if(typeof gPool!=='undefined')for(const p of gPool)p.m.visible=false;
+      if(typeof LIFE!=='undefined'&&LIFE)LIFE.g.visible=false;
+      if(typeof arRB!=='undefined')arRB.visible=false;
+      if(typeof arGP!=='undefined')arGP.visible=false;
+      if(typeof arLights!=='undefined')for(const pl of arLights)pl.intensity=0;
+      if(typeof worldPolishFrame==='function')__safeRun('worldPolish',()=>worldPolishFrame(0,performance.now()*.001));
+    }else if(shAllowed){R.shadowMap.needsUpdate=true}
+  }
 
   const now=performance.now(),tt=now*.001;
   if(S.on){
@@ -177,7 +192,7 @@ function frame(){
     for(const c of treeChunks)c.m.visible=false;
   }
   const shTick=qi>=3?.55:qi>=2?.40:.28;
-  if(!uw&&!PR.on&&PERF.shadow>=shTick){PERF.shadow=0;R.shadowMap.needsUpdate=true;}
+  if(!uw&&!inSubZone&&PERF.shadow>=shTick){PERF.shadow=0;R.shadowMap.needsUpdate=true;}
   drawWorld();
   if(shot){
     shot=false;

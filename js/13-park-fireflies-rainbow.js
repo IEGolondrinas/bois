@@ -38,7 +38,7 @@ for(let i=0;i<(touch?2:3);i++){const pl=new THREE.PointLight(0xffb454,0,26,1.4);
  arSpots.forEach((s,i)=>{E4.set(0,s.a,0);Q4.setFromEuler(E4);M4.compose(P4.set(s.x,s.h,s.z),Q4,S4);bI.setMatrixAt(i,M4)});
  arLamps.forEach((l,i)=>{E4.set(0,l.a,0);Q4.setFromEuler(E4);M4.compose(P4.set(l.x,l.y,l.z),Q4,S4);lI.setMatrixAt(i,M4);M4.compose(P4.set(l.x,l.y+2.62,l.z),Q4,S4);uI.setMatrixAt(i,M4);gp[i*3]=l.x;gp[i*3+1]=l.y+2.62;gp[i*3+2]=l.z});
  bI.count=N;lI.count=NL;uI.count=NL;
- for(const m of[bI,lI,uI]){m.frustumCulled=false;scene.add(m)}bI.castShadow=lI.castShadow=!touch;
+ for(const m of[bI,lI,uI]){if(window.__boisComputeInstBounds)window.__boisComputeInstBounds(m);else m.frustumCulled=false;scene.add(m)}bI.castShadow=lI.castShadow=!touch;
  var arGP=new THREE.Points(new THREE.BufferGeometry().setAttribute('position',new THREE.BufferAttribute(gp,3)),new THREE.PointsMaterial({map:arGlow,size:8.5,sizeAttenuation:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,color:0xffca7a,fog:false,opacity:0}));arGP.frustumCulled=false;scene.add(arGP);
  if(N){const s=arSpots[0],tx=canvasTex(512,256,(x,w,h)=>{x.fillStyle='#4a3320';x.fillRect(0,0,w,h);x.strokeStyle='#c9a46a';x.lineWidth=8;x.strokeRect(10,10,w-20,h-20);x.fillStyle='#f3e3c3';x.textAlign='center';x.font='bold 46px Georgia,serif';x.fillText('Parque de los Cisnes',w/2,100);x.font='italic 28px Georgia,serif';x.fillText('Para Exneyder, tester oficial',w/2,160);x.fillText('de Bois.io  ·  2026',w/2,200)}),
   px=s.x-Math.sin(s.a)*3,pz=s.z-Math.cos(s.a)*3,ph=hAt(px,pz),pl=new THREE.Mesh(new THREE.PlaneGeometry(2.6,1.3),new THREE.MeshStandardMaterial({map:tx,roughness:.8,side:THREE.DoubleSide})),

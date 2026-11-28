@@ -152,7 +152,12 @@ try {
     }
     function saveMonument(data) {
       try {
-        if (!data) { localStorage.removeItem(MON_KEY); return true; }
+        if (!data) {
+          localStorage.removeItem(MON_KEY);
+          window.__boisMarkBackupDirty?.();
+          rebuildMonumentMesh();
+          return true;
+        }
         localStorage.setItem(MON_KEY, JSON.stringify(data));
         window.__boisMarkBackupDirty?.();
         rebuildMonumentMesh();
@@ -271,7 +276,7 @@ try {
     // Modal sereno para contemplar el recuerdo colocado en el parque
     const monModal = document.createElement('div');
     monModal.id = 'boisMonModal';
-    monModal.style.cssText = 'position:fixed;inset:0;z-index:34;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,7,9,.86);backdrop-filter:blur(8px);color:#eee8d9;font-family:Georgia,serif';
+    monModal.style.cssText = 'position:fixed;inset:0;z-index:34;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,7,9,.92);color:#eee8d9;font-family:Georgia,serif';
     monModal.innerHTML =
       '<div style="width:min(560px,94vw);background:rgba(16,22,25,.97);border:1px solid rgba(220,205,175,.32);padding:20px;box-shadow:0 22px 80px #000">' +
       '<div style="font:10px system-ui,sans-serif;letter-spacing:2.4px;color:#c0b292;text-transform:uppercase">Parque de los Cisnes · Tu recuerdo</div>' +

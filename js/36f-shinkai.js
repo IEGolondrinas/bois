@@ -165,7 +165,7 @@ try {
     el.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;mix-blend-mode:screen;will-change:opacity,background';
     document.body.appendChild(el);
     const v = new THREE.Vector3(), fw = new THREE.Vector3();
-    let last = '', occ = 0, occTarget = 0;
+    let last = '', occ = 0, occTarget = 0, lastOccT = -1e9, lastCamX = 1e9, lastCamY = 1e9, lastCamZ = 1e9, lastDot = -2;
     const env = { hAt, cells, TA, CS, blockers: window.__boisSunBlockers };
 
     function glare(dt) {
@@ -183,7 +183,16 @@ try {
           if ((typeof PR !== 'undefined' && PR.on) || (window.__boisCh6 && window.__boisCh6.on) || cam.position.z < -900) {
             o = 0;
           } else if (o > 0.004) {
-            occTarget = sunOccludedFactor(env, cam.position.x, cam.position.y, cam.position.z, d.x, d.y, d.z, 95);
+            const nowT = performance.now();
+            const moved2 = (cam.position.x - lastCamX) ** 2 + (cam.position.y - lastCamY) ** 2 + (cam.position.z - lastCamZ) ** 2;
+            if (nowT - lastOccT >= 70 || Math.abs(k - lastDot) > 0.025 || moved2 > 0.2) {
+              lastOccT = nowT;
+              lastDot = k;
+              lastCamX = cam.position.x;
+              lastCamY = cam.position.y;
+              lastCamZ = cam.position.z;
+              occTarget = sunOccludedFactor(env, cam.position.x, cam.position.y, cam.position.z, d.x, d.y, d.z, 95);
+            }
             const rate = Math.min(1, (dt || 0.016) * (occTarget > occ ? 22 : 12));
             occ += (occTarget - occ) * rate;
             o *= 1 - occ;

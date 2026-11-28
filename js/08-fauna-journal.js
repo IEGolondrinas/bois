@@ -56,7 +56,7 @@ window.camFlash=()=>{dfl.style.transition='none';dfl.style.opacity=.75;requestAn
   const clearProgress=()=>{
     if(resetModal){resetModal.style.display='flex';window.__boisGuideOverlayOpen=true;if(document.pointerLockElement){window.__boisGuideIgnoreNextUnlock=true;document.exitPointerLock?.()}return}
     const md=document.createElement('div');md.id='boisResetModal';
-    md.style.cssText='position:fixed;inset:0;z-index:99992;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(3,7,10,.76);backdrop-filter:blur(7px);font-family:Georgia,serif;color:#eee9dd';
+    md.style.cssText='position:fixed;inset:0;z-index:99992;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(3,7,10,.92);font-family:Georgia,serif;color:#eee9dd';
     md.innerHTML='<div style="width:min(420px,94vw);background:rgba(17,23,26,.97);border:1px solid rgba(220,215,195,.24);padding:22px;box-shadow:0 18px 60px #000a"><h3 style="margin:0 0 8px;font:400 20px Georgia,serif">¿Reiniciar el progreso?</h3><p style="margin:0 0 18px;font:13px/1.55 system-ui,sans-serif;color:#c1c0b7">Se borrarán la historia, las fotografías recuperadas, el mapa explorado y la última posición guardada. Tus ajustes de calidad y sonido se conservarán.</p><div style="display:flex;gap:10px;justify-content:flex-end"><button type="button" data-r="no" style="padding:7px 14px;background:transparent;color:#c9c2b1;border:1px solid #ffffff35;font:12px system-ui;cursor:pointer">Cancelar</button><button type="button" data-r="yes" style="padding:7px 14px;background:rgba(165,62,48,.35);color:#f3e5dc;border:1px solid rgba(220,120,100,.55);font:12px system-ui;cursor:pointer">Sí, reiniciar</button></div></div>';
     const closeMd=()=>{md.style.display='none';try{window.__boisGuideOverlayOpen=!!(typeof BOIS_GUIDE!=='undefined'&&(BOIS_GUIDE.journal||BOIS_GUIDE.map))}catch(e){window.__boisGuideOverlayOpen=false}if(S.on&&!touch&&!window.__boisGuideOverlayOpen)document.getElementById('c')?.requestPointerLock?.()};
     md.addEventListener('click',e=>{const r=e.target.closest&&e.target.closest('[data-r]');if(e.target===md||(r&&r.dataset.r==='no'))closeMd();else if(r&&r.dataset.r==='yes')doReset()});
@@ -104,14 +104,14 @@ window.__life2=(dt,tt)=>{const pr=typeof PR!=='undefined'&&PR.on,nt=(typeof PC!=
   }};
 
 
-let ppx=0,ppz=0,psp=0,first=1;
+let ppx=0,ppz=0,psp=0,first=1,bdT=0;
  const f=(dt,tt)=>{U.value=tt;let near=0;if(first){ppx=S.x;ppz=S.z;first=0}{const dm=Math.hypot(S.x-ppx,S.z-ppz)/Math.max(dt,.001);psp+=(Math.min(dm,40)-psp)*Math.min(1,dt*4);ppx=S.x;ppz=S.z}
   const nt=(typeof PC!=="undefined"&&PC&&PC.night)||0;let thx=S.x,thz=S.z,fdm=psp>7?1.5:psp<3?.6:1;
  for(const a of FN){const sp=a.sp,dx=a.x-S.x,dz=a.z-S.z,d2=dx*dx+dz*dz;
-  if(d2>90000){if(!a.far){a.far=1;sp.im.setMatrixAt(a.i,ZM);sp.dirty=1}continue}
-  a.far=0;if(d2<3600)near++;
+  if(d2>90000){if(!a.far){a.far=1;a._idleDone=0;sp.im.setMatrixAt(a.i,ZM);sp.dirty=1}continue}
+  const wasFar=a.far;a.far=0;if(d2<3600)near++;
      if(a.sv===undefined){a.sv=0;a.st=1;a.al=0;a.ft=0;a.rs=0;a.pp=0;a.sq=1;a.fj=(Math.random()-.5)*1.1}
-   if(a.dead>0){a.dead-=dt;if(a.dead<=0){a.dead=0;a.x=a.g.x+(Math.random()-.5)*4;a.z=a.g.z+(Math.random()-.5)*4;a.st=0;a.tmr=2;a.sv=0}else{sp.im.setMatrixAt(a.i,ZM);sp.dirty=1;continue}}
+   if(a.dead>0){a._idleDone=0;a.dead-=dt;if(a.dead<=0){a.dead=0;a.x=a.g.x+(Math.random()-.5)*4;a.z=a.g.z+(Math.random()-.5)*4;a.st=0;a.tmr=2;a.sv=0}else{sp.im.setMatrixAt(a.i,ZM);sp.dirty=1;continue}}
    let tx_=thx,tz_=thz;
    if(sp.id===2)for(const fx of SP[3].a){const q=(fx.x-a.x)**2+(fx.z-a.z)**2;if(q<196&&q<(a.x-tx_)**2+(a.z-tz_)**2){tx_=fx.x;tz_=fx.z}}
    const ex=a.x-tx_,ez=a.z-tz_,dd=Math.sqrt(ex*ex+ez*ez)||1,fol=(tx_!==thx||tz_!==thz)?1:0,rs=a.rs,fl0=sp.fd*(fol?1:fdm);
@@ -130,7 +130,7 @@ let ppx=0,ppz=0,psp=0,first=1;
    if(a.st!==3&&!hunt){if(a.st===5)a.st=1;
     if(a.st!==2){a.tmr-=dt;if(a.tmr<=0){a.tmr=3+Math.random()*6;const sl=sp.id===3?(nt<.25&&Math.random()<.55):(nt>.65&&Math.random()<.85);
      if(sp.id<4&&sl){a.st=4;a.rs=1;a.tmr=10+Math.random()*20;a.tx=a.x;a.tz=a.z}
-     else{a.rs=0;if(Math.random()<.4){a.st=0;a.tx=a.x;a.tz=a.z;a.hd+=(Math.random()-.5)*1.2}else{a.st=1;const an=Math.random()*6.283,r=Math.random()*sp.r;a.g.x+=(Math.random()-.5)*2;a.g.z+=(Math.random()-.5)*2;a.tx=a.g.x+Math.cos(an)*r;a.tz=a.g.z+Math.sin(an)*r}}}}}
+     else{a.rs=0;if(Math.random()<.4){a.st=0;a.tx=a.x;a.tz=a.z;a.hd+=(Math.random()-.5)*1.2;a._idleDone=0}else{a.st=1;const an=Math.random()*6.283,r=Math.random()*sp.r;a.g.x+=(Math.random()-.5)*2;a.g.z+=(Math.random()-.5)*2;a.tx=a.g.x+Math.cos(an)*r;a.tz=a.g.z+Math.sin(an)*r}}}}}
    let v=0,tgH=null;
    if(a.st===3){tgH=Math.atan2(ex,ez)+a.fj;v=sp.v*3.4;a.g.x+=(a.x-a.g.x)*Math.min(1,dt*.6);a.g.z+=(a.z-a.g.z)*Math.min(1,dt*.6)}
    else if(a.st===5){tgH=Math.atan2(a.tx-a.x,a.tz-a.z);v=sp.v*2.6}
@@ -143,11 +143,13 @@ let ppx=0,ppz=0,psp=0,first=1;
      if(!ok){a.sv=0;if(a.st===1){a.tx=a.x;a.tz=a.z;a.tmr=.5}}}}
 const y=sp.wy!==undefined?sp.wy:hAt(a.x,a.z),hp=sp.wy!==undefined?Math.sin(tt*1.3+a.ph)*.03:a.mv?(sp.hop?Math.abs(Math.sin(tt*9+a.ph))*.35:Math.sin(tt*10+a.ph)*.03):0;
   const gz=a.st===0&&sp.id<4?(sp.id<2?.42:.18):a.st===2?-.1:0;a.pp+=(gz-a.pp)*Math.min(1,dt*5);a.sq+=((a.st===4?.6:1)-a.sq)*Math.min(1,dt*3);
+   if(!wasFar&&!a.mv&&sp.wy===undefined&&a.sv<.01&&a.st===4&&Math.abs(a.sq-.6)<.005&&Math.abs(a.pp)<.005&&a._idleDone)continue;
+   a._idleDone=(a.st===4&&!a.mv&&sp.wy===undefined&&a.sv<.01&&Math.abs(a.sq-.6)<.005&&Math.abs(a.pp)<.005)?1:0;
    E.set(a.pp,a.hd+sp.yo,0);Q.setFromEuler(E);M.compose(V.set(a.x,y+hp,a.z),Q,W.set(a.sc,a.sc*a.sq,a.sc));sp.im.setMatrixAt(a.i,M);sp.as.array[a.i]=a.mv?Math.min(2.2,a.sv/sp.v):0;sp.dirty=1}
  for(const sp of SP)if(sp.dirty){sp.dirty=0;sp.im.instanceMatrix.needsUpdate=true;sp.as.needsUpdate=true}
- for(const b of BD){b.a+=dt*b.w;const x=b.cx+Math.sin(tt*.03+b.f)*90+Math.cos(b.a)*b.r,z=b.cz+Math.cos(tt*.027+b.f)*90+Math.sin(b.a)*b.r;
+ bdT+=dt;if(bdT>=.033){const bdt=bdT;bdT=0;for(const b of BD){b.a+=bdt*b.w;const x=b.cx+Math.sin(tt*.03+b.f)*90+Math.cos(b.a)*b.r,z=b.cz+Math.cos(tt*.027+b.f)*90+Math.sin(b.a)*b.r;
   E.set(0,Math.atan2(-Math.sin(b.a),Math.cos(b.a)),-.4);Q.setFromEuler(E);M.compose(V.set(x,b.y+Math.sin(tt*.6+b.ph)*3,z),Q,W.set(1.8,1.8,1.8));bb.im.setMatrixAt(b.i,M)}
- bb.im.instanceMatrix.needsUpdate=true;
+ bb.im.instanceMatrix.needsUpdate=true}
  for(const s of FS){const sd=(s.x-S.x)**2+(s.z-S.z)**2;s.far=sd>22500;if(s.far)continue;s.tmr-=dt;if(s.tmr<=0){s.tmr=3+Math.random()*5;s.dir+=(Math.random()-.5)*2}if(sd<144&&S.y<WL+.5){s.dir=Math.atan2(s.z-S.z,s.x-S.x);s.bt=1.5}s.bt=(s.bt||0)-dt;
   const nx=s.x+Math.cos(s.dir)*(s.bt>0?3.2:.9)*dt,nz=s.z+Math.sin(s.dir)*(s.bt>0?3.2:.9)*dt;if(hAt(nx,nz)<WL-1.6&&Math.abs(nx)<470&&Math.abs(nz)<470){s.x=nx;s.z=nz}else s.dir+=2.5*dt+.05}
  let fd=0;for(const b of FH){const s=b.s;

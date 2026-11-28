@@ -26,7 +26,7 @@ function mkLife(){const g=new THREE.Group();scene.add(g);const R_=Math.random;
    run(ff,dt,tt,Math.min(1,n*(sp?1.75:1.4)+d*.35)*ov);run(po,dt,tt,(1-n)*(1-d*.5)*Math.max(0,1-SKY.ov*1.8)*.55);
    mt-=dt;if(!m&&mt<=0){mt=sp?(2.5+R_()*5):(7+R_()*14);if(n>.7&&SKY.ov<.3){const a=R_()*6.283,e=.45+R_()*.5,D=new THREE.Vector3(R_()-.5,-.35-R_()*.3,R_()-.5).normalize();m={t:0,A:new THREE.Vector3(Math.sin(a)*Math.cos(e),Math.sin(e),Math.cos(a)*Math.cos(e)),D}}}
    if(m){m.t+=dt;_msH.copy(m.A).multiplyScalar(2000).addScaledVector(m.D,m.t*900).add(cam.position);_msT.copy(_msH).addScaledVector(m.D,-220);const p=lg.attributes.position.array;p[0]=_msT.x;p[1]=_msT.y;p[2]=_msT.z;p[3]=_msH.x;p[4]=_msH.y;p[5]=_msH.z;lg.attributes.position.needsUpdate=true;ml.material.opacity=Math.max(0,1-m.t/.9);ml.visible=true;if(m.t>.9){m=null;ml.visible=false}}}}}
-function lifeFrame(dt,tt){if(LIFE_OFF)return;try{if(!LIFE)LIFE=mkLife();const on=!PR.on&&!uw;LIFE.g.visible=on;if(on)LIFE.upd(dt,tt)}catch(e){LIFE_OFF=true;console.error('Vida',e);if(LIFE)LIFE.g.visible=false}}
+function lifeFrame(dt,tt){if(LIFE_OFF)return;try{if(!LIFE)LIFE=mkLife();const on=!PR.on&&!uw&&!(window.__boisCh6&&window.__boisCh6.on);LIFE.g.visible=on;if(on)LIFE.upd(dt,tt)}catch(e){LIFE_OFF=true;console.error('Vida',e);if(LIFE)LIFE.g.visible=false}}
 // ---------- v58: puente. Mejora de la losa negra original ("floor (1)": 141 x 10 m a ras del agua): cubierta de asfalto con marcas,
 // bordillos, barandas, farolas, pilares hasta el fondo y dos torres con cables. La losa original se conserva debajo (como viga y como colisión).
 {const BR={cx:99,cz:-174.4,ang:.98283,L:140.7,W:9.8,yt:1.97,yb:1.43},hw=BR.W/2,hl=BR.L/2,yt=BR.yt,cs=Math.cos(BR.ang),sn=Math.sin(BR.ang);
@@ -43,7 +43,7 @@ function lifeFrame(dt,tt){if(LIFE_OFF)return;try{if(!LIFE)LIFE=mkLife();const on
  // barandas: postes instanciados + dos pasamanos
  const sm=stdM(0x8d949a,.45,.6),np=Math.floor(BR.L/3)+1,posts=new THREE.InstancedMesh(new THREE.BoxGeometry(.12,1.1,.12),sm,np*2),M4=new THREE.Matrix4();
  for(let i=0,k=0;i<np;i++)for(const s of[-1,1])posts.setMatrixAt(k++,M4.makeTranslation(-hl+i*(BR.L/(np-1)),yt+.83,s*(hw-.1)));
- posts.frustumCulled=false;g.add(posts);
+ posts.userData.noMerge=true;if(window.__boisComputeInstBounds)window.__boisComputeInstBounds(posts);else posts.frustumCulled=false;g.add(posts);
  for(const s of[-1,1])for(const y of[.55,1.0])add(new THREE.BoxGeometry(BR.L,.07,.07),sm,0,yt+.28+y,s*(hw-.1));
  // farolas (cabeza emisiva) alternadas a cada lado
  const hm=new THREE.MeshBasicMaterial({color:0xfff0c4}),pm=stdM(0x4b4f55,.5,.5);
@@ -56,7 +56,8 @@ function lifeFrame(dt,tt){if(LIFE_OFF)return;try{if(!LIFE)LIFE=mkLife();const on
  for(const px of px2){for(const s of[-1,1]){add(new THREE.BoxGeometry(.9,24+yt-BR.yb+1.5,1),tw,px,(BR.yb-1.5+yt+24)/2,s*(hw+.6),true);pier(px,s*(hw+.6),1.1,1.4)}
   add(new THREE.BoxGeometry(.9,.7,2*(hw+.6)+1),tw,px,yt+23.6,0,true);add(new THREE.BoxGeometry(.9,.5,2*(hw+.6)+1),tw,px,yt+14,0,true);
   for(const s of[-1,1])for(let d=6;d<=50;d+=6)for(const q of[-1,1]){const x=px+q*d;if(Math.abs(x)>hl-1)continue;cp.push(px,yt+22.8,s*(hw+.6),x,yt+.4,s*(hw-.1))}}
- const cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(cp,3));const cb=new THREE.LineSegments(cg,new THREE.LineBasicMaterial({color:0xe7ebee}));cb.frustumCulled=false;g.add(cb)}
+ const cg=new THREE.BufferGeometry();cg.setAttribute('position',new THREE.Float32BufferAttribute(cp,3));const cb=new THREE.LineSegments(cg,new THREE.LineBasicMaterial({color:0xe7ebee}));cb.userData.noMerge=true;cb.frustumCulled=false;g.add(cb);
+ window.__boisMergeStaticGroup?.(g)}
 // ---------- v59: torres gemelas del centro: fachada de vidrio con retícula, ventanas que se encienden de noche,
 // balizas rojas parpadeantes y haces de luz hacia el cielo. (Las estructuras originales quedan visibles dentro del vidrio.)
 {const TWR=[[-46.67, -24.97, -27.23, -6.53, 4.0, 110.17], [-10.09, 11.61, -26.6, -5.9, 4.0, 110.17]],glowM=[],bcM=new THREE.SpriteMaterial({map:sunTex,color:0xff2a1a,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true}),
@@ -70,14 +71,15 @@ function lifeFrame(dt,tt){if(LIFE_OFF)return;try{if(!LIFE)LIFE=mkLife();const on
   for(const sx of[-1,1])for(const sz of[-1,1]){const s=new THREE.Sprite(bcM);s.scale.setScalar(16);s.position.set(cx+sx*(w/2-.5),y1_+1,cz+sz*(d/2-.5));scene.add(s)}
   const bm=new THREE.Mesh(new THREE.CylinderGeometry(2.4,2.4,520,16,1,true),bmM);bm.position.set(cx,y1_+260,cz);bm.frustumCulled=false;scene.add(bm);beams.push(bm);
   // v153: estructura y coronación (solo visual): aristas, bandas de pisos, parapeto, remate escalonado y antena
-  {const cm=new THREE.MeshStandardMaterial({color:0x56697a,roughness:.4,metalness:.65}),tg=new THREE.MeshStandardMaterial({color:0x9bc9df,roughness:.15,metalness:.3,transparent:true,opacity:.55,depthWrite:false}),
-   ad=(geo,mat,x,y,z)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);scene.add(m);return m};
+  {const twrGrp=new THREE.Group();scene.add(twrGrp);const cm=new THREE.MeshStandardMaterial({color:0x56697a,roughness:.4,metalness:.65}),tg=new THREE.MeshStandardMaterial({color:0x9bc9df,roughness:.15,metalness:.3,transparent:true,opacity:.55,depthWrite:false}),
+   ad=(geo,mat,x,y,z)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);twrGrp.add(m);return m};
    for(const sx of[-1,1])for(const sz of[-1,1])ad(new THREE.BoxGeometry(.7,h,.7),cm,cx+sx*(w/2+.05),cy,cz+sz*(d/2+.05));
    for(let b=1;b<6;b++)ad(new THREE.BoxGeometry(w+.5,.5,d+.5),cm,cx,y0+h*b/6,cz);
    ad(new THREE.BoxGeometry(w+.9,1.1,d+.9),cm,cx,y1_+.55,cz);
    ad(new THREE.BoxGeometry(w*.72,5,d*.72),tg,cx,y1_+3.6,cz);
    ad(new THREE.BoxGeometry(w*.42,4,d*.42),cm,cx,y1_+8.6,cz);
-   ad(new THREE.CylinderGeometry(.12,.2,16,8),cm,cx,y1_+18.6,cz)}});
+   ad(new THREE.CylinderGeometry(.12,.2,16,8),cm,cx,y1_+18.6,cz);
+   window.__boisMergeStaticGroup?.(twrGrp)}});
 
 // ---------- v141: pasarela aérea exterior entre las torres gemelas.
 // Es arquitectura ambiental: no añade puertas, triggers ni acceso jugable.
@@ -92,7 +94,8 @@ function lifeFrame(dt,tt){if(LIFE_OFF)return;try{if(!LIFE)LIFE=mkLife();const on
  const glass=new THREE.MeshPhysicalMaterial({color:0x9bc9df,roughness:.16,metalness:.18,transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false});
  const floor=new THREE.MeshStandardMaterial({color:0x273d4a,roughness:.34,metalness:.48});
  const glow=new THREE.MeshBasicMaterial({color:0x9de5f2,transparent:true,opacity:.72});
- const addBridge=(geo,mat,x,y0,z,order=0)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y0,z);m.castShadow=true;m.receiveShadow=true;m.renderOrder=order;scene.add(m);return m};
+ const skywalkGrp=new THREE.Group();scene.add(skywalkGrp);
+ const addBridge=(geo,mat,x,y0,z,order=0)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y0,z);m.castShadow=true;m.receiveShadow=true;m.renderOrder=order;skywalkGrp.add(m);return m};
  // Viga-cajón inferior y pavimento continuo que entra ligeramente en ambas fachadas.
  addBridge(new THREE.BoxGeometry(L,.5,7.4),darkSteel,cx,deckY-.18,cz);
  addBridge(new THREE.BoxGeometry(L-.25,.12,6.9),floor,cx,deckY+.105,cz);
@@ -125,6 +128,7 @@ function lifeFrame(dt,tt){if(LIFE_OFF)return;try{if(!LIFE)LIFE=mkLife();const on
   addBridge(new THREE.BoxGeometry(.34,3.25,8.05),steel,x,deckY+1.35,cz);
   addBridge(new THREE.BoxGeometry(.48,.12,8.25),glow,x,deckY+2.95,cz,4);
  }
+ window.__boisMergeStaticGroup?.(skywalkGrp);
 }
 
  WIN.upd=(p,tt)=>{const n=Math.max(p.night,p.dusk*.55);WIN.u.value=n;WIN.t.value=tt;for(const m of glowM)m.opacity=Math.min(1,n*1.15);bmM.opacity=n*.22;for(const b of beams)b.visible=n>.03;bcM.opacity=.35+.65*(Math.sin(tt*2.4)>.55?1:.18)}}
