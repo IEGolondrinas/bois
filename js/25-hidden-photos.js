@@ -78,7 +78,7 @@ function interactPhoto(){
       const p=g.userData.photo;
       storyFlag('photo_'+p.id,1);
       g.visible=false;
-      const n=bgCollected(),tot=PHOTOS.length;
+      const n=typeof bgCollected==='function'?bgCollected():PHOTOS.filter(q=>!!STORY.flags['photo_'+q.id]).length,tot=PHOTOS.length;
       if(typeof auHit==='function'){auHit(3400,.06,.08,'highpass');setTimeout(()=>auHit(1700,.05,.04,'bandpass'),75)}
       ch2Pad(n>=tot?[196,293.7,392]:[220+n*12,293.7+n*10,392],4.8,.034);
       // v73: la imagen real acompaña los fragmentos narrativos de esta fotografía.

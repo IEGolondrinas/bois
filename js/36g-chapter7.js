@@ -46,7 +46,7 @@ try{(()=>{
   playCinematic(script(),()=>{storyFlag('ch7_complete',1);sting([196,294,392],SV,4,.45);
    showMsg('Capítulo VII completado · Siéntate junto al lago (F) para vivir el Epílogo · Presencia')},{lookAt:look,location:'PARQUE DE LOS CISNES · LA DIFERENCIA ENTRE SABER Y CREER'})}
  // ---------- gancho: E junto a Katherin (el resto del tiempo se conserva su conversación normal) ----------
- const oIK=interactKatherin;
+ const oIK=typeof interactKatherin==='function'?interactKatherin:()=>false;
  interactKatherin=function(){
   const g=K7();
   if(active()&&g&&g.visible&&S.on&&!CIN.on&&Math.hypot(S.x-g.position.x,S.z-g.position.z)<=3.5&&!(typeof PR!=='undefined'&&PR.on)){scene();return true}
@@ -58,12 +58,12 @@ try{(()=>{
  window.__boisCh7HintTick=__ch7HintTick;
  if(!window.__boisMainLoopUnified)setInterval(__ch7HintTick,1000);
  // ---------- misión y brújula ----------
- const oM=bgMission;bgMission=function(){const f=FL();
+ const oM=typeof bgMission==='function'?bgMission:()=>({title:'Explora la isla',clue:''});bgMission=function(){const f=FL();
   if(f.ch7_complete&&f.ch7_presencia)return{title:'Historia completada · Capítulos I–VII y Presencia',clue:'Estabas aprendiendo a vivir. La isla sigue abierta para pasear, mirar la libreta (J), guardar un recuerdo en el parque o quedarte frente al agua.'};
   if(f.ch7_complete)return{title:'Epílogo · Presencia',clue:'Siéntate en la banca del lago (F) o quédate quieto mirando el agua unos segundos, sin buscar ninguna señal.'};
   if(f.ch6_complete)return{title:'Capítulo VII · La diferencia entre saber y creer',clue:'Katherin te espera en su banca, junto al lago, en el Parque de los Cisnes. Acércate y pulsa E.'};
   return oM()};
- const oT=bgTarget;bgTarget=function(){if(active()&&!(typeof PR!=='undefined'&&PR.on)){const g=K7();if(g)return{name:'Katherin · banca junto al lago',x:g.position.x,z:g.position.z}}return oT()};
+ const oT=typeof bgTarget==='function'?bgTarget:()=>null;bgTarget=function(){if(active()&&!(typeof PR!=='undefined'&&PR.on)){const g=K7();if(g)return{name:'Katherin · banca junto al lago',x:g.position.x,z:g.position.z}}return oT()};
  // ---------- herramientas de prueba ----------
  if(window.BOIS_DEV){
  window.__boisCh7Unlock=()=>{storyFlag('ch6_complete',1);delete STORY.flags.ch7_complete;delete STORY.flags.ch7_presencia;saveStory();console.log('Capítulo VI marcado como completado. Ve a la banca de Katherin y pulsa E.')};

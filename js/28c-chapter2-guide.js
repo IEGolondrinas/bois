@@ -18,15 +18,16 @@ function ch2gTick(){if(document.hidden)return;
  try{const F=STORY.flags;if(F.ch2_intro){if(CH2G.timer){clearInterval(CH2G.timer);CH2G.timer=null}return}if(!F.gotCam||!F.gotNb||!F.ch1_vista)return;
   const busy=!S.on||CIN.on||(typeof PR!=='undefined'&&PR.on)||(typeof CAR!=='undefined'&&CAR.on)||(typeof camAlbum!=='undefined'&&camAlbum.style.display!=='none');
   if(!CH2G.on){
-   if(bgCollected()>0){storyFlag('ch2_intro',1);return} // partida avanzada: no repetir
+   if(typeof bgCollected==='function'&&bgCollected()>0){storyFlag('ch2_intro',1);return} // partida avanzada: no repetir
    CH2G.idle=busy?0:CH2G.idle+.25;if(CH2G.idle>=2.5)ch2gStart();return}
   if(busy){CH2G.el.classList.remove('on');return}
   const st=ch2gSteps()[CH2G.i];if(!st)return;
   if(st.open){ // espera a que el jugador abra y vuelva a cerrar el panel (o a que pase el tiempo)
-   if(BOIS_GUIDE[st.open])CH2G.seen=true;
-   if(!BOIS_GUIDE[st.open]&&(window.__boisGuideOverlayOpen)){return}
+   const gOpen=typeof BOIS_GUIDE!=='undefined'&&!!BOIS_GUIDE[st.open];
+   if(gOpen)CH2G.seen=true;
+   if(!gOpen&&(window.__boisGuideOverlayOpen)){return}
    CH2G.el.classList.add('on');CH2G.t+=.25;
-   if(CH2G.seen&&!BOIS_GUIDE[st.open]){CH2G.i++;ch2gShow();return}
+   if(CH2G.seen&&!gOpen){CH2G.i++;ch2gShow();return}
    if(CH2G.t*1000>=st.to){CH2G.i++;ch2gShow()}
    CH2G.el.querySelector('i').style.setProperty('--p',Math.min(100,CH2G.t*1000/st.to*100)+'%');return}
   CH2G.el.classList.add('on');CH2G.t+=.25;CH2G.el.querySelector('i').style.setProperty('--p',Math.min(100,CH2G.t*1000/st.ms*100)+'%');

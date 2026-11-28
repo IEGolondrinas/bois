@@ -1599,9 +1599,10 @@ try {
     }
 
     // Misión y brújula paso a paso dentro del Capítulo IV
-    const oldMission = bgMission;
+    const oldMission = typeof bgMission === 'function' ? bgMission : () => ({ title: 'Explora la isla', clue: '' });
     bgMission = function () {
-      if (STORY.flags.metKatherin && bgCollected() >= PHOTOS.length && !STORY.flags.ch4_complete) {
+      const collected = typeof bgCollected === 'function' ? bgCollected() : (typeof PHOTOS !== 'undefined' && Array.isArray(PHOTOS) ? PHOTOS.filter(p => !!STORY.flags['photo_' + p.id]).length : 0);
+      if (STORY.flags.metKatherin && typeof PHOTOS !== 'undefined' && collected >= PHOTOS.length && !STORY.flags.ch4_complete) {
         if (!STORY.flags.ch4_entered) {
           return {
             title: 'Capítulo IV · 06:30 Bus → El Colegio',
@@ -1640,9 +1641,10 @@ try {
       return oldMission();
     };
 
-    const oldTarget = bgTarget;
+    const oldTarget = typeof bgTarget === 'function' ? bgTarget : () => null;
     bgTarget = function () {
-      if (STORY.flags.metKatherin && bgCollected() >= PHOTOS.length && !STORY.flags.ch4_complete) {
+      const collected = typeof bgCollected === 'function' ? bgCollected() : (typeof PHOTOS !== 'undefined' && Array.isArray(PHOTOS) ? PHOTOS.filter(p => !!STORY.flags['photo_' + p.id]).length : 0);
+      if (STORY.flags.metKatherin && typeof PHOTOS !== 'undefined' && collected >= PHOTOS.length && !STORY.flags.ch4_complete) {
         if (!STORY.flags.ch4_entered) return { name: 'El Colegio', x: cx, z: cz };
         if (!STORY.flags.ch4_notebook) return { name: 'Cuaderno abierto', x: chapter4.notebook.x, z: chapter4.notebook.z };
         if (!STORY.flags.ch4_chalk) return { name: 'La pizarra', x: chapter4.board.x, z: chapter4.board.z };
@@ -1652,7 +1654,7 @@ try {
     };
 
     // Hacer visible el edificio y activar sus colisiones al conocer a Katherin
-    const oldInteractK = interactKatherin;
+    const oldInteractK = typeof interactKatherin === 'function' ? interactKatherin : () => false;
     interactKatherin = function () {
       const r = oldInteractK();
       if (STORY.flags.metKatherin) {

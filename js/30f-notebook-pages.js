@@ -13,7 +13,7 @@ const NTB_PAGES=[
   t:'Con Steven podía hablar horas de gameplays. Cuando no estaba, me sentaba en las graderías a mirar el horizonte. Pensé que estaba solo; ahora creo que solo estaba quieto, y que ese también era un buen lugar para estar.'},
  {id:'prof',date:'Antes del examen',sort:0.4,cond:()=>!!STORY.flags.ch4_complete,
   t:'Una profesora estuvo pendiente de mí sin que nadie se lo pidiera. No se lo dije como debía. Si algún día vuelvo a ese pasillo, empiezo por ahí: gracias.'},
- {id:'sep',date:'Septiembre de 2025',sort:1,cond:()=>bgCollected()>=3,
+ {id:'sep',date:'Septiembre de 2025',sort:1,cond:()=>(typeof bgCollected==='function'?bgCollected():0)>=3,
   t:'Hoy cerré una historia. No hubo pelea: solo acepté que terminó de otro modo del que yo esperaba. Y empecé a fijarme en alguien que quizás siempre estuvo ahí, amable, y yo sin mirar bien.'},
  {id:'oct',date:'29 de octubre de 2025 · Cátedra de Paz',sort:2,cond:()=>!!STORY.flags.ch5_complete||!!STORY.flags.photo_empty,
   t:'Actividad «Sé algo bueno de ti». Yo escribí sobre mí: bueno para las matemáticas, muy analítico, hiper-empático. Y Katherin escribió cinco cosas: inteligente, linda persona, reservado, amable y enfocado. Me temblaban las piernas y me sudaba la frente. No sabía que alguien podía mirar lo que yo no medía con notas.'},

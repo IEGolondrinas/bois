@@ -151,7 +151,7 @@ function frame(){
   if(ch6On&&typeof window.__boisCh6Step==='function')__safeRun('ch6',()=>window.__boisCh6Step(dt,now));
   if(S.on&&!cinActive){
     if(!inSubZone&&PERF.photos>=.10){PERF.photos=0;checkPhotos();}
-    bgUpdate();
+    if(typeof bgUpdate==='function')bgUpdate();
     window.__boisUpdateMinimap?.(now);
     if(!inSubZone&&window.__awakeItems){
       const it=window.__awakeItems;
@@ -162,7 +162,7 @@ function frame(){
     }
   }else{
     window.__boisCamFinderClose?.();
-    bgUpdate();
+    if(typeof bgUpdate==='function')bgUpdate();
     window.__boisUpdateMinimap?.(now);
   }
 

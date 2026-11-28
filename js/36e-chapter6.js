@@ -56,6 +56,7 @@ try {
       preloadReady: false,
       preloadWaiters: [],
       intId: 0,
+      valState: null,
       preloadPerf: { state: 'idle', ms: 0, started: 0, ended: 0, geo0: null, geo1: null, tex0: null, tex1: null },
     };
 
@@ -626,6 +627,7 @@ try {
         hdGrp.add(hr);
       }
 
+      const arms = [];
       for (const sx of [-1, 1]) {
         if (sit) {
           put(b, G.thigh, sx * 0.09, hipY, 0, -Math.PI / 2);
@@ -649,6 +651,7 @@ try {
         const hd = new THREE.Mesh(G.hand, m);
         hd.position.y = -0.29;
         el.add(hd);
+        arms.push({ sx, sh, el, hd });
         if (pose === 'write' && sx === 1) {
           sh.rotation.x = -1.55;
           sh.rotation.z = -0.15;
@@ -677,6 +680,7 @@ try {
         hl.scale.setScalar(h * 0.95);
         g.add(hl);
       }
+      g.userData = Object.assign(g.userData || {}, { upper, hdGrp, arms });
       g.position.set(x, 0, z);
       g.rotation.y = ry || 0;
       p.add(g);
@@ -2302,6 +2306,7 @@ try {
       M6.near = '';
       M6.warned = false;
       M6.kid = null;
+      M6.valState = null;
       M6.busy = false;
       M6.fogDensity0 = null;
       M6.preloadStarted = false;
@@ -2857,45 +2862,260 @@ try {
           run: () => scene_cierre(),
         });
 
-        // 4) 01 / 11 / 2025 · La habitación de Valeria (cama con cabecero, mesita, silla al fondo y llave)
+        // 4) 01 / 11 / 2025 · La habitación de Valeria (escena viva: cuarto, umbral del corredor, perrito, Katherin y llave)
         {
           const valStatic = new THREE.Group();
           g.add(valStatic);
-          bx(valStatic, 2.2, 0.014, 1.5, -32.0, 0.017, 6.45, cmat(0x5b646c, 0.16));
+
+          // Rincón arquitectónico cálido (zócalo, pared sur y espejo/lámina de ensayo)
+          bx(valStatic, 2.9, 2.35, 0.04, -31.68, 1.48, 8.75, cmat(0xd7cfbe, 0.18));
+          bx(valStatic, 2.94, 0.92, 0.05, -31.68, 0.46, 8.74, wood);
+          bx(valStatic, 2.96, 0.05, 0.07, -31.68, 0.93, 8.73, cmat(0x886445, 0.22));
+          bx(valStatic, 0.04, 0.92, 2.75, -30.26, 0.46, 7.36, wood);
+          bx(valStatic, 0.06, 0.05, 2.78, -30.26, 0.93, 7.36, cmat(0x886445, 0.22));
+
+          // Marco de espejo y lámina musical en el muro del cuarto
+          bx(valStatic, 0.72, 0.92, 0.04, -32.22, 1.62, 8.71, wood);
+          bx(valStatic, 0.62, 0.82, 0.02, -32.22, 1.62, 8.695, stdM(0x9cb0c0, 0.28, { roughness: 0.14, metalness: 0.75 }));
+          const valScoreTex = txtTex(192, 128, (c, w, h) => {
+            c.fillStyle = '#efe6d4';
+            c.fillRect(0, 0, w, h);
+            c.strokeStyle = 'rgba(72,56,42,.38)';
+            c.lineWidth = 1.5;
+            for (let r = 0; r < 5; r++) {
+              const yy = 28 + r * 8;
+              c.beginPath(); c.moveTo(20, yy); c.lineTo(w - 20, yy); c.stroke();
+            }
+            for (let r = 0; r < 5; r++) {
+              const yy = 78 + r * 8;
+              c.beginPath(); c.moveTo(20, yy); c.lineTo(w - 20, yy); c.stroke();
+            }
+            c.fillStyle = '#3b2e23';
+            [42, 68, 95, 126, 152].forEach((nx, idx) => {
+              c.beginPath(); c.arc(nx, 44 - (idx % 3) * 7, 4, 0, Math.PI * 2); c.fill();
+              c.fillRect(nx + 3, 24 - (idx % 3) * 7, 1.6, 20);
+            });
+          });
+          bx(valStatic, 0.56, 0.42, 0.03, -31.18, 1.58, 8.71, wood);
+          bx(valStatic, 0.48, 0.34, 0.015, -31.18, 1.58, 8.695, new THREE.MeshBasicMaterial({ map: valScoreTex }));
+
+          // Mueble bajo de apoyo con carpeta de ensayo y parlante pequeño
+          bx(valStatic, 0.88, 0.44, 0.4, -32.68, 0.22, 8.32, wood);
+          bx(valStatic, 0.26, 0.025, 0.32, -32.82, 0.455, 8.32, paper);
+          bx(valStatic, 0.16, 0.22, 0.14, -32.42, 0.55, 8.32, cmat(0x252a30, 0.22));
+          bx(valStatic, 0.02, 0.02, 0.02, -32.42, 0.62, 8.245, glowM(0xffd28a, 0.8));
+
+          // Umbral del corredor (marco de madera, luz cálida del pasillo, puerta entreabierta y tapete)
+          bx(valStatic, 0.02, 2.18, 0.88, -30.22, 1.1, 5.48, glowM(0xffdfb0, 0.28));
+          bx(valStatic, 0.1, 2.24, 0.09, -30.27, 1.12, 5.01, wood);
+          bx(valStatic, 0.1, 2.24, 0.09, -30.27, 1.12, 5.95, wood);
+          bx(valStatic, 0.12, 0.11, 1.06, -30.27, 2.24, 5.48, wood);
+          const doorPivot = new THREE.Group();
+          doorPivot.position.set(-30.27, 0, 5.93);
+          doorPivot.rotation.y = 1.34;
+          bx(doorPivot, 0.045, 2.16, 0.78, 0, 1.08, -0.39, cmat(0x5b3f28, 0.22));
+          cyl(doorPivot, 0.026, 0.026, 0.07, -0.04, 1.02, -0.68, cmat(0xd9b86c, 0.3), 8).rotation.z = Math.PI / 2;
+          valStatic.add(doorPivot);
+          bx(valStatic, 0.76, 0.014, 0.62, -30.6, 0.019, 5.46, cmat(0x6c5947, 0.2));
+
+          // Alfombra, cama, cabecero, cobertor, almohada, mesita, lámpara y silla al fondo
+          bx(valStatic, 2.42, 0.01, 1.8, -32.0, 0.013, 6.45, cmat(0x475159, 0.16));
+          bx(valStatic, 2.3, 0.014, 1.68, -32.0, 0.017, 6.45, cmat(0x5b646c, 0.16));
           bx(valStatic, 1.38, 0.36, 0.74, -32.2, 0.18, 6.2, wood);
           bx(valStatic, 0.08, 0.86, 0.76, -32.92, 0.43, 6.2, wood);
           bx(valStatic, 1.26, 0.1, 0.64, -32.2, 0.41, 6.2, cmat(0x8899a8, 0.16));
           bx(valStatic, 0.56, 0.12, 0.66, -31.82, 0.425, 6.2, cmat(0x475a6b, 0.18));
           bx(valStatic, 0.36, 0.08, 0.46, -32.64, 0.5, 6.2, cmat(0xe7dfd1, 0.18));
-          // Mesita de noche y lámpara cálida
           bx(valStatic, 0.44, 0.46, 0.44, -31.18, 0.23, 6.2, wood);
           cyl(valStatic, 0.06, 0.075, 0.025, -31.18, 0.475, 6.18, cmat(0xc29e5a, 0.25), 10);
           cyl(valStatic, 0.016, 0.018, 0.18, -31.18, 0.57, 6.18, cmat(0xc29e5a, 0.25), 8);
-          cyl(valStatic, 0.07, 0.13, 0.14, -31.18, 0.68, 6.18, glowM(0xffe1a8, 0.72), 12);
-          // Silla al fondo y teléfono en descanso (como en la escena real)
+          cyl(valStatic, 0.07, 0.13, 0.14, -31.18, 0.68, 6.18, glowM(0xffe1a8, 0.74), 12);
           chair(valStatic, -31.2, 7.45, -2.55, wood);
-          bx(valStatic, 0.08, 0.012, 0.14, -31.2, 0.495, 7.45, cmat(0x161b22, 0.25));
-          // Llave de latón sobre el cobertor
-          const keyMat = stdM(0xd9b86c, 0.35, { roughness: 0.28, metalness: 0.85 });
-          cyl(valStatic, 0.034, 0.034, 0.012, -32.08, 0.495, 6.08, keyMat, 12);
-          bx(valStatic, 0.08, 0.012, 0.016, -32.02, 0.495, 6.08, keyMat);
-          bx(valStatic, 0.018, 0.012, 0.022, -31.99, 0.495, 6.095, keyMat);
           mergeStaticGroup(valStatic);
+
+          // Charco suave de luz cálida junto a la cama
+          const valLampPool = new THREE.Mesh(
+            new THREE.PlaneGeometry(3.2, 3.2),
+            new THREE.MeshBasicMaterial({ map: dotTex('rgba(255,222,165,0.44)'), transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, fog: false })
+          );
+          valLampPool.rotation.x = -Math.PI / 2;
+          valLampPool.position.set(-31.65, 0.031, 6.25);
+          valLampPool.userData.dyn = true;
+          g.add(valLampPool);
+
+          // Perrito tímido en el umbral del corredor (reutiliza __boisCreatePuppyRig con respaldo compatible)
+          const buildValPuppy = () => {
+            if (typeof window !== 'undefined' && typeof window.__boisCreatePuppyRig === 'function') {
+              return window.__boisCreatePuppyRig({ scale: 0.96, shadowOpacity: 0.26, collarColor: 0xc83737 });
+            }
+            const furM = stdM(0xc89b66, 0.22), crM = stdM(0xf0dfc4, 0.22), dkM = stdM(0x7d5935, 0.22), nsM = stdM(0x1c1517, 0.15), rdM = stdM(0xc83737, 0.25);
+            const dg = new THREE.Group(), sg = new THREE.SphereGeometry(1, 10, 8);
+            const pt = (mt, px, py, pz, sx, sy, sz, rx, rz, pr = dg) => {
+              const o = new THREE.Mesh(sg, mt);
+              o.position.set(px, py, pz);
+              o.scale.set(sx, sy, sz);
+              if (rx || rz) o.rotation.set(rx || 0, 0, rz || 0);
+              pr.add(o);
+              return o;
+            };
+            const sh = new THREE.Mesh(new THREE.PlaneGeometry(0.56, 0.56), basicM(0x0b120e, { transparent: true, opacity: 0.24, depthWrite: false }));
+            sh.rotation.x = -Math.PI / 2;
+            sh.position.y = 0.02;
+            dg.add(sh);
+            pt(furM, 0, 0.26, 0, 0.145, 0.125, 0.23);
+            pt(crM, 0, 0.24, 0.14, 0.105, 0.095, 0.105);
+            const headPivot = new THREE.Group();
+            headPivot.position.set(0, 0.36, 0.22);
+            dg.add(headPivot);
+            pt(furM, 0, 0, 0, 0.105, 0.1, 0.105, 0, 0, headPivot);
+            pt(crM, 0, -0.025, 0.085, 0.055, 0.042, 0.055, 0, 0, headPivot);
+            pt(nsM, 0, -0.005, 0.132, 0.017, 0.014, 0.016, 0, 0, headPivot);
+            for (const s of [-1, 1]) {
+              pt(nsM, s * 0.045, 0.028, 0.088, 0.013, 0.015, 0.012, 0, 0, headPivot);
+              pt(dkM, s * 0.082, 0.015, -0.01, 0.028, 0.072, 0.042, 0.1, s * 0.18, headPivot);
+            }
+            pt(rdM, 0, 0.3, 0.16, 0.112, 0.048, 0.082, 0.2, 0);
+            pt(rdM, 0, 0.23, 0.22, 0.058, 0.072, 0.024, -0.15, 0);
+            const tailPivot = new THREE.Group();
+            tailPivot.position.set(0, 0.32, -0.21);
+            dg.add(tailPivot);
+            pt(furM, 0, 0.05, -0.06, 0.028, 0.028, 0.095, 0.65, 0, tailPivot);
+            const legs = [[-0.072, 0.14], [0.072, 0.14], [-0.072, -0.14], [0.072, -0.14]].map(([lx, lz]) => pt(dkM, lx, 0.095, lz, 0.034, 0.095, 0.034));
+            dg.scale.setScalar(0.96);
+            dg.userData = { headPivot, tailPivot, legs, sh };
+            return dg;
+          };
+          const valDog = buildValPuppy();
+          valDog.position.set(-30.6, 0, 5.46);
+          valDog.rotation.y = -2.18;
+          valDog.userData.dyn = true;
+          g.add(valDog);
+
+          // Katherin sentada en la silla del fondo con el teléfono encendido
+          const valKat = figure(g, -31.2, 7.45, 1.62, 0xe8d9ec, -2.55, 0.78, 'sit', false);
+          valKat.userData.dyn = true;
+          const katRig = valKat.userData.rig || {};
+          if (katRig.arms) {
+            katRig.arms.forEach((a) => {
+              a.sh.rotation.z = -a.sx * 0.16;
+              a.el.rotation.x = -1.12;
+            });
+          }
+          if (katRig.hdGrp) katRig.hdGrp.rotation.x = 0.22;
+          const valPhone = new THREE.Group();
+          valPhone.position.set(0, 0.22, 0.34);
+          valPhone.rotation.x = -0.82;
+          bx(valPhone, 0.078, 0.01, 0.14, 0, 0, 0, cmat(0x161b22, 0.25), true);
+          const valPhoneScr = bx(valPhone, 0.066, 0.004, 0.122, 0, 0.007, 0, glowM(0x9ad4ff, 0.78), true);
+          const valPhoneGlow = new THREE.Mesh(new THREE.PlaneGeometry(0.36, 0.36), glowM(0x9ad4ff, 0.22));
+          valPhoneGlow.rotation.x = -Math.PI / 2;
+          valPhoneGlow.position.y = 0.03;
+          valPhone.add(valPhoneGlow);
+          if (katRig.upper) katRig.upper.add(valPhone);
+          else valKat.add(valPhone);
+
+          // Tú sentado en el borde de la cama girando la llave de latón entre los dedos
+          const valTu = figure(g, -32.22, 6.02, 1.68, 0xf7e2a8, Math.PI + 0.14, 0.74, 'sit', false);
+          valTu.userData.dyn = true;
+          const tuRig = valTu.userData.rig || {};
+          if (tuRig.arms) {
+            tuRig.arms.forEach((a) => {
+              a.sh.rotation.z = -a.sx * 0.18;
+              a.el.rotation.x = -1.06;
+            });
+          }
+          if (tuRig.hdGrp) tuRig.hdGrp.rotation.x = 0.24;
+          const keyMat = stdM(0xd9b86c, 0.42, { roughness: 0.24, metalness: 0.88 });
+          const valKeyPivot = new THREE.Group();
+          valKeyPivot.position.set(0, 0.21, 0.35);
+          cyl(valKeyPivot, 0.032, 0.032, 0.011, -0.025, 0, 0, keyMat, 12, true);
+          bx(valKeyPivot, 0.075, 0.011, 0.015, 0.025, 0, 0, keyMat, true);
+          bx(valKeyPivot, 0.018, 0.011, 0.022, 0.05, 0, 0.014, keyMat, true);
+          const valKeyGlint = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.24), glowM(0xffdf9a, 0.24));
+          valKeyGlint.rotation.x = -Math.PI / 2;
+          valKeyGlint.position.set(0.015, 0.02, 0);
+          valKeyPivot.add(valKeyGlint);
+          if (tuRig.upper) tuRig.upper.add(valKeyPivot);
+          else valTu.add(valKeyPivot);
+
+          M6.valState = { active: false, beat: 'idle', beatAt: 0, camGoal: null, valDog, valKat, valTu, valKeyPivot };
+
           const valHalo = new THREE.Mesh(new THREE.RingGeometry(0.95, 1.08, 28), glowM(0xffe1a8, 0.22));
           valHalo.rotation.x = -Math.PI / 2;
           valHalo.position.set(-32.2, 0.032, 4.7);
           valHalo.userData.dyn = true;
           g.add(valHalo);
-          M6.an.push((t) => {
+
+          M6.an.push((t, dt) => {
             valHalo.material.opacity = FL().ch6_cierre && !FL().ch6_valeria ? 0.18 + 0.1 * Math.sin(t * 1.8) : 0;
+            const st = M6.valState;
+            const beat = st ? st.beat : 'idle';
+            const btAge = st ? Math.max(0, t - (st.beatAt || 0)) : 0;
+
+            // Animación del perrito en el umbral del corredor
+            if (valDog && valDog.userData) {
+              const ud = valDog.userData;
+              if (beat === 'puppy') {
+                const hop = btAge < 1.8 ? Math.abs(Math.sin(t * 10)) * 0.028 : 0;
+                valDog.position.set(-30.65, hop, 5.5);
+                valDog.rotation.y = -2.12 + Math.sin(t * 3.1) * 0.12;
+                if (ud.tailPivot) ud.tailPivot.rotation.y = Math.sin(t * 17) * 0.56;
+                if (ud.headPivot) {
+                  ud.headPivot.rotation.z = Math.sin(t * 3.6) * 0.16;
+                  ud.headPivot.rotation.x = btAge < 1.4 ? -0.18 - Math.abs(Math.sin(t * 9)) * 0.12 : -0.06;
+                }
+                if (ud.legs) ud.legs.forEach((l, li) => (l.position.y = 0.095 + (btAge < 1.8 ? Math.sin(t * 12 + li * 2) * 0.015 : 0)));
+              } else {
+                valDog.position.set(-30.6, 0, 5.46);
+                valDog.rotation.y = -2.18;
+                if (ud.tailPivot) ud.tailPivot.rotation.y = Math.sin(t * 4.2) * 0.24;
+                if (ud.headPivot) {
+                  ud.headPivot.rotation.z = Math.sin(t * 1.3) * 0.07;
+                  ud.headPivot.rotation.x = 0.04;
+                }
+                if (ud.legs) ud.legs.forEach((l) => (l.position.y = 0.095));
+              }
+            }
+
+            // Animación de Katherin mirando el teléfono o saludando suave
+            if (katRig.hdGrp) {
+              const isKat = beat === 'kat';
+              const targetPitch = isKat && btAge < 2.2 ? 0.02 : 0.22 + Math.sin(t * 1.2) * 0.02;
+              const targetYaw = isKat && btAge < 2.2 ? 0.22 : 0;
+              katRig.hdGrp.rotation.x += (targetPitch - katRig.hdGrp.rotation.x) * 0.12;
+              katRig.hdGrp.rotation.y += (targetYaw - katRig.hdGrp.rotation.y) * 0.12;
+              if (katRig.arms && katRig.arms[1]) {
+                const rArm = katRig.arms[1];
+                const wantEl = isKat && btAge < 1.6 ? -1.42 : -1.12;
+                rArm.el.rotation.x += (wantEl - rArm.el.rotation.x) * 0.12;
+              }
+            }
+            valPhoneScr.material.opacity = 0.68 + 0.12 * Math.sin(t * 2.1);
+            valPhoneGlow.material.opacity = (beat === 'kat' ? 0.28 : 0.18) + 0.05 * Math.sin(t * 2.1);
+
+            // Animación de Tú girando la llave entre los dedos
+            const kSpeed = beat === 'key' ? 2.8 : 1.4;
+            valKeyPivot.rotation.y = Math.sin(t * kSpeed) * 0.9;
+            valKeyPivot.rotation.z = Math.cos(t * kSpeed * 0.72) * 0.34;
+            valKeyGlint.material.opacity = (beat === 'key' ? 0.38 : 0.16) + 0.08 * Math.abs(Math.sin(t * kSpeed));
+            if (tuRig.hdGrp) tuRig.hdGrp.rotation.x = 0.24 + Math.sin(t * 1.4) * 0.02;
+
+            // Dolly suave de cámara durante scene_valeria
+            if (st && st.active && st.camGoal && typeof CIN !== 'undefined' && CIN.on && typeof cam !== 'undefined') {
+              const k = 1 - Math.exp(-2.3 * Math.min(dt || 0.016, 0.05));
+              cam.position.x += (st.camGoal.x - cam.position.x) * k;
+              cam.position.y += (st.camGoal.y - cam.position.y) * k;
+              cam.position.z += (st.camGoal.z - cam.position.z) * k;
+            }
           });
-          M6.props.push([-33.05, -30.9, 5.7, 7.75]);
+
+          M6.props.push([-33.15, -30.25, 5.2, 8.75]);
           M6.pts.push({
             id: 'valeria',
             flag: 'ch6_valeria',
             name: '01/11/2025 · La habitación de Valeria',
             x: -32.2,
-            z: 4.7,
+            z: 4.5,
             r: 2.5,
             y: 1.0,
             opt: true,
@@ -3471,30 +3691,111 @@ try {
 
     function scene_valeria() {
       chime(370);
+      S.x = O6.x - 32.2;
+      S.z = O6.z + 4.35;
+      S.y = O6.y;
+      if (typeof cam !== 'undefined' && cam && cam.position) {
+        cam.position.set(S.x, S.y + 1.58, S.z);
+      }
+      const setShot = (beat, cx, cy, cz) => {
+        if (!M6.valState) return;
+        M6.valState.active = true;
+        M6.valState.beat = beat;
+        M6.valState.beatAt = (M6.last || 0) * 0.001;
+        M6.valState.camGoal = worldOf(cx, cy, cz);
+      };
+      setShot('wide', -32.2, 1.58, 4.35);
       cine(
         [
-          { stamp: '01 / 11 / 2025', t: 'La habitación de Valeria.' },
+          {
+            stamp: '01 / 11 / 2025',
+            t: 'La habitación de Valeria.',
+            lookAt: worldOf(-31.55, 0.92, 6.45),
+            camSpeed: 2.6,
+            on: () => setShot('wide', -32.2, 1.58, 4.35),
+          },
           { pause: 900 },
-          { type: 'layer', layer: 'hecho', t: 'Llegaste a casa de Valeria para el último ensayo. Un rato después llegó Katherin.', on: () => distantBarkSnd() },
+          {
+            type: 'layer',
+            layer: 'hecho',
+            t: 'Llegaste a casa de Valeria para el último ensayo. Un rato después llegó Katherin.',
+            lookAt: worldOf(-30.58, 0.42, 5.52),
+            camSpeed: 2.5,
+            on: () => {
+              setShot('puppy', -31.55, 1.0, 4.45);
+              distantBarkSnd();
+            },
+          },
+          { pause: 2400 },
+          {
+            t: 'El perrito de la casa ladraba tímido desde el corredor, así que Valeria los mandó a su habitación mientras se alistaba.',
+            lookAt: worldOf(-30.68, 0.44, 5.58),
+            camSpeed: 2.1,
+            on: () => setShot('puppy', -31.42, 0.94, 4.7),
+          },
           { pause: 2500 },
-          { t: 'El perrito de la casa ladraba tímido desde el corredor, así que Valeria los mandó a su habitación mientras se alistaba.' },
+          {
+            type: 'layer',
+            layer: 'hecho',
+            t: 'Al entrar, Katherin hizo un gesto pequeño y dijo un «hola» suave. Tú te sentaste en la cama, mirando la llave de tu casa entre los dedos.',
+            lookAt: worldOf(-31.2, 1.06, 7.45),
+            camSpeed: 2.2,
+            on: () => {
+              setShot('kat', -32.18, 1.32, 5.1);
+              keyClinkSnd();
+            },
+          },
+          { pause: 2900 },
+          {
+            t: 'Ninguno dijo nada más. Ella miraba su teléfono en la silla del fondo. Tú seguías girando la llave.',
+            lookAt: worldOf(-32.22, 0.72, 5.82),
+            camSpeed: 2.3,
+            on: () => setShot('key', -32.42, 1.1, 4.78),
+          },
           { pause: 2600 },
-          { type: 'layer', layer: 'hecho', t: 'Al entrar, Katherin hizo un gesto pequeño y dijo un «hola» suave. Tú te sentaste en la cama, mirando la llave de tu casa entre los dedos.', on: () => keyClinkSnd() },
-          { pause: 3000 },
-          { t: 'Ninguno dijo nada más. Ella miraba su teléfono en la silla del fondo. Tú seguías girando la llave.' },
-          { pause: 2700 },
-          { type: 'layer', layer: 'pensaste', t: 'Pensé: qué incómodo, seguro le aburro, soy invisible, o quizá Valeria lo hizo a propósito. No pude ni decir hola.' },
-          { pause: 3000 },
-          { type: 'layer', layer: 'hoy', t: 'Desde 2026 solo se ven dos adolescentes bastante reservados en un mismo cuarto, sin saber cómo empezar a hablar.', on: () => keyClinkSnd() },
+          {
+            type: 'layer',
+            layer: 'pensaste',
+            t: 'Pensé: qué incómodo, seguro le aburro, soy invisible, o quizá Valeria lo hizo a propósito. No pude ni decir hola.',
+            lookAt: worldOf(-32.16, 0.68, 5.76),
+            camSpeed: 1.8,
+            on: () => setShot('key', -32.3, 0.98, 4.98),
+          },
           { pause: 2900 },
-          { who: 'Tú (2026)', t: 'No tenías que hacerlo perfectamente. Tenías dieciséis años y estabas aprendiendo.' },
-          { pause: 2900 },
+          {
+            type: 'layer',
+            layer: 'hoy',
+            t: 'Desde 2026 solo se ven dos adolescentes bastante reservados en un mismo cuarto, sin saber cómo empezar a hablar.',
+            lookAt: worldOf(-31.48, 0.9, 6.45),
+            camSpeed: 1.9,
+            on: () => {
+              setShot('wide', -32.2, 1.64, 4.25);
+              keyClinkSnd();
+            },
+          },
+          { pause: 2800 },
+          {
+            who: 'Tú (2026)',
+            t: 'No tenías que hacerlo perfectamente. Tenías dieciséis años y estabas aprendiendo.',
+            lookAt: worldOf(-31.55, 0.92, 6.45),
+            camSpeed: 1.7,
+            on: () => chime(440),
+          },
+          { pause: 2600 },
         ],
         () => {
+          if (M6.valState) {
+            M6.valState.active = false;
+            M6.valState.beat = 'idle';
+            M6.valState.camGoal = null;
+          }
+          if (typeof cam !== 'undefined' && cam && cam.position) {
+            cam.position.set(S.x, S.y + 1.7, S.z);
+          }
           storyFlag('ch6_valeria', 1);
           showMsg('Recuerdo guardado · 01/11/2025 · La habitación de Valeria');
         },
-        { x: -32.2, y: 0.95, z: 6.2 }
+        { x: -31.55, y: 0.92, z: 6.45 }
       );
     }
 
@@ -3997,7 +4298,7 @@ try {
       const s = t * 0.001;
 
       try {
-        for (let i = 0; i < M6.an.length; i++) M6.an[i](s);
+        for (let i = 0; i < M6.an.length; i++) M6.an[i](s, dt);
 
         for (const k in M6.gates) {
           const G = M6.gates[k];
@@ -4112,7 +4413,7 @@ try {
       return f.ch6_ventanas ? 'Acércate al ventanal y mira hacia el horizonte.' : 'Mira el recuerdo de las ventanas opuestas o acércate al ventanal del este.';
     };
 
-    const oM = bgMission;
+    const oM = typeof bgMission === 'function' ? bgMission : () => ({ title: 'Explora la isla', clue: '' });
     bgMission = function () {
       const f = FL();
       if (M6.on) return { title: 'Capítulo VI · Las torres: mirar hacia el pasado', clue: stageClue() + ' · Retroceso: volver a la isla.' };
@@ -4126,7 +4427,7 @@ try {
       return oM();
     };
 
-    const oT = bgTarget;
+    const oT = typeof bgTarget === 'function' ? bgTarget : () => null;
     bgTarget = function () {
       if (M6.on) return null;
       if (active() && !PR.on) return { name: 'Torres gemelas · puerta de cristal', x: GAP.x, z: GAP.z };

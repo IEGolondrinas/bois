@@ -35,26 +35,28 @@ function puRenderAlbum() {
   }
 }
 
-function puBuildDog() {
-  const k = window.__katherin;
-  if (!k || window.__puppy) return;
-
+function puCreateRig(opts) {
+  const o = opts || {};
   const m = (c, r = 0.88) => new THREE.MeshStandardMaterial({ color: c, roughness: r });
-  const fur = m(0xc89b66), cream = m(0xf0dfc4), dk = m(0x7d5935), nose = m(0x1c1517, 0.25), cloth = m(0xc83737, 0.78);
+  const fur = m(o.furColor != null ? o.furColor : 0xc89b66);
+  const cream = m(o.creamColor != null ? o.creamColor : 0xf0dfc4);
+  const dk = m(o.dkColor != null ? o.dkColor : 0x7d5935);
+  const nose = m(0x1c1517, 0.25);
+  const cloth = m(o.collarColor != null ? o.collarColor : 0xc83737, 0.78);
   const g = new THREE.Group(), S1 = new THREE.SphereGeometry(1, 10, 8);
   const part = (mt, x, y, z, sx, sy, sz, rx = 0, ry = 0, rz = 0, parent = g) => {
-    const o = new THREE.Mesh(S1, mt);
-    o.position.set(x, y, z);
-    o.scale.set(sx, sy, sz);
-    if (rx || ry || rz) o.rotation.set(rx, ry, rz);
-    parent.add(o);
-    return o;
+    const mesh = new THREE.Mesh(S1, mt);
+    mesh.position.set(x, y, z);
+    mesh.scale.set(sx, sy, sz);
+    if (rx || ry || rz) mesh.rotation.set(rx, ry, rz);
+    parent.add(mesh);
+    return mesh;
   };
 
   // Sombra suave de contacto en el suelo
   const sh = new THREE.Mesh(
     new THREE.CircleGeometry(0.28, 16),
-    new THREE.MeshBasicMaterial({ color: 0x0b120e, transparent: true, opacity: 0.28, depthWrite: false })
+    new THREE.MeshBasicMaterial({ color: 0x0b120e, transparent: true, opacity: o.shadowOpacity != null ? o.shadowOpacity : 0.28, depthWrite: false })
   );
   sh.rotation.x = -Math.PI / 2;
   sh.position.y = 0.02;
@@ -92,7 +94,16 @@ function puBuildDog() {
     l.userData.dyn = true;
     legs.push(l);
   }
+  if (o.scale && o.scale !== 1) g.scale.setScalar(o.scale);
   g.userData = { headPivot, tailPivot, legs, sh };
+  return g;
+}
+window.__boisCreatePuppyRig = puCreateRig;
+
+function puBuildDog() {
+  const k = window.__katherin;
+  if (!k || window.__puppy) return;
+  const g = puCreateRig();
 
   // Centro de juego: el lado de la banca con el terreno más parejo (evita el agua)
   const b = k.userData.bench;

@@ -189,11 +189,11 @@ try{(()=>{
      {who:'Tú',t:'Todo esto estaba aquí abajo… esperando.'},{pause:2400}],()=>{storyFlag('ch5_entered',1);showMsg('Capítulo V · Busca luces azules flotando · E: examinar')},{lookAt:new THREE.Vector3(0,PR.geo.PY+1.85,-8)})},1700)}catch(e){console.warn('Capítulo V:',e)}};
  // ---------- misión y brújula ----------
  let lk=null;const lakePt=()=>{if(lk)return lk;let b=1e9,bx=0,bz=0;for(let x=-480;x<=480;x+=16)for(let z=-480;z<=480;z+=16){const h=hAt(x,z);if(h<b){b=h;bx=x;bz=z}}return lk={x:bx,z:bz}};
- const oM=bgMission;bgMission=function(){const f=FL();
+ const oM=typeof bgMission==='function'?bgMission:()=>({title:'Explora la isla',clue:''});bgMission=function(){const f=FL();
   if(f.ch5_complete)return{title:'Capítulo V completado · Lo que permanece debajo',clue:PR.on?'Has recordado algo concreto. Sal de los Poolrooms (Retroceso): las torres gemelas te esperan en el centro de la isla.':'Has recordado algo concreto. Las torres gemelas te esperan en el centro de la isla.'};
   if(f.ch4_complete)return{title:'Capítulo V · Lo que permanece debajo',clue:PR.on?(roomsDone()?'Una luz cálida se ve al fondo. Busca la mesa.':'Explora las salas. Busca las luces azules flotando.'):'Hay una abertura bajo el lago. Sumérgete hasta el fondo.'};
   return oM()};
- const oT=bgTarget;bgTarget=function(){if(FL().ch4_complete&&!FL().ch5_complete){if(!PR.on){const p=lakePt();return{name:'Lago · abertura sumergida',x:p.x,z:p.z}}if(C5.built){const t=nearestAct();if(t)return{name:t.id==='table'?'Mesa con fotografía':t.name,x:t.x,z:t.z}}}return oT()};
+ const oT=typeof bgTarget==='function'?bgTarget:()=>null;bgTarget=function(){if(FL().ch4_complete&&!FL().ch5_complete){if(!PR.on){const p=lakePt();return{name:'Lago · abertura sumergida',x:p.x,z:p.z}}if(C5.built){const t=nearestAct();if(t)return{name:t.id==='table'?'Mesa con fotografía':t.name,x:t.x,z:t.z}}}return oT()};
  // Atajos de prueba: solo con ?dev o bois_dev=1
  if(window.BOIS_DEV){
  window.__boisCh5Unlock=()=>{storyFlag('ch4_complete',1);build();ensureKat();refresh();console.log('Capítulo IV marcado como completado. Si no estás en los Poolrooms, sumérgete en el lago; si ya estás, las luces aparecen ahora.')};
